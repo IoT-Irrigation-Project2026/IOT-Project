@@ -8,6 +8,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         /* ألوان وضع الليل الاحترافية */
 body.dark-mode {
@@ -258,14 +260,14 @@ body.dark-mode .grid-cell {
 </div>
     <div id="welcome-page" style="height: 100vh; flex-direction: column; align-items: center; justify-content: center; background: url('https://www.vidaenlatierra.com/wp-content/uploads/2020/11/monocultivos-circulares.jpg') center/cover;">
         <div style="background: rgba(255,255,255,0.95); padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-            <h1 style="color:#2c3e50;">نظام IOT المطور للري الذكي</h1>
+            <h1 style="color:#2c3e50;">نظام IOT</h1>
             <button style="padding: 15px 60px; font-size: 1.3em; cursor: pointer; background: #2ecc71; color: white; border: none; border-radius: 50px; font-weight: bold;" onclick="showDashboard()">جهاز 1 💧</button>
         </div>
         <div class="credits-section" style="margin-top: 20px; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 10px; text-align: center;">
-            <h4 style="margin:5px;">إعداد المهندسين:</h4>
-            <p style="margin:0; font-weight:bold; color:#2980b9;">م/كريم عمرو-م/نادر رامز-م/أمنية علاء-م/نجوى وجيه-م/أحمد ياسر-م/الشيماء جمال-م/أحمد باسم-م/فاطمة علي-م/أمين حجاج-م/سيف الدين حسين</p>
-            <h4 style="margin:5px;">تحت إشراف:</h4>
-            <p style="margin:0; font-weight:bold; color:#e67e22;">أ.د/ياسر عزت</p>
+            <h1 style="margin:5px;">إعداد المهندسين:</h1>
+            <h2><p style="margin:0; font-weight:bold; color:#0e06ee;">م/كريم عمرو|| م/نادر رامز|| م/أمنية علاء|| م/نجوى وجيه|| م/فاطمة علي|| م/الشيماء جمال|| م/أحمد باسم|| م/أحمد ياسر|| م/أمين حجاج|| م/سيف الدين حسين</p></h2>
+            <h1 style="margin:5px;">تحت إشراف:</h1>
+            <h1><p style="margin:0; font-weight:bold; color:#f70505;">أ.د/ياسرعزت</p></h1>
         </div>
     </div>
 
@@ -771,47 +773,114 @@ window.exportToExcel = async function() {
     const history = JSON.parse(localStorage.getItem('irr_history') || "[]");
     if (history.length === 0) { alert("السجل فارغ"); return; }
 
+    const dateStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+
+    // --- 1. إعادة برمجة شيت الإكسيل الأصلية (بكل تفاصيلها) ---
     let dataArr = [
-        ["تقرير نظام IOT(مشروع تخرج المستوى الرابع)"],
+        ["تقرير نظام IOT (مشروع تخرج المستوى الرابع)"],
         ["العملية", "التاريخ", "اليوم", "بداية التشغيل", "", "", "", "نهاية التشغيل", "", "", "", "زمن التشغيل", "", "", "", "كمية المياه (M3)", "", "", ""],
         ["", "", "", "Spr 1", "Spr 2", "Spr 3", "Spr 4", "Spr 1", "Spr 2", "Spr 3", "Spr 4", "Spr 1", "Spr 2", "Spr 3", "Spr 4", "F1", "F2", "F3", "F4"]
     ];
 
     history.forEach(row => {
-        dataArr.push([row.id, row.date, row.day, ...(row.startTimes || ["-","-","-","-"]), ...(row.endTimes || ["-","-","-","-"]), ...(row.durations || ["-","-","-","-"]), ...(row.amounts || ["0","0","0","0"])]);
+        dataArr.push([
+            row.id, 
+            row.date, 
+            row.day, 
+            ...(row.startTimes || ["-","-","-","-"]), 
+            ...(row.endTimes || ["-","-","-","-"]), 
+            ...(row.durations || ["-","-","-","-"]), 
+            ...(row.amounts || ["0","0","0","0"])
+        ]);
     });
 
     const ws = XLSX.utils.aoa_to_sheet(dataArr);
-    ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 18 } }, { s: { r: 1, c: 0 }, e: { r: 2, c: 0 } }, { s: { r: 1, c: 1 }, e: { r: 2, c: 1 } }, { s: { r: 1, c: 2 }, e: { r: 2, c: 2 } }, { s: { r: 1, c: 3 }, e: { r: 1, c: 6 } }, { s: { r: 1, c: 7 }, e: { r: 1, c: 10 } }, { s: { r: 1, c: 11 }, e: { r: 1, c: 14 } }, { s: { r: 1, c: 15 }, e: { r: 1, c: 18 } }];
     
+    // إعدادات الدمج (Merges) الأصلية
+    ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 18 } }, 
+        { s: { r: 1, c: 0 }, e: { r: 2, c: 0 } }, 
+        { s: { r: 1, c: 1 }, e: { r: 2, c: 1 } }, 
+        { s: { r: 1, c: 2 }, e: { r: 2, c: 2 } }, 
+        { s: { r: 1, c: 3 }, e: { r: 1, c: 6 } }, 
+        { s: { r: 1, c: 7 }, e: { r: 1, c: 10 } }, 
+        { s: { r: 1, c: 11 }, e: { r: 1, c: 14 } }, 
+        { s: { r: 1, c: 15 }, e: { r: 1, c: 18 } }
+    ];
+
+    // إعادة تنسيق الخلايا (الألوان، الحدود، المحاذاة) كما كانت في كودك الأصلي
     const range = XLSX.utils.decode_range(ws['!ref']);
     for (let R = range.s.r; R <= range.e.r; ++R) {
         for (let C = range.s.c; C <= range.e.c; ++C) {
             const cell_ref = XLSX.utils.encode_cell({ c: C, r: R });
             if (!ws[cell_ref]) ws[cell_ref] = { t: 's', v: '' };
-            ws[cell_ref].s = { alignment: { vertical: "center", horizontal: "center", wrapText: true }, border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } } };
-            if (R <= 2) { ws[cell_ref].s.fill = { fgColor: { rgb: "E0E0E0" } }; ws[cell_ref].s.font = { bold: true }; }
+            ws[cell_ref].s = { 
+                alignment: { vertical: "center", horizontal: "center", wrapText: true }, 
+                border: { 
+                    top: { style: "thin" }, bottom: { style: "thin" }, 
+                    left: { style: "thin" }, right: { style: "thin" } 
+                } 
+            };
+            if (R <= 2) { 
+                ws[cell_ref].s.fill = { fgColor: { rgb: "E0E0E0" } }; 
+                ws[cell_ref].s.font = { bold: true }; 
+            }
         }
     }
     ws['!cols'] = Array(19).fill({ wch: 12 });
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "نتائج الري");
+    
+    // توليد الـ Buffer الخاص بالإكسيل بصيغة Array
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 
-    // لقطة شاشة HD للمنحنى
+    // --- 2. التقاط الصور للـ PDF (جودة عالية) ---
+    // لقطة للمنحنى
     const chartElement = document.querySelector('.chart-container');
-    const canvas = await html2canvas(chartElement, { scale: 3, useCORS: true, backgroundColor: "#ffffff" });
-    const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
+    const chartCanvas = await html2canvas(chartElement, { scale: 3, useCORS: true, backgroundColor: "#ffffff" });
+    const chartImgData = chartCanvas.toDataURL('image/png');
 
-    // التجميع في ZIP
+    // لقطة للجدول (تأكد أن الـ ID أو الـ Class صحيح في الـ HTML)
+    const tableElement = document.querySelector('.history-table') || document.querySelector('table');
+    const tableCanvas = await html2canvas(tableElement, { scale: 3, useCORS: true, backgroundColor: "#ffffff" });
+    const tableImgData = tableCanvas.toDataURL('image/png');
+
+    // --- 3. بناء ملف الـ PDF الاحترافي ---
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    // الهيدر
+    pdf.setFontSize(18);
+    pdf.setTextColor(40);
+    pdf.text("IoT Irrigation System", 105, 15, { align: "center" });
+    pdf.setFontSize(10);
+    pdf.text(`Generated: ${new Date().toLocaleString()}`, 105, 22, { align: "center" });
+
+    // وضع صورة الجدول
+    const tableProps = pdf.getImageProperties(tableImgData);
+    const tableHeight = (tableProps.height * 190) / tableProps.width;
+    pdf.addImage(tableImgData, 'PNG', 10, 30, 190, tableHeight);
+
+    // وضع صورة المنحنى أسفل الجدول
+    const chartProps = pdf.getImageProperties(chartImgData);
+    const chartHeight = (chartProps.height * 190) / chartProps.width;
+    // ترك مسافة 15 ملم تحت الجدول قبل المنحنى
+    pdf.addImage(chartImgData, 'PNG', 10, tableHeight + 45, 190, chartHeight);
+
+    const pdfBlob = pdf.output('blob');
+
+    // --- 4. التجميع النهائي في ملف ZIP ---
     const zip = new JSZip();
-    const dateStr = new Date().toLocaleDateString('ar-EG').replace(/\//g, '-');
-    zip.file(`Report_${dateStr}.xlsx`, excelBuffer);
-    zip.file(`Chart_${dateStr}.png`, imageBlob);
+    zip.file(`Detailed_Report_${dateStr}.xlsx`, excelBuffer);
+    zip.file(`Summary_Report_${dateStr}.pdf`, pdfBlob);
+    
+    // إضافة الصورة منفردة أيضاً
+    const chartBlob = await new Promise(resolve => chartCanvas.toBlob(resolve, 'image/png'));
+    zip.file(`Chart_Analysis_${dateStr}.png`, chartBlob);
 
     zip.generateAsync({type:"blob"}).then(content => {
-        saveAs(content, `Irrigation_Project_${dateStr}.zip`);
+        saveAs(content, `Irrigation_Project_Data_${dateStr}.zip`);
     });
 };
         window.clearAllHistory = function() {
