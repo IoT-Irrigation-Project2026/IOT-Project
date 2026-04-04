@@ -11,6 +11,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
+        /* أضف هذا داخل وسم الـ <style> */
+body.dark-mode #google-map-iframe {
+    filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    /* هذا الفلتر يقوم بتحويل ألوان الخريطة العادية لألوان داكنة تناسب تصميمك */
+}
         /* ألوان وضع الليل الاحترافية */
 body.dark-mode {
     background: #0b0e14 !important; /* خلفية داكنة جداً */
@@ -71,9 +76,22 @@ body.dark-mode #menu-dropdown button {
 }
 
 /* تحسين شكل الجدول */
-#historyTable thead {
-    background: linear-gradient(135deg, #2c3e50, #34495e);
-    color: white;
+/* تثبيت عناوين الجدول (الـ 4 عماويد) */
+#historyTable thead th {
+    position: sticky;
+    top: 0; /* يثبت العناوين في أعلى الحاوية */
+    background-color: #3786f6; /* نفس لون خلفية الجدول لعدم تداخل الكلام */
+    z-index: 0; /* لضمان ظهور العنوان فوق الصفوف أثناء التمرير */
+    border-bottom: 3px solid #020202; /* خط فاصل لتمييز العناوين */
+    border-top: 3px solid #020202; /* خط فاصل لتمييز العناوين */
+
+    color: #f6f6f7; /* لون الخط المتناسب مع وضع الليل */
+}
+
+/* تأكد أن الحاوية تسمح بالتمرير */
+.scroll-area {
+    position: relative;
+    overflow-y: auto;
 }
        /* الألوان الافتراضية (النهار) */
 :root {
@@ -124,6 +142,8 @@ body.dark-mode .box[style*="var(--f4)"] {
 .box[style*="var(--f3)"] { color: var(--f3); }
 .box[style*="var(--f4)"] { color: var(--f4); }
 #login-page {
+    
+    
     display: none; 
     height: 100vh; 
     display: flex; 
@@ -134,7 +154,6 @@ body.dark-mode .box[style*="var(--f4)"] {
                 url('https://scontent-hbe1-1.xx.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=2285d6&_nc_ohc=NSQdzZpdRsMQ7kNvwExDrwG&_nc_oc=AdrvDjSJY8BME9OY81ct_I3bYF7BXHpTa28Ltj0PTgdXXsg3hSRHtnuTxCK8rVT5ehs&_nc_zt=23&_nc_ht=scontent-hbe1-1.xx&_nc_gid=VWmA2ZqeILvJFStPHzyZ6w&_nc_ss=7a389&oh=00_Af1mZNEQVP4ij_lViSOt-ySqoDJeJY3Pa7_mqyUuLRb6DA&oe=69D46743') no-repeat center center fixed; 
     background-size: cover; 
 }
-
 .login-card { 
     background: rgba(255, 255, 255, 0.9); 
     padding: 40px; 
@@ -151,6 +170,26 @@ body.dark-mode .box[style*="var(--f4)"] {
     border: 1px solid #ddd; 
     border-radius: 8px; 
 }
+/* 1. استهداف المجرى (الخلفية البيضاء التي تضايقك) */
+.scroll-area::-webkit-scrollbar-track {
+    background-color: #1a1a1a !important; /* جرب تغيير هذا للأسود أو الرمادي الداكن */
+    border-radius: 10px !important;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5) !important; /* لإضافة عمق */
+}
+
+/* 2. استهداف المقبض (الجزء المتحرك) */
+.scroll-area::-webkit-scrollbar-thumb {
+    background-color: #3498db !important; /* لون السكرول نفسه */
+    border-radius: 10px !important;
+    border: 2px solid #1a1a1a !important; /* لعمل فاصل بين المقبض والمجرى */
+}
+
+/* 3. حجم السكرول بار */
+.scroll-area::-webkit-scrollbar {
+    width: 20px !important;
+    display: block !important;
+}
+
         
         /* زرار دخول مطور */
         .btn-login { width: 100%; padding: 12px; background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
@@ -165,9 +204,9 @@ body.dark-mode .box[style*="var(--f4)"] {
         .sidebar { flex: 1; min-width: 350px; order: 2; display: flex; flex-direction: column; }
         .box { background: white; border-radius: 15px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 15px; }
         .chart-container { height: 500px; width: 100%; }
-        .scroll-area { height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
+        .scroll-area { height: 400px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85em; text-align: center; }
-        th, td { border: 1px solid #ddd; padding: 8px; vertical-align: middle; }
+        th, td { border: 1px solid #0d0d0d; padding: 8px; vertical-align: middle; }
         .grid-cell { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: #ddd; border: 1px solid #ccc; }
         /* تنسيق القيم داخل الجدول للوضعين */
 .sub-val {
@@ -220,11 +259,12 @@ body.dark-mode .grid-cell {
     </style>
 </head>
 <body>
+    
     <div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fafafb; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999;">
         <div style="width: 50px; height: 50px; border: 5px solid #fff; border-top: 5px solid #2ecc71; border-radius: 50%; animation: spin 1s linear infinite;"></div>
         <h2 style="color: white; margin-top: 20px; font-family: sans-serif;">
     </div>
-
+    
     <style>
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
@@ -260,7 +300,7 @@ body.dark-mode .grid-cell {
 </div>
     <div id="welcome-page" style="height: 100vh; flex-direction: column; align-items: center; justify-content: center; background: url('https://www.vidaenlatierra.com/wp-content/uploads/2020/11/monocultivos-circulares.jpg') center/cover;">
         <div style="background: rgba(255,255,255,0.95); padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-            <h1 style="color:#2c3e50;">نظام IOT</h1>
+            <h1 style="color:#2c3e50;">نظام IOT المطور للري الذكي</h1>
             <button style="padding: 15px 60px; font-size: 1.3em; cursor: pointer; background: #2ecc71; color: white; border: none; border-radius: 50px; font-weight: bold;" onclick="showDashboard()">جهاز 1 💧</button>
         </div>
         <div class="credits-section" style="margin-top: 20px; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 10px; text-align: center;">
@@ -282,11 +322,25 @@ body.dark-mode .grid-cell {
 
         <div class="main-layout">
             <div class="chart-box">
-                <div class="box chart-container">
-                    <canvas id="myChart"></canvas>
-                </div>
-                <div id="mapLink" class="earth-link">🌍</div>
-            </div>
+    <div class="box chart-container" style="height: 400px; margin-bottom: 15px;">
+        <canvas id="myChart"></canvas>
+    </div>
+    
+    <div class="box" style="height: 350px; padding: 10px; position: relative;">
+        <h4 style="margin: 0 0 5px 0; text-align: center;">📍    (GPS Live)</h4>
+        <div id="map-canvas" style="width: 100%; height: 500px; border-radius: 10px;">
+            <iframe 
+                id="google-map-iframe"
+                width="100%" 
+                height="100%" 
+                frameborder="0" 
+                style="border:0; border-radius: 8px;" 
+                src="" 
+                allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+</div>
 
             <div class="sidebar">
                 <div class="box" style="text-align:center;">
@@ -299,7 +353,7 @@ body.dark-mode .grid-cell {
                 </div>
                 <div class="box">
                     <h4 style="text-align:center; margin:0 0 10px 0;">📊 سجل الري</h4>
-                    <div class="scroll-area" style="max-height: 200px; overflow-y: auto;">
+                    <div class="scroll-area" style="max-height: 400px; overflow-y: auto;">
                         <table id="historyTable">
                             <thead>
                                 <tr>
@@ -313,8 +367,8 @@ body.dark-mode .grid-cell {
                         </table>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:15px;">
-                        <button onclick="exportToExcel()" class="btn-modern btn-excel" style="background:#27ae60; color:white; padding:10px; border-radius:8px; cursor:pointer; border:none; flex:1;">
-                            <span>طباعة ملف</span> 📊
+                        <button onclick="exportToExcel()" class="btn-modern btn-excel" style="background:#e6b208; color:white; padding:10px; border-radius:8px; cursor:pointer; border:none; flex:1;">
+                            <span>طباعة الملف</span> 📊
                         </button>
                         <button onclick="clearAllHistory()" class="btn-modern btn-delete" style="background:#e74c3c; color:white; padding:10px; border-radius:8px; cursor:pointer; border:none; flex:1;">
                             <span>حذف السجل</span> 🗑️
@@ -595,7 +649,22 @@ function startTracking() {
                 }
             };
         }
-    });
+    });// مراقبة الـ GPS وتحديث الخريطة فوراً
+onValue(ref(db, 'sensor_data/gps'), (snap) => {
+    const coords = snap.val() || {lat: 0, lang: 0};
+    const mapIframe = document.getElementById('google-map-iframe');
+    
+    if (coords.lat !== 0 && coords.lang !== 0) {
+        // تحديث رابط الخريطة بالإحداثيات الجديدة ليعرض موقع الجهاز الحالي
+        // تم استخدام تنسيق العرض السريع من جوجل ماب
+        const mapUrl = `https://maps.google.com/maps?q=${coords.lat},${coords.lang}&z=15&output=embed`;
+        
+        // منع إعادة تحميل الـ iframe إذا لم تتغير الإحداثيات بشكل ملحوظ (للسلاسة)
+        if (mapIframe.src !== mapUrl) {
+            mapIframe.src = mapUrl;
+        }
+    }
+});
 }
         function addZeroPointToChart(index) {
             const t = new Date().toLocaleTimeString('ar-EG', {hour12:false});
@@ -885,7 +954,7 @@ window.exportToExcel = async function() {
     });
 };
         window.clearAllHistory = function() {
-            if (confirm("هل أنت متأكد من حذف جميع بيانات السجل والمنحنى؟")) { 
+            if (confirm("يرجى العلم أنه سيتم حذف المنحنى مع السجل")) { 
                 localStorage.removeItem('irr_history'); 
                 localStorage.removeItem('chart_labels');
                 localStorage.removeItem('chart_f1'); localStorage.removeItem('chart_f2');
@@ -924,5 +993,18 @@ setTimeout(() => {
             }
         }, 1000); 
     </script>
+    <script>
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                // هنا بنقول للجهاز: روح دور على الزرار اللي جوه login-page ودوس عليه
+                const btn = document.querySelector('#login-page button');
+                if(btn) btn.click();
+            }
+        });
+    </script>
+
+</body>
+</html>
 </body>
 </html>
