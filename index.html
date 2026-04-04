@@ -305,14 +305,18 @@ body.dark-mode .grid-cell {
         </div>
         <div class="credits-section" style="margin-top: 20px; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 10px; text-align: center;">
             <h1 style="margin:5px;">إعداد المهندسين:</h1>
-            <h2><p style="margin:0; font-weight:bold; color:#0e06ee;">م/كريم عمرو|| م/نادر رامز|| م/أمنية علاء|| م/نجوى وجيه|| م/فاطمة علي</p></h2>
-            <h2><p style="margin:0; font-weight:bold; color:#0e06ee;">م/أحمد باسم|| م/أحمد ياسر|| م/أمين حجاج|| م/سيف الدين حسين </p>
+            <h2><p style="margin:0; font-weight:bold; color:#0e06ee;">م/كريم  عمرو || م/نادر رامز || م/أمنية علاء || م/نجوى وجيه || م/فاطمة علي</p></h2>
+            <h2><p style="margin:0; font-weight:bold; color:#0e06ee;">م/الشيماء جمال ||م/أحمد ياسر|| م/أحمد باسم || م/أمين حجاج || م/سيف الدين حسين</p>
             <h1 style="margin:5px;">تحت إشراف:</h1>
             <h1><p style="margin:0; font-weight:bold; color:#f70505;">أ.د/ياسرعزت</p></h1>
         </div>
     </div>
-
     <div id="dashboard-page">
+        <div id="back-arrow" onclick="goBackToWelcome()" 
+     style="position: fixed; top: 50px; left: 0px; z-index: 1000; cursor: pointer; display: flex; align-items: center; background: rgba(52, 152, 219, 0.1); padding: 5px 10px; border-radius: 8px; color: #3498db; font-weight: bold; border: 1px solid #3498db; backdrop-filter: blur(5px);">
+    <span style="font-size: 1.2em; margin-left: 5px;">⬅</span> 
+    <span style="font-size: 0.9em;"></span>
+</div>
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:20px;">
             <div class="box" style="border-bottom: 5px solid var(--f1); text-align: center;">F1: <span id="v1">0.00</span> M3/hr <span id="p1" class="preview-label"></span></div>
             <div class="box" style="border-bottom: 5px solid var(--f2); text-align: center;">F2: <span id="v2">0.00</span> M3/hr <span id="p2" class="preview-label"></span></div>
@@ -578,7 +582,12 @@ function startTracking() {
         const d = snap.val() || {f1:0, f2:0, f3:0, f4:0};
         const f = [parseFloat(d.f1 || 0), parseFloat(d.f2 || 0), parseFloat(d.f3 || 0), parseFloat(d.f4 || 0)];
         const now = Date.now();
-        const timeStr = new Date().toLocaleTimeString('ar-EG', {hour12: true});
+        const timeStr = new Date().toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit', 
+    hour12: true 
+}).replace("AM", "ص").replace("PM", "م");
 
         const anyFlow = f.some(v => v > 0.1);
 
@@ -611,7 +620,12 @@ function startTracking() {
         } else if (isWatering && !anyFlow) {
             isWatering = false;
             
-            const endT = new Date().toLocaleTimeString('ar-EG', {hour12: false});
+            const endT = new Date().toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit', 
+    hour12: true 
+}).replace("AM", "ص").replace("PM", "م");
             if (typeof myChart !== 'undefined') {
                 myChart.data.labels.push(endT + " (توقف)");
                 myChart.data.datasets.forEach(d => d.data.push(0)); 
@@ -667,8 +681,16 @@ onValue(ref(db, 'sensor_data/gps'), (snap) => {
 });
 }
         function addZeroPointToChart(index) {
-            const t = new Date().toLocaleTimeString('ar-EG', {hour12:false});
-            myChart.data.labels.push(t + " (بدء)");
+    // استبدل السطر القديم بهذا:
+    const t = new Date().toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit', 
+        hour12: true 
+    }).replace("AM", "ص").replace("PM", "م");
+    
+    myChart.data.labels.push(t + " (بدء)");
+    // باقي الكود كما هو...
             myChart.data.datasets.forEach((d, i) => {
                 d.data.push(i === index ? 0 : d.data[d.data.length-1] || 0);
             });
@@ -780,7 +802,13 @@ onValue(ref(db, 'sensor_data/gps'), (snap) => {
 
     // لو النظام واقف بس آخر نقطة متسجلة كانت عالية، بنضيف نقطة صفر "قفل"
     if (datasetsData.some(data => data.length > 0 && data[data.length - 1] > 0)) {
-        const nowStr = new Date().toLocaleTimeString('ar-EG', {hour12:false});
+        // ابحث عن السطر الذي يبدأ بـ const nowStr داخل دالة initChart واستبدله بـ:
+const nowStr = new Date().toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit', 
+    hour12: true 
+}).replace("AM", "ص").replace("PM", "م");
         savedLabels.push(nowStr + " (توقف)");
         datasetsData.forEach(data => {
             data.push(0); // إجبار كل المنحنيات تنزل للصفر
@@ -815,7 +843,12 @@ onValue(ref(db, 'sensor_data/gps'), (snap) => {
         
 // 2. دالة تحديث المنحنى المحدثة (لحل مشكلة الخط الأفقي عند الريفرش)
 function updateChart(f) {
-    const t = new Date().toLocaleTimeString('ar-EG', {hour12:false});
+    const t = new Date().toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit', 
+    hour12: true 
+}).replace("AM", "ص").replace("PM", "م");
     myChart.data.labels.push(t);
     f.forEach((v, i) => myChart.data.datasets[i].data.push(v));
 
@@ -992,6 +1025,14 @@ setTimeout(() => {
                 });
             }
         }, 1000); 
+        window.goBackToWelcome = function() {
+    // إخفاء صفحة الداشبورد وإظهار صفحة الترحيب
+    document.getElementById('dashboard-page').style.display = 'none';
+    document.getElementById('welcome-page').style.display = 'flex';
+    
+    // تحديث الحالة في التخزين المحلي حتى لا يفتح الداشبورد تلقائياً عند التحديث
+    localStorage.setItem('activePage', 'welcome');
+};
     </script>
     <script>
         document.addEventListener('keydown', function(event) {
