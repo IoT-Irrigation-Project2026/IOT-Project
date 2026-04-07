@@ -135,7 +135,14 @@ body.dark-mode #menu-dropdown button {
 .box:hover {
     transform: translateY(-5px); /* حركة خفيفة لما الماوس ييجي عليه */
 }
-
+.table-container {
+    max-height: 500px; /* أو أي ارتفاع يناسبك */
+    overflow-y: auto;
+    position: relative;
+}
+.main-content {
+    overflow: visible !important; /* هذا السطر هو مفتاح الحل */
+}
 /* تحسين شكل الجدول */
 /* تثبيت عناوين الجدول (الـ 4 عماويد) */
 #historyTable thead th {
@@ -428,7 +435,7 @@ body.dark-mode #nightModeWarning span {
             <h2><p style="margin:0; font-weight:bold; color:#0e06ee;">م/الشيماء جمال— م/أحمد ياسر— م/أحمد باسم— م/أمنية علاء— م/أمين حجاج</p></h2>
             <h2><p style="margin:0; font-weight:bold; color:#0e06ee;"> م/سيف الدين حسين— م/فاطمة علي— م/كريم عمرو— م/نادر رامز— م/نجوى وجيه</p>
             <h1 style="margin:5px;">تحت إشراف:</h1>
-            <h1><p style="margin:0; font-weight:bold; color:#f70505;">أ.د/ياسرعزت</p></h1>
+            <h1><p style="margin:0; font-weight:bold; color:#f70505;">أ.د/ياسر عزت </p></h1>
         </div>
     </div>
     <div id="dashboard-page">
@@ -477,14 +484,14 @@ body.dark-mode #nightModeWarning span {
                 </div>
                 <div class="box">
                     <h4 style="text-align:center; margin:0 0 10px 0;">📊 سجل الري</h4>
-                    <div class="scroll-area" style="max-height: 400px; overflow-y: auto;">
-                        <table id="historyTable">
-                            <thead style="background-color: #2980b9; color: white;">
+                    <div class="scroll-area" style="max-height: 400px; overflow-y: auto; position: relative;">
+                        <table id="historyTable" style="border-collapse: collapse; width: 100%;">
+                            <thead 
                                 <tr>
-                                    <th>العملية</th>
-                                    <th>التاريخ</th>
-                                    <th>اليوم</th>
-                                    <th>كمية المياه (M3)</th>
+                                    <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black;">العملية</th>
+                                    <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black;">التاريخ</th>
+                                    <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black;">اليوم</th>
+                                    <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black;">كمية المياه (M3)</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -1251,72 +1258,122 @@ window.exportToExcel = async function() {
 
         // بناء ملف الـ PDF الاحترافي (A4)
 
+        // 1. تحديد نوع المستند (تأكد إن السطرين دول في أول الدالة)
         const { jsPDF } = window.jspdf;
-const doc = new jsPDF({
-    orientation: 'p',
-    unit: 'mm',
-    format: 'a4',
-    compress: true
-});
+        const pdf = new jsPDF('p', 'mm', 'a4');
 
-// 1. تعريف التاريخ مرة واحدة بشكل صحيح (لتجنب الشخبطة)
-const dateStrEN = new Date().toLocaleString('en-US');
+        // --- الجزء ده هو اللي فيه الحل السحري ---
+        // بنحدد الخط "Helvetica" لأنه خط Built-in مش بيحتاج تحميل ومستحيل يتشوه
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(18);
+        pdf.setTextColor(40, 40, 40);
 
-// 2. إضافة العناوين
-doc.setFont("helvetica", "bold"); 
-doc.setFontSize(18);
-doc.text("IoT Irrigation System Report", 105, 15, { align: "center" });
+        // كتابة النص مع إضافة ميزة (R2L: false) عشان نوقف أي مكتبة عربي بتحاول تعكس الحروف
+        pdf.text("IoT Irrigation System Report", 105, 15, { 
+            align: "center",
+            R2L: false // إيقاف الكتابة من اليمين لليار للنص ده بالذات
+        });
 
-// 3. إضافة التاريخ (مرة واحدة فقط بخط واضح)
-doc.setFont("helvetica", "normal");
-doc.setFontSize(10);
-doc.setTextColor(100);
-doc.text(`Generated: ${dateStrEN}`, 105, 22, { align: "center" });
+        // التاريخ بالإنجليزية
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10);
+        pdf.setTextColor(100, 100, 100);
+        const dateNow = new Date().toLocaleString('en-US');
+        pdf.text(`Generated: ${dateNow}`, 105, 22, { 
+            align: "center",
+            R2L: false 
+        });
 
-// 4. رسم الخط الفاصل
-doc.setLineWidth(0.5);
-doc.setDrawColor(200);
-doc.line(20, 25, 190, 25);
+        // خط فاصل نظيف
+        pdf.setDrawColor(200, 200, 200);
+        pdf.line(20, 25, 190, 25);
+        // --- نهاية التعديل ---
 
-// 5. إضافة الجدول
-const tableProps = doc.getImageProperties(tableImgData);
-const tableW = 190;
-const tableH = (tableProps.height * tableW) / tableProps.width;
-const tableX = (210 - tableW) / 2;
-doc.addImage(tableImgData, 'PNG', tableX, 30, tableW, tableH);
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10);
+        pdf.setTextColor(100);
+        // التاريخ بالإنجليزية لضمان عدم حدوث تشويه
+        const dateStrEN = new Date().toLocaleString('en-US');
+        pdf.text(`Generated: ${dateStrEN}`, 105, 22, { align: "center" });
 
-// 6. إضافة المنحنى (Chart)
-const chartProps = doc.getImageProperties(chartImgData);
-const imgW = 180;
-const imgH = (chartProps.height * imgW) / chartProps.width;
-const xPos = (210 - imgW) / 2;
+        pdf.setLineWidth(0.5);
+        pdf.line(20, 25, 190, 25);
+        // --- نهاية التعديل ---
 
-if (tableH + 30 + imgH > 275) {
-    doc.addPage();
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text("Irrigation Data Visualization", 105, 15, { align: "center" });
-    doc.addImage(chartImgData, 'PNG', xPos, 25, imgW, imgH);
-} else {
-    doc.addImage(chartImgData, 'PNG', xPos, tableH + 45, imgW, imgH);
-}
+        pdf.setFontSize(10);
 
-// 7. استخراج الـ PDF كـ Blob للـ ZIP
-const docBlob = doc.output('blob');
+        pdf.text(`Generated: ${new Date().toLocaleString()}`, 105, 22, { align: "center" });
 
-// 8. التجميع في ملف ZIP (تأكد أن excelBuffer و dateStr معرفين عندك)
-const zip = new JSZip();
-const finalDate = new Date().toISOString().slice(0,10); // بديل لـ dateStr لو مش موجودة
-zip.file(`Detailed_Report_${finalDate}.xlsx`, typeof excelBuffer !== 'undefined' ? excelBuffer : "");
-zip.file(`Summary_Report_${finalDate}.pdf`, docBlob);
-const chartBlob = await new Promise(resolve => chartCanvas.toBlob(resolve, 'image/png'));
+
+
+        // 1. إضافة الجدول (متوسط)
+
+        const tableProps = pdf.getImageProperties(tableImgData);
+
+        const tableW = 190;
+
+        const tableH = (tableProps.height * tableW) / tableProps.width;
+
+        const tableX = (210 - tableW) / 2;
+
+        pdf.addImage(tableImgData, 'PNG', tableX, 30, tableW, tableH);
+
+
+
+        // 2. فحص المساحة المتبقية للمنحنى (متوسط)
+
+        const chartProps = pdf.getImageProperties(chartImgData);
+
+        const imgW = 180;
+
+        const imgH = (chartProps.height * imgW) / chartProps.width;
+
+        const xPos = (210 - imgW) / 2;
+
+
+
+        if (tableH + 30 + imgH > 275) {
+
+            pdf.addPage();
+
+            pdf.setFontSize(16);
+
+            pdf.text("Irrigation Data Visualization", 105, 15, { align: "center" });
+
+            pdf.addImage(chartImgData, 'PNG', xPos, 25, imgW, imgH);
+
+        } else {
+
+            pdf.addImage(chartImgData, 'PNG', xPos, tableH + 45, imgW, imgH);
+
+        }
+
+
+
+        const pdfBlob = pdf.output('blob');
+
+
+
+        // --- 3. التجميع النهائي في ملف ZIP ---
+
+        const zip = new JSZip();
+
+        zip.file(`Detailed_Report_${dateStr}.xlsx`, excelBuffer);
+
+        zip.file(`Summary_Report_${dateStr}.pdf`, pdfBlob);
+
+        
+
+        const chartBlob = await new Promise(resolve => chartCanvas.toBlob(resolve, 'image/png'));
 
         zip.file(`Chart_Analysis_${dateStr}.png`, chartBlob);
 
-// سطر التحميل (ضروري جداً عشان ميدي مش خطأ)
-zip.generateAsync({type:"blob"}).then(function(content) {
-    saveAs(content, `Project_Files_${finalDate}.zip`);
-});
+
+
+        const zipContent = await zip.generateAsync({type:"blob"});
+
+        saveAs(zipContent, `Irrigation_Project${dateStr}.zip`);
+
 
 
     } catch (error) {
