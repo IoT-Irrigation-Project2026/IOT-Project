@@ -1452,6 +1452,33 @@ setTimeout(() => {
             }
         });
     </script>
-    
+    <script>
+        // مراجع الرشاشات الأربعة في الفايربيز
+for (let i = 1; i <= 4; i++) {
+    const sprinklerRef = firebase.database().ref('sprinklers/' + i);
+
+    sprinklerRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.startTime) {
+            // 1. جلب وقت البداية المخزن في القاعدة
+            const startTimeFromDB = data.startTime; 
+            
+            // 2. تحويله لتوقيت محلي (سيكون موحداً على كل الأجهزة)
+            const dateObject = new Date(startTimeFromDB);
+            const readableTime = dateObject.toLocaleTimeString('ar-EG', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            // 3. تحديث العنصر في واجهة الموقع (تأكد أن ID العنصر مطابق)
+            const timeElement = document.getElementById(`start-time-${i}`);
+            if (timeElement) {
+                timeElement.innerText = `وقت البدء المخزن: ${readableTime}`;
+            }
+        }
+    });
+}
+    </script>
 </body>
 </html>
