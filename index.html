@@ -1422,7 +1422,7 @@ setTimeout(() => {
                 sessionData.rawStartTimes.forEach((startTime, i) => {
                     if (startTime && !sessionData.rawEndTimes[i]) {
                         const avgSoFar = sessionStats.sumFlow[i] / sessionStats.counts[i];
-                        const durHrsSoFar = (Date.now() - startTime) / 3600000;
+                        const durHrsSoFar = (startTimeFromDB - startTime) / 3600000;
                         const previewVal = (avgSoFar * durHrsSoFar).toFixed(6);
                         
                         const element = document.getElementById(`p${i+1}`);
