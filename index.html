@@ -9,469 +9,280 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        /* تنسيق الصندوق ليحتوي القطرات */
-.sidebar .box:first-child {
-    position: relative;
-    overflow: hidden; /* لمنع القطرات من الخروج عن حدود الصندوق */
-}
-
-/* شكل قطرة الماء */
-.drop {
-    position: absolute;
-    top: -20px;
-    width: 2px;
-    height: 10px;
-    background-color: #3498db;
-    border-radius: 50%;
-    opacity: 0.6;
-    animation: fall linear infinite;
-    pointer-events: none; /* عشان ما تعطلش الضغط على أي حاجة */
-}
-
-/* حركة السقوط من أعلى لأسفل */
-@keyframes fall {
-    to {
-        transform: translateY(150px); /* المسافة التي تقطعها القطرة */
-        opacity: 0;
-    }
-}
-
-/* لون نيون للقطرات في وضع الليل */
-body.dark-mode .drop {
-    background-color: #00f2ff;
-    box-shadow: 0 0 5px #00f2ff;
-}
-        /* أضف هذا داخل وسم الـ <style> */
-body.dark-mode #google-map-iframe {
-    filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%);
-    /* هذا الفلتر يقوم بتحويل ألوان الخريطة العادية لألوان داكنة تناسب تصميمك */
-}
-        /* ألوان وضع الليل الاحترافية */
-body.dark-mode {
-    background: #140b0c !important; /* خلفية داكنة جداً */
-    color: #00f2ff !important;
-}
-
-/* تحويل الكروت لخلفية داكنة مع توهج نيون */
-body.dark-mode .box {
-    background: rgba(17, 25, 40, 0.9) !important;
-    border: 1px solid rgba(0, 242, 255, 0.2) !important;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8) !important;
-    backdrop-filter: blur(12px) !important;
-}
-
-/* تعديل ألوان النصوص داخل الكروت */
-/* العناوين الرئيسية: لون أخضر هادئ وواضح */
-body.dark-mode h1, 
-body.dark-mode h2 {
-    color: #0e0e0e !important; /* أخضر زمردي مريح */
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3); /* ظل خفيف لإبراز الخط */
-}
-
-/* العناوين الفرعية: لون أخضر فاتح جداً يميل للأبيض */
-body.dark-mode h3, 
-body.dark-mode h4 {
-    color: #ef3c3c !important; 
-}
-
-/* النصوص العادية والفقرات: لون رمادي فاتح جداً (أفضل بكتير للعين من الأخضر الفاقع) */
-body.dark-mode span, 
-body.dark-mode p,
-body.dark-mode label {
-    color: #f7d307 !important;
-}
-
-/* العناصر المميزة أو الأرقام داخل الـ div */
-body.dark-mode .highlight, 
-body.dark-mode strong {
-    color: #00ff44 !important; /* الأخضر القوي نستخدمه فقط للحاجات المهمة */
-}
-body.dark-mode #nightModeWarning {
-    border: 1px solid #ff007f !important; /* لون نيون وردي أو برتقالي */
-    background: rgba(255, 0, 127, 0.05) !important;
-    box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
-}
-
-body.dark-mode #nightModeWarning span {
-    color: #ff007f !important; /* تغيير لون الخط ليناسب النيون */
-}
-/* تخصيص ألوان الفلو سينسور الأربعة (القيم العلوية) */
-body.dark-mode #v1 { color: var(--f1) !important; font-weight: bold; }
-body.dark-mode #v2 { color: var(--f2) !important; font-weight: bold; }
-body.dark-mode #v3 { color: var(--f3) !important; font-weight: bold; }
-body.dark-mode #v4 { color: var(--f4) !important; font-weight: bold; }
-/* تعديل ألوان الجدول وسجل الأعطال */
-body.dark-mode #historyTable, body.dark-mode #historyTable td, body.dark-mode #historyTable th {
-    border-color: rgba(0, 242, 255, 0.1) !important;
-    color: #ffffff !important;
-}
-
-body.dark-mode #errorLog {
-    background: rgba(255, 0, 0, 0.05) !important;
-    border: 1px solid rgba(255, 0, 0, 0.2);
-}
-
-/* القائمة الجانبية في وضع الليل */
-body.dark-mode #menu-dropdown {
-    background: #1a1f2b !important;
-    border: 1px solid #00f2ff;
-}
-
-body.dark-mode #menu-dropdown button {
-    color: #fff !important;
-    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
-}
-        /* تأثير الزجاج الشفاف للكروت */
-/* تأثير الزجاج الشفاف للكروت */
-.box {
-    background: rgb(255, 255, 255) !important;
-    backdrop-filter: blur(10px); /* بيعمل غروشة للخلفية ورا الكارت */
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: transform 0.3s ease;
-}
-
-.box:hover {
-    transform: translateY(-5px); /* حركة خفيفة لما الماوس ييجي عليه */
-}
-.table-container {
-    max-height: 500px; /* أو أي ارتفاع يناسبك */
-    overflow-y: auto;
-    position: relative;
-}
-.main-content {
-    overflow: visible !important; /* هذا السطر هو مفتاح الحل */
-}
-/* تحسين شكل الجدول */
-/* تثبيت عناوين الجدول (الـ 4 عماويد) */
-#historyTable thead th {
-    position: sticky;
-    top: 0; /* يثبت العناوين في أعلى الحاوية */
-    background-color: var(--card-bg); /* نفس لون خلفية الجدول لعدم تداخل الكلام */
-    z-index: 0; /* لضمان ظهور العنوان فوق الصفوف أثناء التمرير */
-    border-bottom: 3px solid #020202; /* خط فاصل لتمييز العناوين */
-    border-top: 3px solid #020202; /* خط فاصل لتمييز العناوين */
-
-    color: #f6f6f7; /* لون الخط المتناسب مع وضع الليل */
-}
-
-/* تأكد أن الحاوية تسمح بالتمرير */
-.scroll-area {
-    position: relative;
-    overflow-y: auto;
-}
-       /* الألوان الافتراضية (النهار) */
-:root {
-    --bg-main: #87CEEB;
-    --box-bg: rgba(255, 255, 255, 0.962);
-    --text-color: #000;
-    --chart-grid: #ddd;
-    /* إضافة ألوان الرشاشات المحددة من المنحنى */
-    --f1: #3498db; 
-    --f2: #e74c3c;
-    --f3: #f1c40f;
-    --f4: #2ecc71;
-}
-
-/* ألوان وضع الليل (زاهية ولامعة) */
-/* ألوان البطاقات العلوية في وضع الليل */
-/* تعديل البطاقات العلوية في وضع الليل لتشمل الحدود الملونة والتوهج */
-body.dark-mode .box[style*="border-bottom"] {
-    background: rgba(17, 25, 40, 0.9) !important; /* خلفية داكنة احترافية */
-    border: 1px solid rgba(255, 255, 255, 0.1) !important; /* حدود خفيفة جداً */
-    transition: all 0.3s ease;
-}
-
-/* تخصيص الحد السفلي والتوهج لكل رشاش بلونه الخاص */
-body.dark-mode .box[style*="var(--f1)"] { 
-    border-bottom: 4px solid #00f2ff !important; 
-    box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3) !important; 
-}
-body.dark-mode .box[style*="var(--f2)"] { 
-    border-bottom: 4px solid #ff007f !important; 
-    box-shadow: 0 4px 15px rgba(255, 0, 127, 0.3) !important; 
-}
-body.dark-mode .box[style*="var(--f3)"] { 
-    border-bottom: 4px solid #ccff00 !important; 
-    box-shadow: 0 4px 15px rgba(204, 255, 0, 0.3) !important; 
-}
-body.dark-mode .box[style*="var(--f4)"] { 
-    border-bottom: 4px solid #00ff41 !important; 
-    box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3) !important; 
-}
-
-/* تعديل الحدود السفلية للبطاقات في وضع الليل لتطابق ألوان النيون */
-.box {
-    font-weight: bold;
-}
-.box[style*="var(--f1)"] { color: var(--f1); }
-.box[style*="var(--f2)"] { color: var(--f2); }
-.box[style*="var(--f3)"] { color: var(--f3); }
-.box[style*="var(--f4)"] { color: var(--f4); }
-/* --- 1. إعدادات الخلفية للوضع الطبيعي (النهار) --- */
-table {
-    table-layout: fixed;
-    width: 100%;
-    border-collapse: collapse;
-}
-thead {
-    display: table-header-group;
-}
-tbody {
-    display: table-row-group;
-}
-/* صفحة اللوجن */
-/* ابحث عن هذا الجزء واستبدله بالكامل */
-#login-page {
-    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=25d718&_nc_ohc=l6l6l-carw0Q7kNvwEY-uTL&_nc_oc=Ado13DQaoI_TgcQE14jq91ZdW12rXaGbJpGD69ia6vUvQ1o7XCSZSzNGZLjn1JbUqq0BOUX_amO857O03c8AVAnY&_nc_zt=23&_nc_ht=scontent.fcai11-1.fna&_nc_gid=oPpDmxIbNGGwC5YKi-rcSg&_nc_ss=7a389&oh=00_Af2yh1UrKOozUhJMRiJVMwSceTU0a1Xf-v66ifJqa_Ckvw&oe=69D89403') no-repeat center center fixed;
-    background-size: cover;
-}
-
-#welcome-page {
-    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=25d718&_nc_ohc=l6l6l-carw0Q7kNvwEY-uTL&_nc_oc=Ado13DQaoI_TgcQE14jq91ZdW12rXaGbJpGD69ia6vUvQ1o7XCSZSzNGZLjn1JbUqq0BOUX_amO857O03c8AVAnY&_nc_zt=23&_nc_ht=scontent.fcai11-1.fna&_nc_gid=oPpDmxIbNGGwC5YKi-rcSg&_nc_ss=7a389&oh=00_Af1mZNEQVP4ij_lViSOt-ySqoDJeJY3Pa7_mqyUuLRb6DA&oe=69D46743') no-repeat center center fixed;
-    background-size: cover;
-}
-
-/* صفحة الداشبورد (لو عايز لها خلفية برضه) */
-#dashboard-page {
-    background-color: #f4f4f4; /* أو حط رابط صورة لو تحب */
-}
-
-
-/* --- 2. إعدادات الخلفية لوضع الليل (النايت مود) --- */
-
-/* لما نفعل النايت مود.. غير خلفية اللوجن والترحيب للصورة الجديدة */
-body.dark-mode #login-page, 
-body.dark-mode #welcome-page {
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                url('Ph3.png') no-repeat center center !important; 
-    background-size: cover !important;
-    background-attachment: scroll !important; /* خليناها scroll بدل fixed */
-}
-/* تغيير لون خلفية الداشبورد في النايت مود */
-body.dark-mode #dashboard-page {
-    background-color: #1a1a1a !important;
-}
-.login-card { 
-    background: rgba(255, 255, 255, 0.9); 
-    padding: 40px; 
-    border-radius: 20px; 
-    width: 350px; 
-    text-align: center; 
-    box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
-}
-
-.login-card input { 
-    width: 90%; 
-    padding: 12px; 
-    margin: 10px 0; 
-    border: 1px solid #ddd; 
-    border-radius: 8px; 
-}
-/* 1. استهداف المجرى (الخلفية البيضاء التي تضايقك) */
-.scroll-area::-webkit-scrollbar-track {
-    background-color: #1a1a1a !important; /* جرب تغيير هذا للأسود أو الرمادي الداكن */
-    border-radius: 10px !important;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.5) !important; /* لإضافة عمق */
-}
-
-/* 2. استهداف المقبض (الجزء المتحرك) */
-.scroll-area::-webkit-scrollbar-thumb {
-    background-color: #3498db !important; /* لون السكرول نفسه */
-    border-radius: 10px !important;
-    border: 2px solid #1a1a1a !important; /* لعمل فاصل بين المقبض والمجرى */
-}
-
-/* 3. حجم السكرول بار */
-.scroll-area::-webkit-scrollbar {
-    width: 20px !important;
-    display: block !important;
-}
-
-        
-        /* زرار دخول مطور */
-        .btn-login { width: 100%; padding: 12px; background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
-        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(39, 174, 96, 0.4); }
-
-        #welcome-page { height: 100vh; display: none; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://www.vidaenlatierra.com/wp-content/uploads/2020/11/monocultivos-circulares.jpg'); background-size: cover; position: relative; }
-        .credits-section { position: absolute; bottom: 0; width: 100%; text-align: center; background: rgba(255, 255, 255, 0.9); padding: 10px 0; border-top: 3px solid #2ecc71; }
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear { display: none !important; }
+        input[type="password"]::-webkit-credentials-auto-fill-button,
+        input[type="password"]::-webkit-textfield-decoration-container { display: none !important; }
+        body.dark-mode #google-map-iframe { filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%); }
+        body.dark-mode #weather-box #weather-location { color: #aaa !important; }
+        body.dark-mode #weather-box #weather-update-time { color: #666 !important; }
+        body.dark-mode #weather-box [style*="background:#fde8e8"] { background: rgba(231,76,60,0.15) !important; }
+        body.dark-mode #weather-box [style*="background:#e3f2fd"] { background: rgba(52,152,219,0.15) !important; }
+        body.dark-mode #weather-box [style*="background:#e8f5e9"] { background: rgba(46,204,113,0.15) !important; }
+        body.dark-mode #weather-box [style*="background:#f3e5f5"] { background: rgba(155,89,182,0.15) !important; }
+        body.dark-mode #weather-box .weather-label { color: #aaa !important; }
+        body.dark-mode { background: #140b0c !important; color: #00f2ff !important; }
+        body.dark-mode .box { background: rgba(17, 25, 40, 0.9) !important; border: 1px solid rgba(0, 242, 255, 0.2) !important; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8) !important; backdrop-filter: blur(12px) !important; }
+        body.dark-mode h1, body.dark-mode h2 { color: #0e0e0e !important; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        body.dark-mode h3, body.dark-mode h4 { color: #ef3c3c !important; }
+        body.dark-mode span, body.dark-mode p, body.dark-mode label { color: #f7d307 !important; }
+        body.dark-mode .highlight, body.dark-mode strong { color: #00ff44 !important; }
+        body.dark-mode #nightModeWarning { border: 1px solid #ff007f !important; background: rgba(255, 0, 127, 0.05) !important; box-shadow: 0 0 10px rgba(255, 0, 127, 0.2); }
+        body.dark-mode #nightModeWarning span { color: #ff007f !important; }
+        body.dark-mode #v1 { color: var(--f1) !important; font-weight: bold; }
+        body.dark-mode #v2 { color: var(--f2) !important; font-weight: bold; }
+        body.dark-mode #v3 { color: var(--f3) !important; font-weight: bold; }
+        body.dark-mode #v4 { color: var(--f4) !important; font-weight: bold; }
+        body.dark-mode #historyTable, body.dark-mode #historyTable td, body.dark-mode #historyTable th { border-color: rgba(0, 242, 255, 0.1) !important; color: #ffffff !important; }
+        body.dark-mode #errorLog { background: rgba(255, 0, 0, 0.05) !important; border: 1px solid rgba(255, 0, 0, 0.2); }
+        body.dark-mode #menu-dropdown { background: #1a1f2b !important; border: 1px solid #00f2ff; }
+        body.dark-mode #menu-dropdown button { color: #fff !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; }
+        .box { background: rgb(255, 255, 255) !important; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); transition: transform 0.3s ease; font-weight: bold; }
+        .box:hover { transform: translateY(-5px); }
+        .table-container { max-height: 500px; overflow-y: auto; position: relative; }
+        .main-content { overflow: visible !important; }
+        #historyTable thead th { position: sticky; top: 0; background-color: var(--card-bg); z-index: 0; border-bottom: 3px solid #020202; border-top: 3px solid #020202; color: #f6f6f7; }
+        .scroll-area { position: relative; overflow-y: auto; }
+        :root { --bg-main: #87CEEB; --box-bg: rgba(255,255,255,0.962); --text-color: #000; --chart-grid: #ddd; --f1: #3498db; --f2: #e74c3c; --f3: #f1c40f; --f4: #2ecc71; }
+        body.dark-mode .box[style*="border-bottom"] { background: rgba(17, 25, 40, 0.9) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; transition: all 0.3s ease; }
+        body.dark-mode .box[style*="var(--f1)"] { border-bottom: 4px solid #00f2ff !important; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3) !important; }
+        body.dark-mode .box[style*="var(--f2)"] { border-bottom: 4px solid #ff007f !important; box-shadow: 0 4px 15px rgba(255, 0, 127, 0.3) !important; }
+        body.dark-mode .box[style*="var(--f3)"] { border-bottom: 4px solid #ccff00 !important; box-shadow: 0 4px 15px rgba(204, 255, 0, 0.3) !important; }
+        body.dark-mode .box[style*="var(--f4)"] { border-bottom: 4px solid #00ff41 !important; box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3) !important; }
+        .box[style*="var(--f1)"] { color: var(--f1); }
+        .box[style*="var(--f2)"] { color: var(--f2); }
+        .box[style*="var(--f3)"] { color: var(--f3); }
+        .box[style*="var(--f4)"] { color: var(--f4); }
+        table { table-layout: fixed; width: 100%; border-collapse: collapse; }
+        thead { display: table-header-group; }
+        tbody { display: table-row-group; }
+        #login-page { background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=25d718&_nc_ohc=l6l6l-carw0Q7kNvwEY-uTL&_nc_oc=Ado13DQaoI_TgcQE14jq91ZdW12rXaGbJpGD69ia6vUvQ1o7XCSZSzNGZLjn1JbUqq0BOUX_amO857O03c8AVAnY&_nc_zt=23&_nc_ht=scontent.fcai11-1.fna&_nc_gid=oPpDmxIbNGGwC5YKi-rcSg&_nc_ss=7a389&oh=00_Af2yh1UrKOozUhJMRiJVMwSceTU0a1Xf-v66ifJqa_Ckvw&oe=69D89403') no-repeat center center fixed; background-size: cover; }
+        #welcome-page { background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=25d718&_nc_ohc=l6l6l-carw0Q7kNvwEY-uTL&_nc_oc=Ado13DQaoI_TgcQE14jq91ZdW12rXaGbJpGD69ia6vUvQ1o7XCSZSzNGZLjn1JbUqq0BOUX_amO857O03c8AVAnY&_nc_zt=23&_nc_ht=scontent.fcai11-1.fna&_nc_gid=oPpDmxIbNGGwC5YKi-rcSg&_nc_ss=7a389&oh=00_Af1mZNEQVP4ij_lViSOt-ySqoDJeJY3Pa7_mqyUuLRb6DA&oe=69D46743') no-repeat center center fixed; background-size: cover; }
+        #dashboard-page { background-color: #f4f4f4; }
+        body.dark-mode #login-page, body.dark-mode #welcome-page { background: linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)), url('Ph3.png') no-repeat center center !important; background-size: cover !important; background-attachment: scroll !important; }
+        body.dark-mode #dashboard-page { background-color: #1a1a1a !important; }
+        .login-card { background: rgba(255,255,255,0.9); padding: 40px; border-radius: 20px; width: 350px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+        .login-card input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
+        .scroll-area::-webkit-scrollbar-track { background-color: #1a1a1a !important; border-radius: 10px !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.5) !important; }
+        .scroll-area::-webkit-scrollbar-thumb { background-color: #3498db !important; border-radius: 10px !important; border: 2px solid #1a1a1a !important; }
+        .scroll-area::-webkit-scrollbar { width: 20px !important; display: block !important; }
+        .btn-login { width: 100%; padding: 12px; background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; box-shadow: 0 4px 10px rgba(39,174,96,0.3); }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(39,174,96,0.4); }
+        #welcome-page { height: 100vh; display: none; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .credits-section { position: absolute; bottom: 0; width: 100%; text-align: center; background: rgba(255,255,255,0.9); padding: 10px 0; border-top: 3px solid #2ecc71; }
         .logout-btn { position: fixed; top: 15px; left: 15px; background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; z-index: 10000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-weight: bold; }
         #dashboard-page { padding: 20px; background: var(--bg); min-height: 100vh; padding-bottom: 120px; }
         .main-layout { display: flex; flex-wrap: wrap; flex-direction: row-reverse; gap: 20px; justify-content: center; }
         .chart-box { flex: 2; min-width: 600px; order: 1; position: relative; padding-bottom: 80px; }
-        .sidebar { flex: 1; min-width: 350px; order: 2; display: flex; flex-direction: column;height: auto; }
-        .box { background: rgb(255, 255, 255); border-radius: 15px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .sidebar { flex: 1; min-width: 350px; order: 2; display: flex; flex-direction: column; height: auto; }
+        .box { background: rgb(255,255,255); border-radius: 15px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 15px; }
         .chart-container { height: 500px; width: 100%; }
         .scroll-area { height: 400px; overflow-y: auto; border: 1px solid #0124e9; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85em; text-align: center; }
         th, td { border: 1px solid #0d0d0d; padding: 8px; vertical-align: middle; }
-        .grid-cell { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: #ddd; border: 1px solid #ccc; }
-        /* تنسيق القيم داخل الجدول للوضعين */
-.sub-val {
-    background: transparent !important; /* شفافة دائماً */
-    padding: 4px;
-    font-size: 0.75em;
-    font-weight: bold;
-    line-height: 1.4;
-    border: none !important; /* إزالة الحدود لو مش محتاجها */
-}
-
-/* تخصيص الألوان في الوضع النهاري (ألوان غامقة واضحة) */
-.sub-val[style*="--f1"] { color: #3498db !important; } /* أزرق */
-.sub-val[style*="--f2"] { color: #e74c3c !important; } /* أحمر */
-.sub-val[style*="--f3"] { color: #f1c40f !important; } /* أصفر */
-.sub-val[style*="--f4"] { color: #2ecc71 !important; } /* أخضر */
-
-/* تخصيص الألوان في وضع الليل (نيون لامع) */
-body.dark-mode .sub-val[style*="--f1"] { color: #00f2ff !important; text-shadow: 0 0 5px #00f2ff; }
-body.dark-mode .sub-val[style*="--f2"] { color: #ff007f !important; text-shadow: 0 0 5px #ff007f; }
-body.dark-mode .sub-val[style*="--f3"] { color: #ccff00 !important; text-shadow: 0 0 5px #ccff00; }
-body.dark-mode .sub-val[style*="--f4"] { color: #00ff41 !important; text-shadow: 0 0 5px #00ff41; }
-
-/* إخفاء خلفية الشبكة الرمادية في الجدول */
-.grid-cell {
-    background: transparent !important;
-    border: none !important;
-}
-/* تخصيص أسماء المهندسين العشرة في وضع الليل */
-body.dark-mode .credits-section h2 p {
-    color: #0004ff !important; /* لون أزرق نيون احترافي ليناسب الـ Dark Mode */
-    text-shadow: 0 0 5px rgba(0, 242, 255, 0.5); /* توهج خفيف لزيادة الوضوح */
-}
-
-/* تخصيص اسم المشرف في وضع الليل */
-body.dark-mode .credits-section h1 p {
-    color: #ff4d4d !important; /* لون أحمر واضح للمشرف */
-    text-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
-}
-body.dark-mode .grid-cell {
-    background: rgba(0, 242, 255, 0.05) !important; /* لون شبكة الجدول في وضع الليل */
-}
+        .grid-cell { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: transparent !important; border: none !important; }
+        .sub-val { background: transparent !important; padding: 4px; font-size: 0.75em; font-weight: bold; line-height: 1.4; border: none !important; }
+        .sub-val[style*="--f1"] { color: #3498db !important; }
+        .sub-val[style*="--f2"] { color: #e74c3c !important; }
+        .sub-val[style*="--f3"] { color: #f1c40f !important; }
+        .sub-val[style*="--f4"] { color: #2ecc71 !important; }
+        body.dark-mode .sub-val[style*="--f1"] { color: #00f2ff !important; text-shadow: 0 0 5px #00f2ff; }
+        body.dark-mode .sub-val[style*="--f2"] { color: #ff007f !important; text-shadow: 0 0 5px #ff007f; }
+        body.dark-mode .sub-val[style*="--f3"] { color: #ccff00 !important; text-shadow: 0 0 5px #ccff00; }
+        body.dark-mode .sub-val[style*="--f4"] { color: #00ff41 !important; text-shadow: 0 0 5px #00ff41; }
+        body.dark-mode .credits-section h2 p { color: #0004ff !important; text-shadow: 0 0 5px rgba(0,242,255,0.5); }
+        body.dark-mode .credits-section h1 p { color: #ff4d4d !important; text-shadow: 0 0 5px rgba(255,77,77,0.5); }
+        body.dark-mode .grid-cell { background: rgba(0, 242, 255, 0.05) !important; }
         .earth-link { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 70px; height: 70px; background: #3498db; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 35px; cursor: pointer; box-shadow: 0 0 20px rgba(0,0,0,0.3); z-index: 10; border: 3px solid white; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(52, 152, 219, 0); } 100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(52,152,219,0.7); } 70% { box-shadow: 0 0 0 15px rgba(52,152,219,0); } 100% { box-shadow: 0 0 0 0 rgba(52,152,219,0); } }
         .error-msg { color: #e74c3c; font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #f8d7da; padding: 3px; font-size: 1.5em; }
         .preview-label { display: block; font-size: 0.8em; color: #666; margin-top: 4px; }
         #timeSinceStatus { color: red; font-size: 0.8em; display: block; margin-top: 5px; font-weight: normal; }
-
-        /* ستايل الأزرار الاحترافية الجديد */
-        .btn-modern {
-            flex: 1; padding: 12px; border: none; border-radius: 12px; cursor: pointer;
-            font-weight: bold; display: flex; align-items: center; justify-content: center;
-            gap: 10px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            color: white; font-size: 0.95em;
-        }
+        .btn-modern { flex: 1; padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); color: white; font-size: 0.95em; }
         .btn-excel { background: linear-gradient(135deg, #f39c12, #e67e22); }
-        .btn-excel:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(243, 156, 18, 0.4); background: linear-gradient(135deg, #e67e22, #d35400); }
+        .btn-excel:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(243,156,18,0.4); background: linear-gradient(135deg, #e67e22, #d35400); }
         .btn-delete { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .btn-delete:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4); background: linear-gradient(135deg, #c0392b, #a93226); }
-    /* تنسيق الرسالة في وضع النهار */
-/* تنسيق الرسالة لضمان التوسيط تحت الأزرار */
-#nightModeWarning {
-    clear: both;
-    width: 100%;
-}
-
-/* وضع الليل - تغيير ألوان البرواز والخلفية والنص */
-body.dark-mode #nightModeWarning div {
-    border-color: #ff007f !important;
-    background: rgba(255, 0, 127, 0.1) !important;
-}
-
-body.dark-mode #nightModeWarning span {
-    color: #ff007f !important;
-}
+        .btn-delete:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(231,76,60,0.4); background: linear-gradient(135deg, #c0392b, #a93226); }
+        #nightModeWarning { clear: both; width: 100%; }
+        body.dark-mode #nightModeWarning div { border-color: #ff007f !important; background: rgba(255,0,127,0.1) !important; }
+        body.dark-mode #nightModeWarning span { color: #ff007f !important; }
     </style>
 </head>
 <body>
-    
+
     <div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fafafb; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999;">
         <div style="width: 50px; height: 50px; border: 5px solid #fff; border-top: 5px solid #2ecc71; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-        <h2 style="color: white; margin-top: 20px; font-family: sans-serif;">
+        <h2 style="color: white; margin-top: 20px; font-family: sans-serif;"></h2>
     </div>
-    
+
     <style>
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* إضافة هامة: إخفاء الصفحات افتراضياً لمنع الوميض */
+        /* ─── PANDA ───────────────────────────────────── */
+        @keyframes pandaBob   {0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-7px) rotate(1deg)}}
+        @keyframes pandaLaugh {0%,100%{transform:scale(1) rotate(-2deg)} 25%{transform:scale(1.05) rotate(2.5deg)} 75%{transform:scale(1.05) rotate(-2.5deg)}}
+        @keyframes pandaShake {0%,100%{transform:rotate(0deg)} 25%{transform:rotate(-3deg)} 75%{transform:rotate(3deg)}}
+        @keyframes pandaPeek  {0%,100%{transform:scale(1) rotate(3deg)} 50%{transform:scale(1.06) rotate(-3deg)}}
+        @keyframes bubblePop  {0%{transform:scale(0.7);opacity:0} 60%{transform:scale(1.07)} 100%{transform:scale(1);opacity:1}}
+        @keyframes cardSpin   {0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)}}
+        #panda-svg { animation:pandaBob 2.4s ease-in-out infinite; display:block; margin:0 auto; }
+        #panda-bubble { animation:bubblePop 0.4s ease forwards; }
+        .card-glow-wrap { position:relative; border-radius:24px; padding:3px; overflow:hidden; }
+        .card-glow-wrap::before { content:''; position:absolute; inset:-60px;
+            background:conic-gradient(#1a3a2a,#2c5f6e,#1e3a5f,#3a2560,#5f1e3a,#2a3e1e,#1a3a2a);
+            animation:cardSpin 6s linear infinite; z-index:0; }
+        .login-card { position:relative; z-index:1; min-width:320px !important; }
+        /* ─── RAIN ────────────────────────────────────── */
+        .rain-drop {
+            position:absolute; top:0; width:2px; border-radius:2px;
+            opacity:0.82; pointer-events:none;
+            animation:rainFall linear infinite;
+        }
+        @keyframes rainFall {
+            0%  {transform:translateY(-14px);opacity:0.9;}
+            85% {opacity:0.7;}
+            100%{transform:translateY(var(--box-h,70px));opacity:0;}
+        }
         #login-page, #welcome-page, #dashboard-page { display: none; }
     </style>
 
-    <div id="login-page" style="height: 100vh; align-items: center; justify-content: center; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=25d718&_nc_ohc=l6l6l-carw0Q7kNvwEY-uTL&_nc_oc=Ado13DQaoI_TgcQE14jq91ZdW12rXaGbJpGD69ia6vUvQ1o7XCSZSzNGZLjn1JbUqq0BOUX_amO857O03c8AVAnY&_nc_zt=23&_nc_ht=scontent.fcai11-1.fna&_nc_gid=oPpDmxIbNGGwC5YKi-rcSg&_nc_ss=7a389&oh=00_Af2yh1UrKOozUhJMRiJVMwSceTU0a1Xf-v66ifJqa_Ckvw&oe=69D89403') no-repeat center center fixed; background-size: cover;">
-        <div class="login-card">
-            <h2>تسجيل الدخول</h2>
-            <input type="email" id="email" placeholder="البريد الإلكتروني">
-            <input type="password" id="password" placeholder="كلمة المرور">
-            <button class="btn-login" id="loginBtn">دخول</button>
+    <div id="login-page" style="height: 100vh; align-items: center; justify-content: center; background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=25d718&_nc_ohc=l6l6l-carw0Q7kNvwEY-uTL&_nc_oc=Ado13DQaoI_TgcQE14jq91ZdW12rXaGbJpGD69ia6vUvQ1o7XCSZSzNGZLjn1JbUqq0BOUX_amO857O03c8AVAnY&_nc_zt=23&_nc_ht=scontent.fcai11-1.fna&_nc_gid=oPpDmxIbNGGwC5YKi-rcSg&_nc_ss=7a389&oh=00_Af2yh1UrKOozUhJMRiJVMwSceTU0a1Xf-v66ifJqa_Ckvw&oe=69D89403') no-repeat center center fixed; background-size: cover;">
+        <div class="card-glow-wrap">
+        <div class="login-card" style="padding-top:14px;">
+          <div style="display:flex;flex-direction:column;align-items:center;width:100%;margin-bottom:4px;">
+            <!-- speech bubble above panda -->
+            <div id="panda-bubble" style="display:none;">
+              <span id="speech-text"></span>
+              <div id="bubble-arrow"></div>
+            </div>
+            <!-- PANDA SVG — arms drawn in LOCAL coords, pivot = shoulder -->
+            <svg id="panda-svg" width="150" height="170" viewBox="0 0 150 170"
+                 style="filter:drop-shadow(0 4px 14px rgba(0,0,0,0.28));overflow:visible;">
+              <!-- Body -->
+              <ellipse cx="75" cy="140" rx="44" ry="36" fill="white" stroke="#ddd" stroke-width="1"/>
+              <ellipse cx="75" cy="142" rx="25" ry="21" fill="#f5f5f5"/>
+              <!-- ═══ ARMS — drawn in LOCAL coords, pivot at shoulder (0,0) ═══ -->
+              <!-- Left arm: shoulder at (44,118), idle rotate=30°, covering rotate=165° -->
+              <g id="arm-left" style="transform:translate(44px,118px) rotate(30deg);transition:transform 0.45s cubic-bezier(.4,0,.2,1);">
+                <ellipse cx="0" cy="22" rx="11" ry="24" fill="#111"/>
+                <circle cx="0" cy="44" r="11" fill="#111"/>
+                <ellipse cx="-9" cy="52" rx="5" ry="4" fill="#111"/>
+                <ellipse cx="0"  cy="55" rx="5" ry="4" fill="#111"/>
+                <ellipse cx="9"  cy="52" rx="5" ry="4" fill="#111"/>
+              </g>
+              <!-- Right arm: shoulder at (106,118), idle rotate=-30°, covering rotate=-165° -->
+              <g id="arm-right" style="transform:translate(106px,118px) rotate(-30deg);transition:transform 0.45s cubic-bezier(.4,0,.2,1);">
+                <ellipse cx="0" cy="22" rx="11" ry="24" fill="#111"/>
+                <circle cx="0" cy="44" r="11" fill="#111"/>
+                <ellipse cx="-9" cy="52" rx="5" ry="4" fill="#111"/>
+                <ellipse cx="0"  cy="55" rx="5" ry="4" fill="#111"/>
+                <ellipse cx="9"  cy="52" rx="5" ry="4" fill="#111"/>
+              </g>
+              <!-- Head (drawn AFTER arms so head is on top) -->
+              <circle cx="75" cy="76" r="52" fill="white" stroke="#ddd" stroke-width="1"/>
+              <!-- Ears -->
+              <circle cx="30" cy="30" r="17" fill="#111"/><circle cx="30" cy="30" r="7" fill="#333"/>
+              <circle cx="120" cy="30" r="17" fill="#111"/><circle cx="120" cy="30" r="7" fill="#333"/>
+              <!-- Eye patches -->
+              <ellipse cx="53" cy="72" rx="19" ry="17" fill="#111"/>
+              <ellipse cx="97" cy="72" rx="19" ry="17" fill="#111"/>
+              <!-- Eye whites -->
+              <ellipse id="lew" cx="53" cy="72" rx="12" ry="11" fill="white"/>
+              <ellipse id="rew" cx="97" cy="72" rx="12" ry="11" fill="white"/>
+              <!-- Pupils -->
+              <circle id="lp" cx="53" cy="72" r="5.5" fill="#111"/>
+              <circle id="rp" cx="97" cy="72" r="5.5" fill="#111"/>
+              <!-- Highlights -->
+              <circle id="lh" cx="56" cy="69" r="2" fill="white"/>
+              <circle id="rh" cx="100" cy="69" r="2" fill="white"/>
+              <!-- Happy closed lids -->
+              <ellipse id="llid" cx="53" cy="77" rx="12" ry="10" fill="#111" opacity="0" style="transition:opacity 0.25s"/>
+              <ellipse id="rlid" cx="97" cy="77" rx="12" ry="10" fill="#111" opacity="0" style="transition:opacity 0.25s"/>
+              <!-- Nose & mouth -->
+              <ellipse cx="75" cy="90" rx="6" ry="4" fill="#111"/>
+              <path id="panda-mouth" d="M 62 99 Q 75 111 88 99" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"/>
+              <!-- Blush -->
+              <ellipse id="lb" cx="37" cy="87" rx="9" ry="6" fill="rgba(255,120,120,0.55)" opacity="0" style="transition:opacity 0.3s"/>
+              <ellipse id="rb" cx="113" cy="87" rx="9" ry="6" fill="rgba(255,120,120,0.55)" opacity="0" style="transition:opacity 0.3s"/>
+            </svg>
+          </div>
+          <h2 style="margin-top:4px;">تسجيل الدخول</h2>
+          <input type="email" id="email" placeholder="البريد الإلكتروني">
+          <div style="position:relative;width:90%;margin:10px auto 0;">
+            <input type="password" id="password" placeholder="كلمة المرور" style="width:100%;padding:12px;padding-left:38px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;-webkit-appearance:none;-moz-appearance:none;">
+            <span id="togglePwd" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:1.1em;user-select:none;">👁</span>
+          </div>
+          <button class="btn-login" id="loginBtn" style="margin-top:12px;">دخول</button>
+        </div>
         </div>
     </div>
 
-    <div id="menu-container" style="position: fixed; top: 1px; left: 1px; z-index: 1; display:none;">
-    <div id="menu-icon" style="cursor: pointer; background: #063959; padding: 10px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
-        <div style="width: 25px; height: 3px; background: white; margin: 4px 0;"></div>
-        <div style="width: 25px; height: 3px; background: white; margin: 4px 0;"></div>
-        <div style="width: 25px; height: 3px; background: white; margin: 4px 0;"></div>
+    <div id="menu-container" style="position: fixed; top: 1px; left: 1px; z-index: 1000; display:none;">
+        <div id="menu-icon" style="cursor: pointer; background: #063959; padding: 10px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+            <div style="width: 25px; height: 3px; background: white; margin: 4px 0;"></div>
+            <div style="width: 25px; height: 3px; background: white; margin: 4px 0;"></div>
+            <div style="width: 25px; height: 3px; background: white; margin: 4px 0;"></div>
+        </div>
+        <div id="menu-dropdown" style="display: none; position: absolute; top: 50px; left: 0; background: white; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); min-width: 170px; overflow: hidden;">
+            <button id="themeToggle" style="width: 100%; padding: 12px; border: none; background: none; cursor: pointer; text-align: right; font-family: sans-serif; color: #2c3e50; font-weight: bold; border-bottom: 1px solid #eee;">
+                <span id="themeText">وضع الليل</span> <span id="themeIcon">🌙</span>
+            </button>
+            <button id="globalLogout" style="width: 100%; padding: 12px; border: none; background: none; cursor: pointer; text-align: right; font-family: sans-serif; color: #e74c3c; font-weight: bold;">
+                تسجيل الخروج 🚪
+            </button>
+        </div>
     </div>
-    
-    <div id="menu-dropdown" style="display: none; position: absolute; top: 50px; left: 0; background: white; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); min-width: 170px; overflow: hidden;">
-    <button id="themeToggle" style="width: 100%; padding: 12px; border: none; background: none; cursor: pointer; text-align: right; font-family: sans-serif; color: #2c3e50; font-weight: bold; border-bottom: 1px solid #eee;">
-        <span id="themeText">وضع الليل</span> <span id="themeIcon">🌙</span>
-    </button>
-    
-    <button id="globalLogout" style="width: 100%; padding: 12px; border: none; background: none; cursor: pointer; text-align: right; font-family: sans-serif; color: #e74c3c; font-weight: bold;">
-        تسجيل الخروج 🚪
-    </button>
-</div>
-</div>
+
     <div id="welcome-page" style="height: 100vh; flex-direction: column; align-items: center; justify-content: center; background: url('https://www.vidaenlatierra.com/wp-content/uploads/2020/11/monocultivos-circulares.jpg') center/cover;">
         <div style="background: rgba(255,255,255,0.95); padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-            <h1 style="color:#2c3e50;">نظام IOT   </h1>
-            <button style="padding: 15px 60px; font-size: 1.3em; cursor: pointer; background: #2ecc71; color: white; border: none; border-radius: 50px; font-weight: bold;" onclick="showDashboard()">جهاز 1 </button>
+            <h1 style="color:#2c3e50;">نظام IOT</h1>
+            <button style="padding: 15px 60px; font-size: 1.3em; cursor: pointer; background: #2ecc71; color: white; border: none; border-radius: 50px; font-weight: bold;" onclick="showDashboard()">جهاز 1</button>
         </div>
         <div class="credits-section" style="margin-top: 20px; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 10px; text-align: center;">
             <h1 style="margin:5px;">إعداد المهندسين:</h1>
             <h2><p style="margin:0; font-weight:bold; color:#0e06ee;">م/الشيماء جمال— م/أحمد ياسر— م/أحمد باسم— م/أمنية علاء— م/أمين حجاج</p></h2>
-            <h2><p style="margin:0; font-weight:bold; color:#0e06ee;"> م/سيف الدين حسين— م/فاطمة علي— م/كريم عمرو— م/نادر رامز— م/نجوى وجيه</p>
+            <h2><p style="margin:0; font-weight:bold; color:#0e06ee;">م/سيف الدين حسين— م/فاطمة علي— م/كريم عمرو— م/نادر رامز— م/نجوى وجيه</p></h2>
             <h1 style="margin:5px;">تحت إشراف:</h1>
-            <h1><p style="margin:0; font-weight:bold; color:#f70505;">أ.د/ياسر عزت </p></h1>
+            <h1><p style="margin:0; font-weight:bold; color:#f70505;">أ.د/ياسر عزت</p></h1>
         </div>
     </div>
+
     <div id="dashboard-page">
-        <div id="back-arrow" onclick="goBackToWelcome()" 
-     style="position: fixed; top: 50px; left: 0px; z-index: 1000; cursor: pointer; display: flex; align-items: center; background: rgba(52, 152, 219, 0.1); padding: 5px 10px; border-radius: 8px; color: #3498db; font-weight: bold; border: 1px solid #3498db; backdrop-filter: blur(5px);">
-    <span style="font-size: 1.2em; margin-left: 5px;">⬅</span> 
-    <span style="font-size: 0.9em;"></span>
-</div>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:20px;">
-            <div class="box" style="border-bottom: 5px solid var(--f1); text-align: center;">F1: <span id="v1">0.00</span> M3/hr <span id="p1" class="preview-label"></span></div>
-            <div class="box" style="border-bottom: 5px solid var(--f2); text-align: center;">F2: <span id="v2">0.00</span> M3/hr <span id="p2" class="preview-label"></span></div>
-            <div class="box" style="border-bottom: 5px solid var(--f3); text-align: center;">F3: <span id="v3">0.00</span> M3/hr <span id="p3" class="preview-label"></span></div>
-            <div class="box" style="border-bottom: 5px solid var(--f4); text-align: center;">F4: <span id="v4">0.00</span> M3/hr <span id="p4" class="preview-label"></span></div>
+        <div id="back-arrow" onclick="goBackToWelcome()" style="position: fixed; top: 50px; left: 0px; z-index: 1000; cursor: pointer; display: flex; align-items: center; background: rgba(52,152,219,0.1); padding: 5px 10px; border-radius: 8px; color: #3498db; font-weight: bold; border: 1px solid #3498db; backdrop-filter: blur(5px);">
+            <span style="font-size: 1.2em; margin-left: 5px;">⬅</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px;">
+            <div id="sbox-1" class="box" style="border-bottom:5px solid var(--f1);text-align:center;position:relative;overflow:hidden;min-height:56px;z-index:0;">
+                <div id="rain-1" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;clip-path:inset(0);"></div>
+                <span style="position:relative;z-index:2;">F1: <span id="v1">0.00</span> M3/hr</span>
+            </div>
+            <div id="sbox-2" class="box" style="border-bottom:5px solid var(--f2);text-align:center;position:relative;overflow:hidden;min-height:56px;z-index:0;">
+                <div id="rain-2" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;clip-path:inset(0);"></div>
+                <span style="position:relative;z-index:2;">F2: <span id="v2">0.00</span> M3/hr</span>
+            </div>
+            <div id="sbox-3" class="box" style="border-bottom:5px solid var(--f3);text-align:center;position:relative;overflow:hidden;min-height:56px;z-index:0;">
+                <div id="rain-3" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;clip-path:inset(0);"></div>
+                <span style="position:relative;z-index:2;">F3: <span id="v3">0.00</span> M3/hr</span>
+            </div>
+            <div id="sbox-4" class="box" style="border-bottom:5px solid var(--f4);text-align:center;position:relative;overflow:hidden;min-height:56px;z-index:0;">
+                <div id="rain-4" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;clip-path:inset(0);"></div>
+                <span style="position:relative;z-index:2;">F4: <span id="v4">0.00</span> M3/hr</span>
+            </div>
         </div>
 
         <div class="main-layout">
             <div class="chart-box">
-    <div class="box chart-container" style="height: 400px; margin-bottom: 15px;">
-        <canvas id="myChart"></canvas>
-    </div>
-    
-    <div class="box" style="height: 350px; padding: 10px; position: relative;">
-        <h4 style="margin: 0 0 5px 0; text-align: center;">📍    (GPS Live)</h4>
-        <div id="map-canvas" style="width: 100%; height: 500px; border-radius: 10px;">
-            <iframe 
-                id="google-map-iframe"
-                width="100%" 
-                height="100%" 
-                frameborder="0" 
-                style="border:0; border-radius: 8px;" 
-                src="" 
-                allowfullscreen>
-            </iframe>
-        </div>
-    </div>
-</div>
+                <div class="box chart-container" style="height: 400px; margin-bottom: 15px;">
+                    <canvas id="myChart"></canvas>
+                </div>
+                <div class="box" style="height: 350px; padding: 10px; position: relative;">
+                    <h4 style="margin: 0 0 5px 0; text-align: center;">📍 (GPS Live)</h4>
+                    <div id="map-canvas" style="width: 100%; height: 290px; border-radius: 10px;">
+                        <iframe id="google-map-iframe" width="100%" height="100%" frameborder="0" style="border:0; border-radius: 8px;" src="" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
 
             <div class="sidebar">
                 <div class="box" style="text-align:center;">
@@ -482,11 +293,41 @@ body.dark-mode #nightModeWarning span {
                     <h4 style="color:red; text-align:center; margin:0 0 10px 0;">⚠️ سجل الأعطال</h4>
                     <div id="errorLog" style="flex-grow: 1; overflow-y: auto; background: #fff9f5; border-radius: 8px; padding: 10px;"></div>
                 </div>
+
+                <!-- ===================== صندوق الأرصاد الجوية ===================== -->
+                <div class="box" id="weather-box">
+                    <h4 style="text-align:center; margin:0 0 8px 0;">🌤️ الأرصاد الجوية</h4>
+                    <div id="weather-location" style="text-align:center; font-size:0.82em; color:#555; margin-bottom:10px;">في انتظار بيانات GPS...</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div style="background:#fde8e8; border-radius:12px; padding:10px; text-align:center; border-bottom:3px solid #e74c3c;">
+                            <div style="font-size:1.4em;">🌡️</div>
+                            <div style="font-size:0.72em; color:#555; margin:3px 0;">درجة الحرارة</div>
+                            <div id="w-temp" style="font-size:1.2em; font-weight:bold; color:#e74c3c;">--</div>
+                        </div>
+                        <div style="background:#e3f2fd; border-radius:12px; padding:10px; text-align:center; border-bottom:3px solid #3498db;">
+                            <div style="font-size:1.4em;">💧</div>
+                            <div style="font-size:0.72em; color:#555; margin:3px 0;">الرطوبة الجوية</div>
+                            <div id="w-humidity" style="font-size:1.2em; font-weight:bold; color:#3498db;">--</div>
+                        </div>
+                        <div style="background:#e8f5e9; border-radius:12px; padding:10px; text-align:center; border-bottom:3px solid #2ecc71;">
+                            <div style="font-size:1.4em;">💨</div>
+                            <div style="font-size:0.72em; color:#555; margin:3px 0;">سرعة الرياح</div>
+                            <div id="w-wind" style="font-size:1.2em; font-weight:bold; color:#2ecc71;">--</div>
+                        </div>
+                        <div style="background:#f3e5f5; border-radius:12px; padding:10px; text-align:center; border-bottom:3px solid #9b59b6;">
+                            <div style="font-size:1.4em;">🌧️</div>
+                            <div style="font-size:0.72em; color:#555; margin:3px 0;">بخر نتح / أمطار</div>
+                            <div id="w-rain" style="font-size:1.2em; font-weight:bold; color:#9b59b6;">--</div>
+                        </div>
+                    </div>
+                    <div id="weather-update-time" style="text-align:center; font-size:0.68em; color:#aaa; margin-top:8px;"></div>
+                </div>
+
                 <div class="box">
                     <h4 style="text-align:center; margin:0 0 10px 0;">📊 سجل الري</h4>
                     <div class="scroll-area" style="max-height: 400px; overflow-y: auto; position: relative;">
                         <table id="historyTable" style="border-collapse: collapse; width: 100%;">
-                            <thead 
+                            <thead>
                                 <tr>
                                     <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black;">العملية</th>
                                     <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black;">التاريخ</th>
@@ -497,132 +338,26 @@ body.dark-mode #nightModeWarning span {
                             <tbody></tbody>
                         </table>
                     </div>
-                    <div style="display: flex; gap: 10px; width: 100%; margin-top: 30px;"> 
-    <button onclick="exportToExcel()" class="btn-modern btn-excel" style="flex: 1; padding: 12px; border-radius: 8px; cursor: pointer; border: none; background: #534001; color: rgb(255, 255, 255); font-weight: bold;">
-        طباعة الملف 📊
-    </button>
-    <button onclick="clearAllHistory()" class="btn-modern btn-delete" style="flex: 1; padding: 12px; border-radius: 8px; cursor: pointer; border: none; background: #f10d0d; color: rgb(255, 255, 255); font-weight: bold;">
-        حذف السجل 🗑️
-    </button>
-</div>
-
-<div id="nightModeWarning" style="
-    display: none; 
-    width: fit-content; 
-    margin: 15px 0 0 auto; 
-    padding: 5px 15px; 
-    border: 1px solid #ffcc00; 
-    background: rgba(255, 204, 0, 0.05); 
-    border-radius: 20px; 
-    text-align: right; 
-    direction: rtl;
-">
-    <span style="color: #ffcc00; font-size: 1.5em; font-weight: bold; white-space: nowrap;">
-        ⚠️ جاري تجهيز الملفات.. انتظر قليلاً
-    </span>
-</div>
-</div>
-
+                    <div style="display: flex; gap: 10px; width: 100%; margin-top: 30px;">
+                        <button onclick="exportToExcel()" class="btn-modern btn-excel" style="flex: 1; padding: 12px; border-radius: 8px; cursor: pointer; border: none; background: #534001; color: rgb(255,255,255); font-weight: bold;">طباعة الملف 📊</button>
+                        <button onclick="clearAllHistory()" class="btn-modern btn-delete" style="flex: 1; padding: 12px; border-radius: 8px; cursor: pointer; border: none; background: #f10d0d; color: rgb(255,255,255); font-weight: bold;">حذف السجل 🗑️</button>
+                    </div>
+                    <div id="nightModeWarning" style="display: none; width: fit-content; margin: 15px 0 0 auto; padding: 5px 15px; border: 1px solid #ffcc00; background: rgba(255,204,0,0.05); border-radius: 20px; text-align: right; direction: rtl;">
+                        <span style="color: #ffcc00; font-size: 1.5em; font-weight: bold; white-space: nowrap;">⚠️ جاري تجهيز الملفات.. انتظر قليلاً</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- FIX 1: الـ import لازم يكون أول حاجة في الـ module script بدون أي كود قبله -->
     <script type="module">
-        function createWaterDrop() {
-    // نتأكد أولاً أن النظام يعمل
-    if (!isWatering) return;
-
-    const statusBox = document.querySelector('.sidebar .box:first-child');
-    if (!statusBox) return;
-
-    const drop = document.createElement('div');
-    drop.classList.add('drop');
-    
-    // وضع القطرة في مكان عشوائي أفقياً داخل الصندوق
-    drop.style.left = Math.random() * 100 + '%';
-    
-    // سرعة عشوائية للسقوط ليعطي شكلاً واقعياً
-    const duration = Math.random() * 1 + 0.5;
-    drop.style.animationDuration = duration + 's';
-    
-    statusBox.appendChild(drop);
-
-    // حذف عنصر القطرة بعد انتهاء الأنميشن لتجنب ثقل الصفحة
-    setTimeout(() => {
-        drop.remove();
-    }, duration * 1000);
-}
-
-// تشغيل صناعة القطرات باستمرار كل 100 مللي ثانية
-setInterval(createWaterDrop, 1);
-        const themeToggle = document.getElementById('themeToggle');
-const themeText = document.getElementById('themeText');
-const themeIcon = document.getElementById('themeIcon');
-
-themeToggle.onclick = () => {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    
-    // تغيير النص والأيقونة
-    themeText.innerText = isDark ? "وضع النهار" : "وضع الليل";
-    themeIcon.innerText = isDark ? "☀️" : "🌙";
-    
-   
-    // ---------------------------------
-    
-    // تحديث ألوان المنحنى فوراً
-    updateChartColors(isDark);
-};
-
-function updateChartColors(isDark) {
-    if (!myChart) return;
-    
-    const neonColors = ['#00f2ff', '#ff007f', '#ccff00', '#00ff41'];
-    const originalColors = ['#3498db', '#e74c3c', '#f1c40f', '#2ecc71'];
-    
-    myChart.data.datasets.forEach((dataset, i) => {
-        dataset.borderColor = isDark ? neonColors[i] : originalColors[i];
-        dataset.borderWidth = isDark ? 3 : 2;
-    });
-    
-    // --- التعديل المطلوب: جعل أسماء الرشاشات بيضاء في وضع الليل فقط ---
-    if (myChart.options.plugins && myChart.options.plugins.legend) {
-        myChart.options.plugins.legend.labels.color = isDark ? "#ffffff" : "#666";
-    }
-    // ------------------------------------------------------------------
-
-    // تحديث ألوان شبكة المنحنى والارقام على المحاور
-    myChart.options.scales.x.grid.color = isDark ? "rgba(255, 255, 255, 0.05)" : "#ddd";
-    myChart.options.scales.y.grid.color = isDark ? "rgba(255, 255, 255, 0.05)" : "#ddd";
-    myChart.options.scales.x.ticks.color = isDark ? "#00f2ff" : "#666";
-    myChart.options.scales.y.ticks.color = isDark ? "#00f2ff" : "#666";
-    
-    myChart.update();
-}
-        // ربط زر تسجيل الخروج بالوظيفة الفعلية
-const logoutBtn = document.getElementById('globalLogout');
-if (logoutBtn) {
-    logoutBtn.onclick = () => {
-        // تنفيذ عملية الخروج من Firebase
-        signOut(auth).then(() => {
-            console.log("تم تسجيل الخروج بنجاح");
-            
-            // تنظيف البيانات المحلية عشان يرجع لصفحة اللوجن
-            localStorage.removeItem('activePage');
-            
-            // إعادة تحميل الصفحة عشان التأثير يظهر
-            location.reload();
-        }).catch((error) => {
-            alert("حدث خطأ أثناء تسجيل الخروج: " + error.message);
-        });
-    };
-}
-        
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // FIX 2: تعريف المتغيرات بعد الـ imports مش قبلها
+        let lastFirebaseTime = 0;
 
         const firebaseConfig = {
             apiKey: "AIzaSyDNWgqZdWppxKD2oGynIgut9cRGXFVGTKw",
@@ -636,257 +371,430 @@ if (logoutBtn) {
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        let myChart, isWatering = false;
-        let sessionData = { 
-            startTimes: [null,null,null,null], 
+        let serverOffset = 0;
+        onValue(ref(db, ".info/serverTimeOffset"), (snap) => {
+            serverOffset = snap.val() || 0;
+            window._serverOffset = serverOffset;
+            console.log("تم ضبط توقيت السيرفر:", serverOffset);
+        });
+
+        let myChart = null;
+        let isWatering = false;
+
+        // --- بيانات الجلسة ---
+        let sessionData = {
+            startTimes: [null,null,null,null],
             endTimes: [null,null,null,null],
             rawStartTimes: [null,null,null,null],
             rawEndTimes: [null,null,null,null],
-            accumulatedAmounts: [0, 0, 0, 0]
+            accumulatedAmounts: [0,0,0,0]
         };
 
-        let sessionStats = {
-            sumFlow: [0, 0, 0, 0],
-            counts: [0, 0, 0, 0]
+        // --- متغيرات التكامل العددي الدقيق (مطلب 4) ---
+        // بدل avgFlow * totalTime، بنحسب مجموع (flow_i × Δt_i) لكل فترة
+        let integrationLastTs = [null, null, null, null];   // توقيت آخر قراءة لكل رشاش (ms)
+        let integrationLastFlow = [0, 0, 0, 0];             // آخر قيمة تصرف لكل رشاش
+
+        // --- متغيرات لمتابعة آخر قيم للمنحنى (مطلب 1) ---
+        let lastChartFlows = null;   // null = لم يُعرض أي شيء بعد
+
+        // نشارك المتغيرات مع السكريبتات الأخرى
+        window._sessionData = sessionData;
+        window._integrationLastTs = integrationLastTs;
+        window._integrationLastFlow = integrationLastFlow;
+
+
+        // ===================== وضع الليل =====================
+        const themeToggle = document.getElementById('themeToggle');
+        const themeText = document.getElementById('themeText');
+        const themeIcon = document.getElementById('themeIcon');
+
+        themeToggle.onclick = () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            themeText.innerText = isDark ? "وضع النهار" : "وضع الليل";
+            themeIcon.innerText = isDark ? "☀️" : "🌙";
+            updateChartColors(isDark);
         };
-        // 1. كود تشغيل القائمة (أيقونة الـ 3 شرط)
-// وضعناه خارج دالة التحقق ليعمل في أي وقت
-// كود تشغيل القائمة الجانبية (إظهار وإخفاء)
-document.addEventListener('click', (e) => {
-    const menuIcon = document.getElementById('menu-icon');
-    const dropdown = document.getElementById('menu-dropdown');
-    
-    if (menuIcon && menuIcon.contains(e.target)) {
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    } else if (dropdown && !dropdown.contains(e.target)) {
-        dropdown.style.display = 'none';
-    }
-});
 
-// 2. دالة مراقبة حالة المستخدم (المسؤولة عن إخفاء الشاشة الزرقاء)
-onAuthStateChanged(auth, (user) => {
-// تفعيل زر الدخول
-document.getElementById('loginBtn').onclick = () => {
-    const email = document.getElementById('email').value;
-    const pass = document.getElementById('password').value;
-    const loader = document.getElementById('loading-screen');
-
-    if (email && pass) {
-        // إظهار شاشة التحميل أثناء الدخول
-        if(loader) loader.style.display = 'flex';
-
-        signInWithEmailAndPassword(auth, email, pass)
-            .then((userCredential) => {
-                console.log("تم الدخول بنجاح");
-                // شاشة التحميل هتختفي أوتوماتيك عن طريق onAuthStateChanged
-            })
-            .catch((error) => {
-                if(loader) loader.style.display = 'none';
-                alert("خطأ في البيانات: " + error.message);
+        function updateChartColors(isDark) {
+            if (!myChart) return;
+            const neonColors = ['#00f2ff', '#ff007f', '#ccff00', '#00ff41'];
+            const originalColors = ['#3498db', '#e74c3c', '#f1c40f', '#2ecc71'];
+            myChart.data.datasets.forEach((dataset, i) => {
+                dataset.borderColor = isDark ? neonColors[i] : originalColors[i];
+                dataset.borderWidth = isDark ? 3 : 2;
             });
-    } else {
-        alert("يرجى إدخال البريد وكلمة المرور");
-    }
-};
-    const loadingScreen = document.getElementById('loading-screen');
-    const menuContainer = document.getElementById('menu-container');
-    const loginPage = document.getElementById('login-page');
-    const welcomePage = document.getElementById('welcome-page');
-    const dashboardPage = document.getElementById('dashboard-page');
-
-    // إخفاء كل الصفحات كخطوة احترازية أولى
-    if(loginPage) loginPage.style.display = 'none';
-    if(welcomePage) welcomePage.style.display = 'none';
-    if(dashboardPage) dashboardPage.style.display = 'none';
-
-    if (user) {
-        // المستخدم مسجل دخول
-        if (menuContainer) menuContainer.style.display = 'block';
-        
-        const activePage = localStorage.getItem('activePage');
-        if (activePage === 'dashboard') {
-            showDashboard();
-        } else {
-            if(welcomePage) welcomePage.style.display = 'flex';
+            if (myChart.options.plugins?.legend) {
+                myChart.options.plugins.legend.labels.color = isDark ? "#ffffff" : "#666";
+            }
+            if (myChart.options.scales?.x) {
+                myChart.options.scales.x.grid.color = isDark ? "rgba(255,255,255,0.05)" : "#ddd";
+                myChart.options.scales.x.ticks.color = isDark ? "#00f2ff" : "#666";
+            }
+            if (myChart.options.scales?.y) {
+                myChart.options.scales.y.grid.color = isDark ? "rgba(255,255,255,0.05)" : "#ddd";
+                myChart.options.scales.y.ticks.color = isDark ? "#00f2ff" : "#666";
+            }
+            myChart.update();
         }
-    } else {
-        // المستخدم غير مسجل دخول
-        if (menuContainer) menuContainer.style.display = 'none';
-        if (loginPage) loginPage.style.display = 'flex';
-        localStorage.removeItem('activePage');
-    }
+        window.updateChartColors = updateChartColors;
 
-    // القضاء على الشاشة الزرقاء: السطر ده لازم يتنفذ مهما كانت النتيجة
-    if (loadingScreen) {
-        setTimeout(() => {
-            loadingScreen.style.display = 'none';
-        }, 500); // تأخير بسيط لنعومة الحركة
-    }
-});
-        function showLoginPage() {
-    localStorage.removeItem('activePage');
-    document.getElementById('login-page').style.display = 'flex'; // تأكد من إظهار الصفحة
-    const email = document.getElementById('email').value;
-    const pass = document.getElementById('password').value;
-    document.getElementById('globalLogout').addEventListener('click', () => {
-    signOut(auth).then(() => {
-        localStorage.removeItem('activePage');
-        location.reload();
-    });
-});
-    
-    if(email && pass) {
-        // إظهار التحميل عند محاولة الدخول
-        document.getElementById('loading-screen').style.display = 'flex';
-        signInWithEmailAndPassword(auth, email, pass).catch((error) => {
-            document.getElementById('loading-screen').style.display = 'none';
-            alert("خطأ في البيانات: " + error.message);
+        // ===================== القائمة =====================
+        document.addEventListener('click', (e) => {
+            const menuIcon = document.getElementById('menu-icon');
+            const dropdown = document.getElementById('menu-dropdown');
+            if (menuIcon && menuIcon.contains(e.target)) {
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            } else if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
         });
-    }
-};
+
+        // ===================== Firebase Auth =====================
+        onAuthStateChanged(auth, (user) => {
+            document.getElementById('loginBtn').onclick = () => {
+                const email = document.getElementById('email').value;
+                const pass = document.getElementById('password').value;
+                const loader = document.getElementById('loading-screen');
+                if (email && pass) {
+                    if (loader) loader.style.display = 'flex';
+                    signInWithEmailAndPassword(auth, email, pass)
+                        .then(() => console.log("تم الدخول بنجاح"))
+                        .catch((error) => {
+                            if (loader) loader.style.display = 'none';
+                            alert("خطأ في البيانات: " + error.message);
+                        });
+                } else {
+                    alert("يرجى إدخال البريد وكلمة المرور");
+                }
+            };
+
+            const logoutBtn = document.getElementById('globalLogout');
+            if (logoutBtn) {
+                logoutBtn.onclick = () => {
+                    signOut(auth).then(() => {
+                        localStorage.removeItem('activePage');
+                        location.reload();
+                    }).catch((error) => alert("خطأ أثناء تسجيل الخروج: " + error.message));
+                };
+            }
+
+            const loadingScreen = document.getElementById('loading-screen');
+            const menuContainer = document.getElementById('menu-container');
+            const loginPage = document.getElementById('login-page');
+            const welcomePage = document.getElementById('welcome-page');
+            const dashboardPage = document.getElementById('dashboard-page');
+
+            if (loginPage) loginPage.style.display = 'none';
+            if (welcomePage) welcomePage.style.display = 'none';
+            if (dashboardPage) dashboardPage.style.display = 'none';
+
+            if (user) {
+                if (menuContainer) menuContainer.style.display = 'block';
+                const activePage = localStorage.getItem('activePage');
+                if (activePage === 'dashboard') {
+                    showDashboard();
+                } else {
+                    if (welcomePage) welcomePage.style.display = 'flex';
+                }
+            } else {
+                if (menuContainer) menuContainer.style.display = 'none';
+                if (loginPage) loginPage.style.display = 'flex';
+                localStorage.removeItem('activePage');
+            }
+
+            if (loadingScreen) {
+                setTimeout(() => { loadingScreen.style.display = 'none'; }, 500);
+            }
+        });
+
+        // ===================== التنقل بين الصفحات =====================
         window.showDashboard = function() {
             localStorage.setItem('activePage', 'dashboard');
             document.getElementById('welcome-page').style.display = 'none';
             document.getElementById('dashboard-page').style.display = 'block';
-            setTimeout(() => { initChart(); loadHistory(); startTracking(); setInterval(updateLastSeen, 1000); }, 100);
-        }
+            setTimeout(() => {
+                initChart();
+                window.loadHistory();
+                window.startTracking();
+                setInterval(updateLastSeen, 1000);
+            }, 100);
+        };
 
-        // تأكد من وجود هذا المتغير في بداية السكربت مع sessionStats
-// 1. دالة التتبع المحدثة (شاملة الـ GPS ومسح الأعطال)
-function startTracking() {
-    onValue(ref(db, 'sensor_data/flow-sensor'), (snap) => {
-        const d = snap.val() || {f1:0, f2:0, f3:0, f4:0};
-        const f = [parseFloat(d.f1 || 0), parseFloat(d.f2 || 0), parseFloat(d.f3 || 0), parseFloat(d.f4 || 0)];
-        const now = Date.now();
-        const timeStr = new Date().toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    second: '2-digit', 
-    hour12: true 
-}).replace("AM", "ص").replace("PM", "م");
+        window.goBackToWelcome = function() {
+            document.getElementById('dashboard-page').style.display = 'none';
+            document.getElementById('welcome-page').style.display = 'flex';
+            localStorage.setItem('activePage', 'welcome');
+        };
 
-        const anyFlow = f.some(v => v > 0.1);
+        // ===================== تتبع Firebase Sprinklers =====================
+        window.startTracking = function() {
+            onValue(ref(db, 'Sprinklers'), (snap) => {
+                const d = snap.val() || {};
 
-        if (anyFlow) {
-            isWatering = true;
-            document.getElementById('mainStatus').innerText = "جهاز 1 قيد التشغيل الآن ...";
+                // --- مطلب 5: الوقت يجي من Firebase مش من الجهاز ---
+                // كل رشاش عنده timestamp خاص بيه، نأخذه ونحوله لـ ms
+                const sprinklerKeys = ['Sprinkler1','Sprinkler2','Sprinkler3','Sprinkler4'];
+                const flows = sprinklerKeys.map(k => parseFloat(d[k]?.Flow || 0));
+                const timestamps = sprinklerKeys.map(k => {
+                    let ts = d[k]?.timestamp;
+                    if (!ts) return null;
+                    if (ts < 10000000000) ts *= 1000; // تحويل ثواني → ms
+                    return ts;
+                });
 
-            f.forEach((v, i) => {
-                if (v > 0.1) {
-                    if (!sessionData.rawStartTimes[i]) {
-                        addZeroPointToChart(i);
-                        sessionData.startTimes[i] = timeStr;
-                        sessionData.rawStartTimes[i] = now;
-                        sessionData.rawEndTimes[i] = null;
-                        sessionStats.sumFlow[i] = 0;
-                        sessionStats.counts[i] = 0;
-                    }
-                    sessionStats.sumFlow[i] += v;
-                    sessionStats.counts[i] += 1;
-                } else {
-                    if (sessionData.rawStartTimes[i] && !sessionData.rawEndTimes[i]) {
-                        calculateFinalForSprinkler(i, now, timeStr);
-                    }
+                // نأخذ أحدث timestamp متاح من Firebase كوقت مرجعي عام
+                const _fbFallback = lastFirebaseTime || (Date.now()+(window._serverOffset||0));
+                const firebaseNow = timestamps.reduce((best, ts) => (ts && ts > best) ? ts : best, _fbFallback);
+                lastFirebaseTime = firebaseNow;
+
+                window._lastFlows = flows;
+                const anyOn = flows.some(v => v > 0.1);
+
+                // --- مطلب 1: تحديث المنحنى فقط لو التصرف اتغير ---
+                const flowChanged = !lastChartFlows ||
+                    flows.some((v, i) => Math.abs(v - lastChartFlows[i]) > 0.001);
+
+                // الحالة القديمة للري قبل التعديل
+                const isWatering_prev = isWatering;
+                const statusEl = document.getElementById('mainStatus');
+
+                // ===================== منطق بداية/نهاية الري =====================
+                if (anyOn && !isWatering) {
+                    isWatering = true;
+                    localStorage.setItem('isWatering','true');
+                    if (statusEl) statusEl.innerText = "🟢 النظام يعمل الآن";
+                    flows.forEach((v, i) => {
+                        if (v > 0.1 && !sessionData.rawStartTimes[i]) {
+                            const ts = timestamps[i] || firebaseNow;
+                            sessionData.rawStartTimes[i] = ts;
+                            sessionData.startTimes[i] = new Date(ts).toLocaleTimeString('ar-EG');
+                            // نبدأ التكامل من هنا
+                            integrationLastTs[i] = ts;
+                            integrationLastFlow[i] = v;
+                        }
+                    });
+
+                } else if (!anyOn && isWatering) {
+                    isWatering = false;
+                    localStorage.setItem('isWatering','false');
+                    if (statusEl) statusEl.innerText = "🔴 النظام متوقف حالياً";
+
+                    // --- مطلب 5: وقت التوقف من Firebase ---
+                    localStorage.setItem('lastStoppedTime', String(firebaseNow));
+
+                    flows.forEach((_, i) => {
+                        if (sessionData.rawStartTimes[i] && !sessionData.rawEndTimes[i]) {
+                            const ts = timestamps[i] || firebaseNow;
+                            // نضيف آخر فترة للتكامل (من آخر قراءة للآن بتصرف صفر)
+                            if (integrationLastTs[i] !== null) {
+                                const deltaHrs = (ts - integrationLastTs[i]) / 3600000;
+                                sessionData.accumulatedAmounts[i] += integrationLastFlow[i] * deltaHrs;
+                            }
+                            sessionData.rawEndTimes[i] = ts;
+                            sessionData.endTimes[i] = new Date(ts).toLocaleTimeString('ar-EG');
+                            // نصفّر التكامل
+                            integrationLastTs[i] = null;
+                            integrationLastFlow[i] = 0;
+                        }
+                    });
+                    saveSession(firebaseNow);
                 }
-                document.getElementById('v' + (i + 1)).innerText = v.toFixed(2);
-            });
 
-            updateChart(f); // استدعاء الدالة المحدثة
-            updateErrorLogs(f, true);
-        } else if (isWatering && !anyFlow) {
-            isWatering = false;
-            
-            const endT = new Date().toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    second: '2-digit', 
-    hour12: true 
-}).replace("AM", "ص").replace("PM", "م");
-            if (typeof myChart !== 'undefined') {
-                myChart.data.labels.push(endT + " (توقف)");
-                myChart.data.datasets.forEach(d => d.data.push(0)); 
-                myChart.update();
+                if (anyOn) {
+                    flows.forEach((v, i) => {
+                        if (v > 0.1 && !sessionData.rawStartTimes[i]) {
+                            const ts=timestamps[i]||firebaseNow;
+                            sessionData.rawStartTimes[i]=ts; sessionData.startTimes[i]=new Date(ts).toLocaleTimeString('ar-EG');
+                            integrationLastTs[i]=ts; integrationLastFlow[i]=v;
+                        }
+                        if (v<=0.1 && sessionData.rawStartTimes[i] && !sessionData.rawEndTimes[i]) {
+                            const ts=timestamps[i]||firebaseNow;
+                            if (integrationLastTs[i]!==null) sessionData.accumulatedAmounts[i]+=integrationLastFlow[i]*((ts-integrationLastTs[i])/3600000);
+                            sessionData.rawEndTimes[i]=ts; sessionData.endTimes[i]=new Date(ts).toLocaleTimeString('ar-EG');
+                            integrationLastTs[i]=null; integrationLastFlow[i]=0;
+                        }
+                    });
+                    flows.forEach((v, i) => {
+                        if (v > 0.1) {
+                            const ts = timestamps[i] || firebaseNow;
+                            if (integrationLastTs[i] !== null && ts > integrationLastTs[i]) {
+                                const deltaHrs = (ts - integrationLastTs[i]) / 3600000;
+                                // نضيف المساحة (التصرف السابق × الفترة الزمنية)
+                                sessionData.accumulatedAmounts[i] += integrationLastFlow[i] * deltaHrs;
+                            } else if (integrationLastTs[i] === null) {
+                                // أول قراءة — نبدأ التتبع
+                                integrationLastTs[i] = ts;
+                            }
+                            integrationLastTs[i] = ts;
+                            integrationLastFlow[i] = v;
+                        }
+                    });
+                }
+
+                // ===================== تحديث المنحنى (مطلب 1 + 2 + 3) =====================
+                // نأخذ الوقت من Firebase فقط — أحدث timestamp حقيقي من البيانات
+                const fbTimestamp = timestamps.reduce((best, ts) => (ts && ts > best) ? ts : best, 0);
+                if (myChart && flowChanged && fbTimestamp > 0) {
+                    // الوقت من Firebase بالتوقيت المحلي HH:MM:SS (مثل شيت Excel)
+                    const timeStr = new Date(fbTimestamp).toLocaleTimeString('en-US', {
+                        hour: '2-digit', minute: '2-digit', second: '2-digit',
+                        hour12: false
+                    });
+
+                    if (anyOn && !isWatering_prev) { myChart.data.labels.push(timeStr+' ▶'); myChart.data.datasets.forEach(ds=>ds.data.push(0)); }
+
+                    if (anyOn) {
+                        // الري شغال — ضيف القيم الحالية
+                        myChart.data.labels.push(timeStr);
+                        flows.forEach((v, i) => myChart.data.datasets[i].data.push(v));
+                    } else if (!anyOn && isWatering_prev) { myChart.data.labels.push(timeStr+' ⏹'); myChart.data.datasets.forEach(ds=>ds.data.push(0)); }
+
+                    // احتفظ بآخر 60 نقطة فقط
+                    while (myChart.data.labels.length > 60) {
+                        myChart.data.labels.shift();
+                        myChart.data.datasets.forEach(ds => ds.data.shift());
+                    }
+
+                    myChart.update('none');
+                    localStorage.setItem('chart_labels', JSON.stringify(myChart.data.labels));
+                    myChart.data.datasets.forEach((ds, i) => localStorage.setItem(`chart_f${i+1}`, JSON.stringify(ds.data)));
+
+                    // تحديث lastChartFlows بعد الرسم
+                    lastChartFlows = [...flows];
+                }
+
+                updateErrorLogs(flows, anyOn);
+
+                // تحديث أرقام F1-F4 في أعلى الصفحة
+                flows.forEach((v, i) => {
+                    const el = document.getElementById('v' + (i + 1));
+                    if (el) el.innerText = v.toFixed(2);
+                });
+            });
+        };
+
+        // ===================== GPS =====================
+        onValue(ref(db, 'GPS_Data'), (snap) => {
+            const coords = snap.val() || {};
+            console.log("GPS DATA:", coords);
+            const lat = parseFloat(coords.Lat) || 0;
+            const lng = parseFloat(coords.Lng) || 0;
+            // مطلب 5: الوقت من Firebase — نحوله من ثواني لـ ms لو محتاج
+            let time = coords.timestamp || (Date.now()+(window._serverOffset||0));
+            if (time < 10000000000) time *= 1000;
+
+            // FIX 3: إزالة الكود المكسور بالـ mapUrl الزيادة جوه الـ onclick
+            const mapIcon = document.getElementById('mapLink');
+            if (mapIcon) {
+                mapIcon.onclick = () => {
+                    if (lat !== 0 && lng !== 0) {
+                        window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+                    } else {
+                        alert("الإحداثيات غير متوفرة");
+                    }
+                };
             }
 
-            f.forEach((v, i) => {
-                if (sessionData.rawStartTimes[i] && !sessionData.rawEndTimes[i]) {
-                    calculateFinalForSprinkler(i, now, timeStr);
-                }
-                if (document.getElementById('v' + (i + 1))) {
-                    document.getElementById('v' + (i + 1)).innerText = "0.00";
-                }
-                const pElement = document.getElementById(`p${i+1}`);
-                if (pElement) pElement.innerText = "";
-            });
+            const mapIframe = document.getElementById('google-map-iframe');
+            if (mapIframe && lat !== 0 && lng !== 0) {
+                const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+                if (mapIframe.src !== mapUrl) mapIframe.src = mapUrl;
+            }
 
-            updateErrorLogs(f, false); // مسح سجل الأعطال فوراً
-            saveSession();
-            document.getElementById('mainStatus').innerText = "النظام متوقف حالياً";
-            localStorage.setItem('lastStoppedTime', Date.now().toString());
-        }
-    });
+            const gpsTimeEl = document.getElementById('gpsTime');
+            if (gpsTimeEl) gpsTimeEl.innerText = "آخر تحديث: " + new Date(time).toLocaleString('ar-EG');
 
-    // مراقبة الـ GPS لفتح الخريطة
-    onValue(ref(db, 'sensor_data/gps'), (snap) => {
-        const coords = snap.val() || {lat: 0, lang: 0};
-        const mapIcon = document.getElementById('mapLink');
-        if (mapIcon) {
-            mapIcon.onclick = () => {
-                if (coords.lat !== 0 && coords.lang !== 0) {
-                    window.open(`https://www.google.com/maps?q=${coords.lat},${coords.lang}`, '_blank');
+            // تحديث الأرصاد الجوية بناءً على إحداثيات GPS من Firebase
+            if (lat !== 0 && lng !== 0) fetchWeather(lat, lng);
+        });
+
+        // ===================== الأرصاد الجوية (OpenWeather) =====================
+        let _lastWeatherLat = null, _lastWeatherLng = null;
+        async function fetchWeather(lat, lng) {
+            // تجنب طلبات متكررة لنفس الموقع (فرق أقل من 0.01 درجة)
+            if (_lastWeatherLat !== null &&
+                Math.abs(lat - _lastWeatherLat) < 0.01 &&
+                Math.abs(lng - _lastWeatherLng) < 0.01) return;
+            _lastWeatherLat = lat;
+            _lastWeatherLng = lng;
+
+            const locEl = document.getElementById('weather-location');
+            if (locEl) locEl.innerText = 'جاري تحميل بيانات الطقس...';
+
+            try {
+                const WEATHER_KEY = 'a61c339ea08be66a370500c00c12a44a';
+                const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${WEATHER_KEY}&units=metric&lang=ar`;
+                const res = await fetch(url);
+                if (res.status === 401) {
+                    if (locEl) locEl.innerText = '⏳ مفتاح API لم يُفعَّل بعد — انتظر 2-4 ساعات من إنشائه';
+                    // نعيد ضبط الإحداثيات عشان يحاول تاني لما GPS يتحدث
+                    _lastWeatherLat = null; _lastWeatherLng = null;
+                    return;
+                }
+                if (!res.ok) throw new Error(`خطأ ${res.status}`);
+                const data = await res.json();
+
+                const temp     = data.main?.temp?.toFixed(1)     ?? '--';
+                const humidity = data.main?.humidity              ?? '--';
+                const wind     = data.wind?.speed?.toFixed(1)     ?? '--';
+
+                // معدل الأمطار — ياخد من rain.1h أو rain.3h لو متوفر
+                let rainVal = 0;
+                if (data.rain) {
+                    rainVal = data.rain['1h'] ?? data.rain['3h'] ?? 0;
+                }
+                // لو مفيش مطر نحسب تقريب مبسط للبخر نتح بالـ Hargreaves
+                let rainText;
+                if (rainVal > 0) {
+                    rainText = `${rainVal.toFixed(1)} mm/hr`;
                 } else {
-                    alert("الإحداثيات غير متوفرة");
+                    // تقدير مبسط للبخر نتح اليومي (Hargreaves): ET0 = 0.0023 × Ra × (T+17.8) × √(ΔT)
+                    // نستخدم T_max ≈ T+5 و T_min ≈ T-5 كتقريب
+                    const T = parseFloat(data.main.temp) || 20;
+                    const Ra = 25; // معدل إشعاع عالمي تقريبي MJ/m²/day
+                    const et0 = (0.0023 * Ra * (T + 17.8) * Math.sqrt(10)).toFixed(1);
+                    rainText = `ET₀ ≈ ${et0} mm/day`;
                 }
-            };
-        }
-    });// مراقبة الـ GPS وتحديث الخريطة فوراً
-onValue(ref(db, 'sensor_data/gps'), (snap) => {
-    const coords = snap.val() || {lat: 0, lang: 0};
-    const mapIframe = document.getElementById('google-map-iframe');
-    
-    if (coords.lat !== 0 && coords.lang !== 0) {
-        // تحديث رابط الخريطة بالإحداثيات الجديدة ليعرض موقع الجهاز الحالي
-        // تم استخدام تنسيق العرض السريع من جوجل ماب
-        const mapUrl = `https://maps.google.com/maps?q=${coords.lat},${coords.lang}&z=15&output=embed`;
-        
-        // منع إعادة تحميل الـ iframe إذا لم تتغير الإحداثيات بشكل ملحوظ (للسلاسة)
-        if (mapIframe.src !== mapUrl) {
-            mapIframe.src = mapUrl;
-        }
-    }
-});
-}
-        function addZeroPointToChart(index) {
-    // استبدل السطر القديم بهذا:
-    const t = new Date().toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit', 
-        hour12: true 
-    }).replace("AM", "ص").replace("PM", "م");
-    
-    myChart.data.labels.push(t + " (بدء)");
-    // باقي الكود كما هو...
-            myChart.data.datasets.forEach((d, i) => {
-                d.data.push(i === index ? 0 : d.data[d.data.length-1] || 0);
-            });
-            myChart.update();
-        }
 
+                const cityName = data.name || '';
+                const country  = data.sys?.country || '';
+
+                const tempEl   = document.getElementById('w-temp');
+                const humEl    = document.getElementById('w-humidity');
+                const windEl   = document.getElementById('w-wind');
+                const rainEl   = document.getElementById('w-rain');
+                const timeEl   = document.getElementById('weather-update-time');
+
+                if (tempEl)   tempEl.innerText   = `${temp} °C`;
+                if (humEl)    humEl.innerText     = `${humidity} %`;
+                if (windEl)   windEl.innerText    = `${wind} m/s`;
+                if (rainEl)   rainEl.innerText    = rainText;
+                if (locEl)    locEl.innerText     = cityName ? `📍 ${cityName}${country ? ', '+country : ''}` : `📍 ${lat.toFixed(3)}, ${lng.toFixed(3)}`;
+                if (timeEl)   timeEl.innerText    = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar-EG');
+
+            } catch (err) {
+                const locEl2 = document.getElementById('weather-location');
+                if (locEl2) locEl2.innerText = '⚠️ تعذّر تحميل بيانات الطقس';
+            }
+        }
+        window.fetchWeather = fetchWeather;
+
+        // ===================== الدوال المساعدة =====================
         function updateLastSeen() {
             const lastStop = localStorage.getItem('lastStoppedTime');
             const statusEl = document.getElementById('timeSinceStatus');
+            if (!statusEl) return;
             if (!lastStop || isWatering) { statusEl.innerText = ""; return; }
-
-            const diffMs = Date.now() - parseInt(lastStop);
+            const diffMs = Date.now() + serverOffset - parseInt(lastStop);
             const diffSec = Math.floor(diffMs / 1000);
             const diffMin = Math.floor(diffSec / 60);
             const diffHrs = Math.floor(diffMin / 60);
-
             let text = "اخر وقت تشغيل منذ ";
-            if (diffSec < 60) { text += `${diffSec} ثانية`; }
-            else if (diffMin < 60) { text += `${diffMin} دقيقة`; }
-            else if (diffHrs < 24) { text += `${diffHrs} ساعة و ${diffMin % 60} دقيقة`; }
+            if (diffSec < 60) text += `${diffSec} ثانية`;
+            else if (diffMin < 60) text += `${diffMin} دقيقة`;
+            else if (diffHrs < 24) text += `${diffHrs} ساعة و ${diffMin % 60} دقيقة`;
             else {
                 const d = new Date(parseInt(lastStop));
                 text = `اخر وقت تشغيل بتاريخ ${d.toLocaleDateString('ar-EG')} الساعة ${d.toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}`;
@@ -894,32 +802,30 @@ onValue(ref(db, 'sensor_data/gps'), (snap) => {
             statusEl.innerText = text;
         }
 
-        function calculateFinalForSprinkler(i, now, timeStr) {
-            sessionData.rawEndTimes[i] = now;
-            sessionData.endTimes[i] = timeStr;
-            const avgFlow = sessionStats.sumFlow[i] / (sessionStats.counts[i] || 1);
-            const durationHrs = (now - sessionData.rawStartTimes[i]) / 3600000;
-            sessionData.accumulatedAmounts[i] = avgFlow * durationHrs;
-        }
+        // calculateFinalForSprinkler: اتحولت لتكامل عددي مباشر جوه startTracking
 
         function updateErrorLogs(f, isActive) {
             const log = document.getElementById('errorLog');
             if (!log) return;
-            if (!isActive) { log.innerHTML = ""; return; }
-            let html = "";
-            f.forEach((v, i) => { if (v < 0.1) html += `<div class="error-msg">⚠️ رشاش ${i + 1} لا يعمل</div>`; });
-            log.innerHTML = html;
+            if (!isActive) { log.innerHTML=""; return; }
+            let html="";
+            f.forEach((v,i)=>{
+                if(v<0.1) html+=`<div class="error-msg">⚠️ رشاش ${i+1} لا يعمل</div>`;
+                else {
+                    if(v>10) html+=`<div class="error-msg" style="color:#c0392b">🚨 رشاش ${i+1}: تصرف مرتفع جداً (${v.toFixed(2)} M3/hr)</div>`;
+                    else if(v<5) html+=`<div class="error-msg" style="color:#e67e22">⚠️ رشاش ${i+1}: تصرف منخفض (${v.toFixed(2)} M3/hr)</div>`;
+                }
+            });
+            log.innerHTML=html;
         }
 
-        function saveSession() {
+        function saveSession(finishTime) {
             const history = JSON.parse(localStorage.getItem('irr_history') || "[]");
             const finalAmounts = sessionData.accumulatedAmounts.map(a => parseFloat(a).toFixed(4));
             const durations = sessionData.rawStartTimes.map((start, i) => {
                 if (start && sessionData.rawEndTimes[i]) {
                     let diff = Math.floor((sessionData.rawEndTimes[i] - start) / 1000);
-                    let h = Math.floor(diff / 3600);
-                    let m = Math.floor((diff % 3600) / 60);
-                    let s = diff % 60;
+                    let h = Math.floor(diff / 3600), m = Math.floor((diff % 3600) / 60), s = diff % 60;
                     return `${h}س و${m}د و${s}ث`;
                 }
                 return "-";
@@ -927,558 +833,377 @@ onValue(ref(db, 'sensor_data/gps'), (snap) => {
 
             history.push({
                 id: history.length + 1,
-                date: new Date().toLocaleDateString('ar-EG'),
-                day: new Intl.DateTimeFormat('ar-EG', {weekday:'long'}).format(new Date()),
+                date: new Date(finishTime).toLocaleDateString('ar-EG'),
+                day: new Intl.DateTimeFormat('ar-EG', {weekday:'long'}).format(new Date(finishTime)),
                 amounts: finalAmounts,
                 startTimes: [...sessionData.startTimes],
                 endTimes: [...sessionData.endTimes],
                 durations: durations
             });
             localStorage.setItem('irr_history', JSON.stringify(history));
-            sessionData.rawStartTimes = [null,null,null,null];
-            sessionData.rawEndTimes = [null,null,null,null];
-            sessionData.startTimes = [null,null,null,null];
-            sessionData.endTimes = [null,null,null,null];
-            sessionData.accumulatedAmounts = [0,0,0,0];
-            loadHistory();
+
+            for(let i=0;i<4;i++){sessionData.rawStartTimes[i]=null;sessionData.rawEndTimes[i]=null;sessionData.startTimes[i]=null;sessionData.endTimes[i]=null;sessionData.accumulatedAmounts[i]=0;integrationLastTs[i]=null;integrationLastFlow[i]=0;}
+
+            window.loadHistory();
         }
 
+        // ===================== السجل =====================
         window.loadHistory = function() {
-    const tbody = document.querySelector('#historyTable tbody');
-    tbody.innerHTML = "";
-    const history = JSON.parse(localStorage.getItem('irr_history') || "[]");
-    
-    // شلنا .reverse() عشان يعرض بالترتيب الطبيعي (من 1 إلى الأحدث)
-    history.slice().forEach(row => {
-        const tr = tbody.insertRow();
-        tr.innerHTML = `<td>${row.id}</td><td>${row.date}</td><td>${row.day}</td>
-            <td><div class="grid-cell">
-                <div class="sub-val" style="color:var(--f1)">F1:${row.amounts[0]}</div>
-                <div class="sub-val" style="color:var(--f2)">F2:${row.amounts[1]}</div>
-                <div class="sub-val" style="color:var(--f3)">F3:${row.amounts[2]}</div>
-                <div class="sub-val" style="color:var(--f4)">F4:${row.amounts[3]}</div>
-            </div></td>`;
-    });
-}
+            const tbody = document.querySelector('#historyTable tbody');
+            if (!tbody) return;
+            tbody.innerHTML = "";
+            const history = JSON.parse(localStorage.getItem('irr_history') || "[]");
+            history.slice().forEach(row => {
+                const tr = tbody.insertRow();
+                tr.innerHTML = `<td>${row.id}</td><td>${row.date}</td><td>${row.day}</td>
+                    <td><div class="grid-cell">
+                        <div class="sub-val" style="color:#3498db;font-weight:bold">F1:${row.amounts[0]}</div>
+                        <div class="sub-val" style="color:#e74c3c;font-weight:bold">F2:${row.amounts[1]}</div>
+                        <div class="sub-val" style="color:#f1c40f;font-weight:bold">F3:${row.amounts[2]}</div>
+                        <div class="sub-val" style="color:#2ecc71;font-weight:bold">F4:${row.amounts[3]}</div>
+                    </div></td>`;
+            });
+        };
 
+        // ===================== المنحنى =====================
         function initChart() {
-    const ctx = document.getElementById('myChart');
-    if (myChart) myChart.destroy();
-    
-    // 1. استرجاع البيانات المحفوظة
-    let savedLabels = JSON.parse(localStorage.getItem('chart_labels') || "[]");
-    let datasetsData = [];
-    for (let i = 1; i <= 4; i++) {
-        datasetsData.push(JSON.parse(localStorage.getItem(`chart_f${i}`) || "[]"));
-    }
+            const ctx = document.getElementById('myChart');
+            if (myChart) myChart.destroy();
 
-    // 2. فحص حالة الري الحالية من الداتا اللي جاية من الحساسات
-    // لو كل القراءات الحالية صفر، ده معناه إننا لازم نقفل المنحنى عند الصفر
-    const isCurrentlyOff = datasetsData.every(data => data.length > 0 && data[data.length - 1] < 0.1);
+            let savedLabels = JSON.parse(localStorage.getItem('chart_labels') || "[]");
+            let datasetsData = [];
+            for (let i = 1; i <= 4; i++) {
+                datasetsData.push(JSON.parse(localStorage.getItem(`chart_f${i}`) || "[]"));
+            }
 
-    // لو النظام واقف بس آخر نقطة متسجلة كانت عالية، بنضيف نقطة صفر "قفل"
-    if (datasetsData.some(data => data.length > 0 && data[data.length - 1] > 0)) {
-        // ابحث عن السطر الذي يبدأ بـ const nowStr داخل دالة initChart واستبدله بـ:
-const nowStr = new Date().toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    second: '2-digit', 
-    hour12: true 
-}).replace("AM", "ص").replace("PM", "م");
-        savedLabels.push(nowStr + " (توقف)");
-        datasetsData.forEach(data => {
-            data.push(0); // إجبار كل المنحنيات تنزل للصفر
-        });
-    }
+            if (localStorage.getItem('isWatering')!=='true' && datasetsData.some(data => data.length > 0 && data[data.length - 1] > 0)) {
+                if (lastFirebaseTime > 0) {
+                    const nowStr = new Date(lastFirebaseTime).toLocaleTimeString('en-US', {
+                        hour: '2-digit', minute: '2-digit', second: '2-digit',
+                        hour12: false
+                    });
+                    savedLabels.push(nowStr + " (توقف)");
+                    datasetsData.forEach(data => data.push(0));
+                }
+            }
 
-    myChart = new Chart(ctx, {
-        type: 'line',
-        data: { 
-            labels: savedLabels, 
-            datasets: [
-                { label: 'F1', borderColor: '#3498db', data: datasetsData[0], tension: 0.4, fill: false, pointRadius: 0 },
-                { label: 'F2', borderColor: '#e74c3c', data: datasetsData[1], tension: 0.4, fill: false, pointRadius: 0 },
-                { label: 'F3', borderColor: '#f1c40f', data: datasetsData[2], tension: 0.4, fill: false, pointRadius: 0 },
-                { label: 'F4', borderColor: '#2ecc71', data: datasetsData[3], tension: 0.4, fill: false, pointRadius: 0 }
-            ]
-        },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false, 
-            animation: false, 
-            scales: { y: { beginAtZero: true, suggestedMax: 2.0 } } 
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: savedLabels,
+                    datasets: [
+                        { label: 'F1', borderColor: '#3498db', data: datasetsData[0], tension: 0.4, fill: false, pointRadius: 0 },
+                        { label: 'F2', borderColor: '#e74c3c', data: datasetsData[1], tension: 0.4, fill: false, pointRadius: 0 },
+                        { label: 'F3', borderColor: '#f1c40f', data: datasetsData[2], tension: 0.4, fill: false, pointRadius: 0 },
+                        { label: 'F4', borderColor: '#2ecc71', data: datasetsData[3], tension: 0.4, fill: false, pointRadius: 0 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#ddd' }, ticks: { color: '#666' } },
+                        x: { grid: { color: '#ddd' }, ticks: { color: '#666' } }
+                    },
+                    plugins: { legend: { labels: { color: '#666' } } }
+                }
+            });
+
+            localStorage.setItem('chart_labels', JSON.stringify(savedLabels));
+            datasetsData.forEach((data, i) => localStorage.setItem(`chart_f${i+1}`, JSON.stringify(data)));
         }
-    });
 
-    // حفظ حالة "القفل" الجديدة عشان الريفريش اللي جاي
-    localStorage.setItem('chart_labels', JSON.stringify(savedLabels));
-    datasetsData.forEach((data, i) => {
-        localStorage.setItem(`chart_f${i+1}`, JSON.stringify(data));
-    });
-}
-        
-// 2. دالة تحديث المنحنى المحدثة (لحل مشكلة الخط الأفقي عند الريفرش)
-function updateChart(f) {
-    const t = new Date().toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    second: '2-digit', 
-    hour12: true 
-}).replace("AM", "ص").replace("PM", "م");
-    myChart.data.labels.push(t);
-    f.forEach((v, i) => myChart.data.datasets[i].data.push(v));
-
-    // إذا كان النظام متوقف، اجعل آخر نقطة صفر لضمان قفل المنحنى
-    if (f.every(v => v < 0.1)) {
-        myChart.data.datasets.forEach(d => {
-            if (d.data.length > 0) d.data[d.data.length - 1] = 0;
-        });
-    }
-
-    if(myChart.data.labels.length > 30) { 
-        myChart.data.labels.shift(); 
-        myChart.data.datasets.forEach(d => d.data.shift()); 
-    }
-    myChart.update();
-    
-    localStorage.setItem('chart_labels', JSON.stringify(myChart.data.labels));
-    myChart.data.datasets.forEach((d, i) => {
-        localStorage.setItem(`chart_f${i+1}`, JSON.stringify(d.data));
-    });
-}
-
-// 3. دالة الإكسل المحدثة (شاملة التنسيق القديم + الصورة HD + ملف ZIP)
-window.exportToExcel = async function() {
-    const isDarkMode = document.body.classList.contains('dark-mode');
-
-    // 1. إظهار رسالة التحذير فوراً عند الضغط
-
-    const warningBox = document.getElementById('nightModeWarning');
-
-    if (warningBox) warningBox.style.display = 'block';
-
-
-
-    const history = JSON.parse(localStorage.getItem('irr_history') || "[]");
-
-    if (history.length === 0) { 
-
-        alert("السجل فارغ"); 
-
-        if (warningBox) warningBox.style.display = 'none';
-
-        return; 
-
-    }
-
-
-
-    // حفظ حالة الوضع الليلي الحالية
-
-
-    const dateStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
-
-
-
-    try {
-
-        // --- 1. إعداد شيت الإكسيل (الإعدادات الأصلية الكاملة) ---
-
-        let dataArr = [
-
-            ["تقرير نظام IOT (مشروع تخرج المستوى الرابع)"],
-
-            ["العملية", "التاريخ", "اليوم", "بداية التشغيل", "", "", "", "نهاية التشغيل", "", "", "", "زمن التشغيل", "", "", "", "كمية المياه (M3)", "", "", ""],
-
-            ["", "", "", "Spr 1", "Spr 2", "Spr 3", "Spr 4", "Spr 1", "Spr 2", "Spr 3", "Spr 4", "Spr 1", "Spr 2", "Spr 3", "Spr 4", "F1", "F2", "F3", "F4"]
-
-        ];
-
-
-
-        history.forEach(row => {
-
-            dataArr.push([
-
-                row.id, row.date, row.day, 
-
-                ...(row.startTimes || ["-","-","-","-"]), 
-
-                ...(row.endTimes || ["-","-","-","-"]), 
-
-                ...(row.durations || ["-","-","-","-"]), 
-
-                ...(row.amounts || ["0","0","0","0"])
-
-            ]);
-
-        });
-
-
-
-        const ws = XLSX.utils.aoa_to_sheet(dataArr);
-
-        ws['!merges'] = [
-
-            { s: { r: 0, c: 0 }, e: { r: 0, c: 18 } }, 
-
-            { s: { r: 1, c: 0 }, e: { r: 2, c: 0 } }, 
-
-            { s: { r: 1, c: 1 }, e: { r: 2, c: 1 } }, 
-
-            { s: { r: 1, c: 2 }, e: { r: 2, c: 2 } }, 
-
-            { s: { r: 1, c: 3 }, e: { r: 1, c: 6 } }, 
-
-            { s: { r: 1, c: 7 }, e: { r: 1, c: 10 } }, 
-
-            { s: { r: 1, c: 11 }, e: { r: 1, c: 14 } }, 
-
-            { s: { r: 1, c: 15 }, e: { r: 1, c: 18 } }
-
-        ];
-
-
-
-        const range = XLSX.utils.decode_range(ws['!ref']);
-
-        for (let R = range.s.r; R <= range.e.r; ++R) {
-
-            for (let C = range.s.c; C <= range.e.c; ++C) {
-
-                const cell_ref = XLSX.utils.encode_cell({ c: C, r: R });
-
-                if (!ws[cell_ref]) ws[cell_ref] = { t: 's', v: '' };
-
-                ws[cell_ref].s = { 
-
-                    alignment: { vertical: "center", horizontal: "center", wrapText: true }, 
-
-                    border: { 
-
-                        top: { style: "thin" }, bottom: { style: "thin" }, 
-
-                        left: { style: "thin" }, right: { style: "thin" } 
-
-                    } 
-
+        // ===================== تصدير Excel + PDF + ZIP =====================
+        window.exportToExcel = async function() {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const warningBox = document.getElementById('nightModeWarning');
+            if (warningBox) warningBox.style.display = 'block';
+
+            const history = JSON.parse(localStorage.getItem('irr_history') || "[]");
+            if (history.length === 0) {
+                alert("السجل فارغ");
+                if (warningBox) warningBox.style.display = 'none';
+                return;
+            }
+
+            const dateStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+
+            try {
+                let dataArr = [
+                    ["تقرير نظام IOT (مشروع تخرج المستوى الرابع)"],
+                    ["العملية", "التاريخ", "اليوم", "بداية التشغيل", "", "", "", "نهاية التشغيل", "", "", "", "زمن التشغيل", "", "", "", "كمية المياه (M3)", "", "", ""],
+                    ["", "", "", "Spr 1", "Spr 2", "Spr 3", "Spr 4", "Spr 1", "Spr 2", "Spr 3", "Spr 4", "Spr 1", "Spr 2", "Spr 3", "Spr 4", "F1", "F2", "F3", "F4"]
+                ];
+                history.forEach(row => {
+                    dataArr.push([row.id, row.date, row.day,
+                        ...(row.startTimes || ["-","-","-","-"]),
+                        ...(row.endTimes || ["-","-","-","-"]),
+                        ...(row.durations || ["-","-","-","-"]),
+                        ...(row.amounts || ["0","0","0","0"])
+                    ]);
+                });
+
+                const ws = XLSX.utils.aoa_to_sheet(dataArr);
+                ws['!merges'] = [
+                    { s: { r:0,c:0 }, e: { r:0,c:18 } },
+                    { s: { r:1,c:0 }, e: { r:2,c:0 } },
+                    { s: { r:1,c:1 }, e: { r:2,c:1 } },
+                    { s: { r:1,c:2 }, e: { r:2,c:2 } },
+                    { s: { r:1,c:3 }, e: { r:1,c:6 } },
+                    { s: { r:1,c:7 }, e: { r:1,c:10 } },
+                    { s: { r:1,c:11 }, e: { r:1,c:14 } },
+                    { s: { r:1,c:15 }, e: { r:1,c:18 } }
+                ];
+                const range = XLSX.utils.decode_range(ws['!ref']);
+                for (let R = range.s.r; R <= range.e.r; ++R) {
+                    for (let C = range.s.c; C <= range.e.c; ++C) {
+                        const cell_ref = XLSX.utils.encode_cell({ c: C, r: R });
+                        if (!ws[cell_ref]) ws[cell_ref] = { t: 's', v: '' };
+                        ws[cell_ref].s = {
+                            alignment: { vertical: "center", horizontal: "center", wrapText: true },
+                            border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } }
+                        };
+                        if (R <= 2) { ws[cell_ref].s.fill = { fgColor: { rgb: "E0E0E0" } }; ws[cell_ref].s.font = { bold: true }; }
+                    }
+                }
+                ws['!cols'] = Array(19).fill({ wch: 12 });
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "نتائج الري");
+                const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+                if (isDarkMode) document.body.classList.remove('dark-mode');
+                if (typeof updateChartColors === "function") updateChartColors(false);
+                await new Promise(resolve => setTimeout(resolve, 800));
+
+                const captureOptions = {
+                    scale: 3, useCORS: true, backgroundColor: "#ffffff",
+                    onclone: (clonedDoc) => {
+                        clonedDoc.querySelectorAll('*').forEach(node => {
+                            node.style.filter = 'none';
+                            node.style.textShadow = 'none';
+                            node.style.boxShadow = 'none';
+                        });
+                        clonedDoc.querySelectorAll('.chart-container, table, .box').forEach(c => {
+                            c.style.setProperty('background', '#ffffff', 'important');
+                            c.style.setProperty('color', '#000000', 'important');
+                        });
+                    }
                 };
 
-                if (R <= 2) { 
+                const chartElement = document.querySelector('.chart-container');
+                const chartCanvas = await html2canvas(chartElement, captureOptions);
+                const chartImgData = chartCanvas.toDataURL('image/png');
 
-                    ws[cell_ref].s.fill = { fgColor: { rgb: "E0E0E0" } }; 
+                const tableElement = document.querySelector('table');
+                const tableCanvas = await html2canvas(tableElement, captureOptions);
+                const tableImgData = tableCanvas.toDataURL('image/png');
 
-                    ws[cell_ref].s.font = { bold: true }; 
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(18);
+                pdf.setTextColor(40, 40, 40);
+                pdf.text("IoT Irrigation System Report", 105, 15, { align: "center" });
+                pdf.setFont("helvetica", "normal");
+                pdf.setFontSize(10);
+                pdf.setTextColor(100, 100, 100);
+                pdf.text(`Generated: ${new Date().toLocaleString('en-US')}`, 105, 22, { align: "center" });
+                pdf.setDrawColor(200, 200, 200);
+                pdf.line(20, 25, 190, 25);
 
+                const tableProps = pdf.getImageProperties(tableImgData);
+                const tableW = 190, tableH = (tableProps.height * tableW) / tableProps.width;
+                pdf.addImage(tableImgData, 'PNG', (210 - tableW) / 2, 30, tableW, tableH);
+
+                const chartProps = pdf.getImageProperties(chartImgData);
+                const imgW = 180, imgH = (chartProps.height * imgW) / chartProps.width;
+                const xPos = (210 - imgW) / 2;
+                if (tableH + 30 + imgH > 275) {
+                    pdf.addPage();
+                    pdf.setFontSize(16);
+                    pdf.text("Irrigation Data Visualization", 105, 15, { align: "center" });
+                    pdf.addImage(chartImgData, 'PNG', xPos, 25, imgW, imgH);
+                } else {
+                    pdf.addImage(chartImgData, 'PNG', xPos, tableH + 45, imgW, imgH);
                 }
 
+                const zip = new JSZip();
+                zip.file(`Detailed_Report_${dateStr}.xlsx`, excelBuffer);
+                zip.file(`Summary_Report_${dateStr}.pdf`, pdf.output('blob'));
+                zip.file(`Chart_Analysis_${dateStr}.png`, await new Promise(resolve => chartCanvas.toBlob(resolve, 'image/png')));
+                saveAs(await zip.generateAsync({type:"blob"}), `Irrigation_Project_${dateStr}.zip`);
+
+            } catch (error) {
+                console.error("خطأ:", error);
+                alert("حدث خطأ، يرجى المحاولة مرة أخرى");
+            } finally {
+                if (warningBox) warningBox.style.display = 'none';
+                if (isDarkMode) document.body.classList.add('dark-mode');
+                if (typeof updateChartColors === "function") updateChartColors(isDarkMode);
             }
-
-        }
-
-        ws['!cols'] = Array(19).fill({ wch: 12 });
-
-
-
-        const wb = XLSX.utils.book_new();
-
-        XLSX.utils.book_append_sheet(wb, ws, "نتائج الري");
-
-        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-
-
-
-        // --- 2. معالجة الصور والـ PDF ---
-
-        if (isDarkMode) document.body.classList.remove('dark-mode');
-
-        if (typeof updateChartColors === "function") updateChartColors(false);
-
-
-
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-
-
-        const captureOptions = {
-
-            scale: 3,
-
-            useCORS: true,
-
-            backgroundColor: "#ffffff",
-
-            onclone: (clonedDoc) => {
-
-                const all = clonedDoc.querySelectorAll('*');
-
-                all.forEach(node => {
-
-                    node.style.filter = 'none';
-
-                    node.style.textShadow = 'none';
-
-                    node.style.boxShadow = 'none';
-
-                });
-
-                // إجبار اللون الأبيض وقت التصوير لضمان النقاء
-
-                const containers = clonedDoc.querySelectorAll('.history-table, .chart-container, table, .box');
-
-                containers.forEach(c => {
-
-                    c.style.setProperty('background', '#ffffff', 'important');
-
-                    c.style.setProperty('color', '#000000', 'important');
-
-                });
-
-            }
-
         };
 
-
-
-        const chartElement = document.querySelector('.chart-container');
-
-        const chartCanvas = await html2canvas(chartElement, captureOptions);
-
-        const chartImgData = chartCanvas.toDataURL('image/png');
-
-
-
-        const tableElement = document.querySelector('.history-table') || document.querySelector('table');
-
-        const tableCanvas = await html2canvas(tableElement, captureOptions);
-
-        const tableImgData = tableCanvas.toDataURL('image/png');
-
-
-
-        // بناء ملف الـ PDF الاحترافي (A4)
-
-        // 1. تحديد نوع المستند (تأكد إن السطرين دول في أول الدالة)
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-
-        // --- الجزء ده هو اللي فيه الحل السحري ---
-        // بنحدد الخط "Helvetica" لأنه خط Built-in مش بيحتاج تحميل ومستحيل يتشوه
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(18);
-        pdf.setTextColor(40, 40, 40);
-
-        // كتابة النص مع إضافة ميزة (R2L: false) عشان نوقف أي مكتبة عربي بتحاول تعكس الحروف
-        pdf.text("IoT Irrigation System Report", 105, 15, { 
-            align: "center",
-            R2L: false // إيقاف الكتابة من اليمين لليار للنص ده بالذات
-        });
-
-        // التاريخ بالإنجليزية
-        pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(10);
-        pdf.setTextColor(100, 100, 100);
-        const dateNow = new Date().toLocaleString('en-US');
-        pdf.text(`Generated: ${dateNow}`, 105, 22, { 
-            align: "center",
-            R2L: false 
-        });
-
-        // خط فاصل نظيف
-        pdf.setDrawColor(200, 200, 200);
-        pdf.line(20, 25, 190, 25);
-        // --- نهاية التعديل ---
-
-        pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(10);
-        pdf.setTextColor(100);
-        // التاريخ بالإنجليزية لضمان عدم حدوث تشويه
-        const dateStrEN = new Date().toLocaleString('en-US');
-        pdf.text(`Generated: ${dateStrEN}`, 105, 22, { align: "center" });
-
-        pdf.setLineWidth(0.5);
-        pdf.line(20, 25, 190, 25);
-        // --- نهاية التعديل ---
-
-        pdf.setFontSize(10);
-
-        pdf.text(`Generated: ${new Date().toLocaleString()}`, 105, 22, { align: "center" });
-
-
-
-        // 1. إضافة الجدول (متوسط)
-
-        const tableProps = pdf.getImageProperties(tableImgData);
-
-        const tableW = 190;
-
-        const tableH = (tableProps.height * tableW) / tableProps.width;
-
-        const tableX = (210 - tableW) / 2;
-
-        pdf.addImage(tableImgData, 'PNG', tableX, 30, tableW, tableH);
-
-
-
-        // 2. فحص المساحة المتبقية للمنحنى (متوسط)
-
-        const chartProps = pdf.getImageProperties(chartImgData);
-
-        const imgW = 180;
-
-        const imgH = (chartProps.height * imgW) / chartProps.width;
-
-        const xPos = (210 - imgW) / 2;
-
-
-
-        if (tableH + 30 + imgH > 275) {
-
-            pdf.addPage();
-
-            pdf.setFontSize(16);
-
-            pdf.text("Irrigation Data Visualization", 105, 15, { align: "center" });
-
-            pdf.addImage(chartImgData, 'PNG', xPos, 25, imgW, imgH);
-
-        } else {
-
-            pdf.addImage(chartImgData, 'PNG', xPos, tableH + 45, imgW, imgH);
-
-        }
-
-
-
-        const pdfBlob = pdf.output('blob');
-
-
-
-        // --- 3. التجميع النهائي في ملف ZIP ---
-
-        const zip = new JSZip();
-
-        zip.file(`Detailed_Report_${dateStr}.xlsx`, excelBuffer);
-
-        zip.file(`Summary_Report_${dateStr}.pdf`, pdfBlob);
-
-        
-
-        const chartBlob = await new Promise(resolve => chartCanvas.toBlob(resolve, 'image/png'));
-
-        zip.file(`Chart_Analysis_${dateStr}.png`, chartBlob);
-
-
-
-        const zipContent = await zip.generateAsync({type:"blob"});
-
-        saveAs(zipContent, `Irrigation_Project${dateStr}.zip`);
-
-
-
-    } catch (error) {
-        console.error("خطأ أثناء التجميع:", error);
-        alert("حدث خطأ، يرجى المحاولة مرة أخرى");
-    } finally {
-        // 2. إخفاء الرسالة فوراً بعد ما الملف يتحمل (سواء نجح أو فشل)
-        if (warningBox) {
-            warningBox.style.display = 'none';
-        }
-        if (isDarkMode) {
-            document.body.classList.add('dark-mode');
-        }
-
-        // 5. تحديث ألوان الرسوم البيانية إذا كانت موجودة
-        if (typeof updateChartColors === "function") {
-            updateChartColors(isDarkMode);
-        }
-    }
-};
         window.clearAllHistory = function() {
-            if (confirm("يرجى العلم أنه سيتم حذف المنحنى مع السجل")) { 
-                localStorage.removeItem('irr_history'); 
-                localStorage.removeItem('chart_labels');
-                localStorage.removeItem('chart_f1'); localStorage.removeItem('chart_f2');
-                localStorage.removeItem('chart_f3'); localStorage.removeItem('chart_f4');
-                localStorage.removeItem('lastStoppedTime');
+            if (confirm("يرجى العلم أنه سيتم حذف المنحنى مع السجل")) {
+                ['irr_history','chart_labels','chart_f1','chart_f2','chart_f3','chart_f4','lastStoppedTime','savedChartData'].forEach(k => localStorage.removeItem(k));
                 initChart();
-                loadHistory(); 
+                window.loadHistory();
             }
         };
-        // سطر أمان: لو التحميل طول عن 5 ثواني اخفيه إجباري
-setTimeout(() => {
-    if (document.getElementById('loading-screen').style.display !== 'none') {
-        document.getElementById('loading-screen').style.display = 'none';
-        console.log("تم إخفاء شاشة التحميل إجبارياً - يوجد خطأ في منطق التحقق");
-    }
-}, 5000);   
-    </script>
-    <script>
-        // ... كل الدوال القديمة بتاعتك (startTracking, addZeroPointToChart, إلخ) ...
 
-        // ضيف الكود ده هنا في الآخر بس "داخل" وسم الـ script
-        setInterval(() => {
-            if (typeof isWatering !== 'undefined' && isWatering) {
-                sessionData.rawStartTimes.forEach((startTime, i) => {
-                    if (startTime && !sessionData.rawEndTimes[i]) {
-                        const avgSoFar = sessionStats.sumFlow[i] / sessionStats.counts[i];
-                        const durHrsSoFar = (startTimeFromDB - startTime) / 3600000;
-                        const previewVal = (avgSoFar * durHrsSoFar).toFixed(6);
-                        
-                        const element = document.getElementById(`p${i+1}`);
-                        if (element) {
-                            element.innerText = `كميات المياة التقريبية الحالية= ${previewVal} M3`;
-                        }
-                    }
-                });
+        // إخفاء شاشة التحميل إجبارياً بعد 5 ثواني
+        setTimeout(() => {
+            const loadingEl = document.getElementById('loading-screen');
+            if (loadingEl && loadingEl.style.display !== 'none') {
+                loadingEl.style.display = 'none';
             }
-        }, 1000); 
-        window.goBackToWelcome = function() {
-    // إخفاء صفحة الداشبورد وإظهار صفحة الترحيب
-    document.getElementById('dashboard-page').style.display = 'none';
-    document.getElementById('welcome-page').style.display = 'flex';
-    
-    // تحديث الحالة في التخزين المحلي حتى لا يفتح الداشبورد تلقائياً عند التحديث
-    localStorage.setItem('activePage', 'welcome');
-};
+        }, 5000);
+
     </script>
+
+    <script>/* water amounts display removed by R5 */</script>
+
     <script>
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                // هنا بنقول للجهاز: روح دور على الزرار اللي جوه login-page ودوس عليه
                 const btn = document.querySelector('#login-page button');
-                if(btn) btn.click();
+                if (btn) btn.click();
             }
         });
     </script>
+
+    <!-- PANDA JS -->
     <script>
-        // مراجع الرشاشات الأربعة في الفايربيز
-for (let i = 1; i <= 4; i++) {
-    const sprinklerRef = firebase.database().ref('sprinklers/' + i);
+    (function(){
+        const msgs={idle:'أهلاً بك! 👋 سجّل دخولك',email:'😄 كمّل، أنا مستنيك!',password:'🙈 أنا مش شايف حاجة!',peek:'😏 هيهيهي.. شفتها!'};
+        const bga={idle:'#2ecc71',email:'#3498db',password:'#e74c3c',peek:'#f39c12'};
+        const anms={idle:'pandaBob 2.4s ease-in-out infinite',email:'pandaLaugh 0.5s ease-in-out infinite',password:'pandaShake 1.6s ease-in-out infinite',peek:'pandaPeek 0.6s ease-in-out infinite'};
+        let state='idle',pwdVisible=false;
+        function g(id){return document.getElementById(id);}
 
-    sprinklerRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data && data.startTime) {
-            // 1. جلب وقت البداية المخزن في القاعدة
-            const startTimeFromDB = data.startTime; 
-            
-            // 2. تحويله لتوقيت محلي (سيكون موحداً على كل الأجهزة)
-            const dateObject = new Date(startTimeFromDB);
-            const readableTime = dateObject.toLocaleTimeString('ar-EG', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+        function setState(s){
+            if(state===s)return; state=s;
+            const svg=g('panda-svg'),bub=g('panda-bubble'),txt=g('speech-text');
+            if(!svg)return;
+            svg.style.animation=anms[s];
+            bub.style.animation='none'; void bub.offsetHeight; bub.style.animation='bubblePop 0.35s ease forwards';
+            txt.innerText=msgs[s]; bub.style.background=bga[s];
+            const arr=g('bubble-arrow'); if(arr)arr.style.borderTopColor=bga[s];
+            const lew=g('lew'),rew=g('rew'),lp=g('lp'),rp=g('rp'),lh=g('lh'),rh=g('rh');
+            const llid=g('llid'),rlid=g('rlid'),lb=g('lb'),rb=g('rb'),mouth=g('panda-mouth');
+            const armL=g('arm-left'),armR=g('arm-right');
+            // reset
+            [lew,rew].forEach(e=>e&&e.setAttribute('opacity','1'));
+            [lp,rp,lh,rh].forEach(e=>e&&e.setAttribute('opacity','1'));
+            [llid,rlid].forEach(e=>e&&e.setAttribute('opacity','0'));
+            [lb,rb].forEach(e=>e&&e.setAttribute('opacity','0'));
+            if(mouth)mouth.setAttribute('d','M 62 99 Q 75 111 88 99');
+            // arms idle
+            if(armL) armL.style.transform='translate(44px,118px) rotate(30deg)';
+            if(armR) armR.style.transform='translate(106px,118px) rotate(-30deg)';
 
-            // 3. تحديث العنصر في واجهة الموقع (تأكد أن ID العنصر مطابق)
-            const timeElement = document.getElementById(`start-time-${i}`);
-            if (timeElement) {
-                timeElement.innerText = `وقت البدء المخزن: ${readableTime}`;
+            if(s==='email'){
+                [llid,rlid].forEach(e=>e&&e.setAttribute('opacity','0.85'));
+                [lb,rb].forEach(e=>e&&e.setAttribute('opacity','1'));
+                if(mouth)mouth.setAttribute('d','M 59 98 Q 75 115 91 98');
+            } else if(s==='password'){
+                // close eyes + RAISE ARMS to cover eyes
+                [lew,rew].forEach(e=>e&&e.setAttribute('opacity','0'));
+                [lp,rp,lh,rh].forEach(e=>e&&e.setAttribute('opacity','0'));
+                [llid,rlid].forEach(e=>e&&e.setAttribute('opacity','1'));
+                // rotate arms up: left shoulder(44,118)→left eye(53,72): angle ≈ 165°
+                //                 right shoulder(106,118)→right eye(97,72): angle ≈ -165°
+                if(armL) armL.style.transform='translate(44px,118px) rotate(165deg)';
+                if(armR) armR.style.transform='translate(106px,118px) rotate(-165deg)';
+                if(mouth)mouth.setAttribute('d','M 68 101 Q 75 99 82 101');
+            } else if(s==='peek'){
+                // الإيد الشمال فاضلة على العين الشمال، الإيد اليمين بتتشال شوية — الباندا بيتنسط بعينه اليمين
+                [lew,lp,lh].forEach(e=>e&&e.setAttribute('opacity','0'));
+                if(llid)llid.setAttribute('opacity','1');
+                // العين اليمين ظاهرة (بتتنسط)
+                if(rew)rew.setAttribute('opacity','1'); if(rp)rp.setAttribute('opacity','1'); if(rh)rh.setAttribute('opacity','1');
+                if(rlid)rlid.setAttribute('opacity','0');
+                [lb,rb].forEach(e=>e&&e.setAttribute('opacity','1'));
+                // الإيد الشمال فاضلة فوق على العين الشمال
+                if(armL) armL.style.transform='translate(44px,118px) rotate(165deg)';
+                // الإيد اليمين بتتشال شوية
+                if(armR) armR.style.transform='translate(106px,118px) rotate(-70deg)';
+                if(mouth)mouth.setAttribute('d','M 60 98 Q 75 112 90 98');
             }
         }
-    });
-}
+
+        // eye tracking — clamp within eye-white bounds
+        document.addEventListener('mousemove',function(e){
+            if(state==='password')return;
+            const svg=g('panda-svg'); if(!svg)return;
+            const r=svg.getBoundingClientRect();
+            let ox=Math.max(-6,Math.min(6,(e.clientX-(r.left+r.width/2))/r.width*7));
+            let oy=Math.max(-5,Math.min(5,(e.clientY-(r.top+r.height/2))/r.height*6));
+            const lp=g('lp'),rp=g('rp'),lh=g('lh'),rh=g('rh');
+            if(lp){lp.setAttribute('cx',53+ox);lp.setAttribute('cy',72+oy);}
+            if(rp){rp.setAttribute('cx',97+ox);rp.setAttribute('cy',72+oy);}
+            if(lh){lh.setAttribute('cx',56+ox);lh.setAttribute('cy',69+oy);}
+            if(rh){rh.setAttribute('cx',100+ox);rh.setAttribute('cy',69+oy);}
+        });
+
+        window.addEventListener('load',function(){
+            setTimeout(function(){
+                const em=g('email'),pw=g('password'),tg=g('togglePwd');
+                if(em){em.addEventListener('focus',()=>setState('email'));em.addEventListener('input',()=>setState('email'));em.addEventListener('blur',()=>{if(document.activeElement!==pw)setState('idle');});}
+                if(pw){pw.addEventListener('focus',()=>setState(pwdVisible?'peek':'password'));pw.addEventListener('input',()=>setState(pwdVisible?'peek':'password'));pw.addEventListener('blur',()=>setState('idle'));}
+                if(tg){tg.addEventListener('click',function(){pwdVisible=!pwdVisible;pw.type=pwdVisible?'text':'password';tg.textContent=pwdVisible?'🙈':'👁';if(document.activeElement===pw||pw.value.length>0)setState(pwdVisible?'peek':'password');});}
+            },600);
+        });
+    })();
     </script>
+
+    <!-- RAIN JS — strictly inside sprinkler boxes -->
+    <script>
+    (function(){
+        const dropCounts=[0,0,0,0];
+        function getCfg(flow){
+            if(flow<5)  return {color:'rgba(200,175,50,0.78)', dur:2.2, h:13, w:2,   n:8};
+            if(flow>10) return {color:'rgba(195,55,55,0.82)',  dur:0.55,h:16, w:2.5, n:20};
+            return            {color:'rgba(55,130,210,0.80)',  dur:1.2, h:14, w:2,   n:13};
+        }
+        function startRain(idx,flow){
+            const box=document.getElementById('sbox-'+(idx+1));
+            const layer=document.getElementById('rain-'+(idx+1));
+            if(!layer||!box)return;
+            const cfg=getCfg(flow);
+            if(Math.abs(dropCounts[idx]-cfg.n)<3){
+                // just update existing drops
+                Array.from(layer.children).forEach(d=>{d.style.background=cfg.color;d.style.animationDuration=cfg.dur+'s';d.style.height=cfg.h+'px';d.style.width=cfg.w+'px';});
+                return;
+            }
+            layer.innerHTML=''; dropCounts[idx]=cfg.n;
+            const W=box.offsetWidth||200, H=box.offsetHeight||60;
+            layer.style.setProperty('--box-h', H+'px');
+            for(let k=0;k<cfg.n;k++){
+                const d=document.createElement('div');
+                d.className='rain-drop';
+                d.style.cssText='position:absolute;border-radius:2px;pointer-events:none;animation:rainFall linear infinite;';
+                d.style.left=Math.random()*(W-6)+'px';
+                d.style.height=cfg.h+'px'; d.style.width=cfg.w+'px';
+                d.style.background=cfg.color;
+                d.style.animationDuration=cfg.dur+'s';
+                d.style.animationDelay=(Math.random()*cfg.dur)+'s';
+                d.style.setProperty('--box-h', H+'px');
+                layer.appendChild(d);
+            }
+        }
+        function stopRain(idx){
+            const layer=document.getElementById('rain-'+(idx+1));
+            if(layer){layer.innerHTML=''; dropCounts[idx]=0;}
+        }
+        setInterval(function(){
+            const flows=window._lastFlows; if(!flows)return;
+            flows.forEach(function(v,i){ if(v>0.1) startRain(i,v); else stopRain(i); });
+        },1200);
+    })();
+    </script>
+
 </body>
 </html>
