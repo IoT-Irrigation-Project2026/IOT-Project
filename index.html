@@ -99,7 +99,6 @@
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(52,152,219,0.7); } 70% { box-shadow: 0 0 0 15px rgba(52,152,219,0); } 100% { box-shadow: 0 0 0 0 rgba(52,152,219,0); } }
         .error-msg { color: #e74c3c; font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #f8d7da; padding: 3px; font-size: 1.5em; }
         .preview-label { display: block; font-size: 0.8em; color: #666; margin-top: 4px; }
-        #timeSinceStatus { color: red; font-size: 0.8em; display: block; margin-top: 5px; font-weight: normal; }
         .btn-modern { flex: 1; padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); color: white; font-size: 0.95em; }
         .btn-excel { background: linear-gradient(135deg, #f39c12, #e67e22); }
         .btn-excel:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(243,156,18,0.4); background: linear-gradient(135deg, #e67e22, #d35400); }
@@ -119,20 +118,6 @@
 
     <style>
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        /* ─── PANDA ───────────────────────────────────── */
-        @keyframes pandaBob   {0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-7px) rotate(1deg)}}
-        @keyframes pandaLaugh {0%,100%{transform:scale(1) rotate(-2deg)} 25%{transform:scale(1.05) rotate(2.5deg)} 75%{transform:scale(1.05) rotate(-2.5deg)}}
-        @keyframes pandaShake {0%,100%{transform:rotate(0deg)} 25%{transform:rotate(-3deg)} 75%{transform:rotate(3deg)}}
-        @keyframes pandaPeek  {0%,100%{transform:scale(1) rotate(3deg)} 50%{transform:scale(1.06) rotate(-3deg)}}
-        @keyframes bubblePop  {0%{transform:scale(0.7);opacity:0} 60%{transform:scale(1.07)} 100%{transform:scale(1);opacity:1}}
-        @keyframes cardSpin   {0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)}}
-        #panda-svg { animation:pandaBob 2.4s ease-in-out infinite; display:block; margin:0 auto; }
-        #panda-bubble { animation:bubblePop 0.4s ease forwards; }
-        .card-glow-wrap { position:relative; border-radius:24px; padding:3px; overflow:hidden; }
-        .card-glow-wrap::before { content:''; position:absolute; inset:-60px;
-            background:conic-gradient(#1a3a2a,#2c5f6e,#1e3a5f,#3a2560,#5f1e3a,#2a3e1e,#1a3a2a);
-            animation:cardSpin 6s linear infinite; z-index:0; }
-        .login-card { position:relative; z-index:1; min-width:320px !important; }
         /* ─── RAIN ────────────────────────────────────── */
         .rain-drop {
             position:absolute; top:0; width:2px; border-radius:2px;
@@ -148,65 +133,7 @@
     </style>
 
     <div id="login-page" style="height: 100vh; align-items: center; justify-content: center; background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=25d718&_nc_ohc=l6l6l-carw0Q7kNvwEY-uTL&_nc_oc=Ado13DQaoI_TgcQE14jq91ZdW12rXaGbJpGD69ia6vUvQ1o7XCSZSzNGZLjn1JbUqq0BOUX_amO857O03c8AVAnY&_nc_zt=23&_nc_ht=scontent.fcai11-1.fna&_nc_gid=oPpDmxIbNGGwC5YKi-rcSg&_nc_ss=7a389&oh=00_Af2yh1UrKOozUhJMRiJVMwSceTU0a1Xf-v66ifJqa_Ckvw&oe=69D89403') no-repeat center center fixed; background-size: cover;">
-        <div class="card-glow-wrap">
         <div class="login-card" style="padding-top:14px;">
-          <div style="display:flex;flex-direction:column;align-items:center;width:100%;margin-bottom:4px;">
-            <!-- speech bubble above panda -->
-            <div id="panda-bubble" style="display:none;">
-              <span id="speech-text"></span>
-              <div id="bubble-arrow"></div>
-            </div>
-            <!-- PANDA SVG — arms drawn in LOCAL coords, pivot = shoulder -->
-            <svg id="panda-svg" width="150" height="170" viewBox="0 0 150 170"
-                 style="filter:drop-shadow(0 4px 14px rgba(0,0,0,0.28));overflow:visible;">
-              <!-- Body -->
-              <ellipse cx="75" cy="140" rx="44" ry="36" fill="white" stroke="#ddd" stroke-width="1"/>
-              <ellipse cx="75" cy="142" rx="25" ry="21" fill="#f5f5f5"/>
-              <!-- ═══ ARMS — drawn in LOCAL coords, pivot at shoulder (0,0) ═══ -->
-              <!-- Left arm: shoulder at (44,118), idle rotate=30°, covering rotate=165° -->
-              <g id="arm-left" style="transform:translate(44px,118px) rotate(30deg);transition:transform 0.45s cubic-bezier(.4,0,.2,1);">
-                <ellipse cx="0" cy="22" rx="11" ry="24" fill="#111"/>
-                <circle cx="0" cy="44" r="11" fill="#111"/>
-                <ellipse cx="-9" cy="52" rx="5" ry="4" fill="#111"/>
-                <ellipse cx="0"  cy="55" rx="5" ry="4" fill="#111"/>
-                <ellipse cx="9"  cy="52" rx="5" ry="4" fill="#111"/>
-              </g>
-              <!-- Right arm: shoulder at (106,118), idle rotate=-30°, covering rotate=-165° -->
-              <g id="arm-right" style="transform:translate(106px,118px) rotate(-30deg);transition:transform 0.45s cubic-bezier(.4,0,.2,1);">
-                <ellipse cx="0" cy="22" rx="11" ry="24" fill="#111"/>
-                <circle cx="0" cy="44" r="11" fill="#111"/>
-                <ellipse cx="-9" cy="52" rx="5" ry="4" fill="#111"/>
-                <ellipse cx="0"  cy="55" rx="5" ry="4" fill="#111"/>
-                <ellipse cx="9"  cy="52" rx="5" ry="4" fill="#111"/>
-              </g>
-              <!-- Head (drawn AFTER arms so head is on top) -->
-              <circle cx="75" cy="76" r="52" fill="white" stroke="#ddd" stroke-width="1"/>
-              <!-- Ears -->
-              <circle cx="30" cy="30" r="17" fill="#111"/><circle cx="30" cy="30" r="7" fill="#333"/>
-              <circle cx="120" cy="30" r="17" fill="#111"/><circle cx="120" cy="30" r="7" fill="#333"/>
-              <!-- Eye patches -->
-              <ellipse cx="53" cy="72" rx="19" ry="17" fill="#111"/>
-              <ellipse cx="97" cy="72" rx="19" ry="17" fill="#111"/>
-              <!-- Eye whites -->
-              <ellipse id="lew" cx="53" cy="72" rx="12" ry="11" fill="white"/>
-              <ellipse id="rew" cx="97" cy="72" rx="12" ry="11" fill="white"/>
-              <!-- Pupils -->
-              <circle id="lp" cx="53" cy="72" r="5.5" fill="#111"/>
-              <circle id="rp" cx="97" cy="72" r="5.5" fill="#111"/>
-              <!-- Highlights -->
-              <circle id="lh" cx="56" cy="69" r="2" fill="white"/>
-              <circle id="rh" cx="100" cy="69" r="2" fill="white"/>
-              <!-- Happy closed lids -->
-              <ellipse id="llid" cx="53" cy="77" rx="12" ry="10" fill="#111" opacity="0" style="transition:opacity 0.25s"/>
-              <ellipse id="rlid" cx="97" cy="77" rx="12" ry="10" fill="#111" opacity="0" style="transition:opacity 0.25s"/>
-              <!-- Nose & mouth -->
-              <ellipse cx="75" cy="90" rx="6" ry="4" fill="#111"/>
-              <path id="panda-mouth" d="M 62 99 Q 75 111 88 99" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"/>
-              <!-- Blush -->
-              <ellipse id="lb" cx="37" cy="87" rx="9" ry="6" fill="rgba(255,120,120,0.55)" opacity="0" style="transition:opacity 0.3s"/>
-              <ellipse id="rb" cx="113" cy="87" rx="9" ry="6" fill="rgba(255,120,120,0.55)" opacity="0" style="transition:opacity 0.3s"/>
-            </svg>
-          </div>
           <h2 style="margin-top:4px;">تسجيل الدخول</h2>
           <input type="email" id="email" placeholder="البريد الإلكتروني">
           <div style="position:relative;width:90%;margin:10px auto 0;">
@@ -214,7 +141,6 @@
             <span id="togglePwd" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:1.1em;user-select:none;">👁</span>
           </div>
           <button class="btn-login" id="loginBtn" style="margin-top:12px;">دخول</button>
-        </div>
         </div>
     </div>
 
@@ -241,8 +167,8 @@
         </div>
         <div class="credits-section" style="margin-top: 20px; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 10px; text-align: center;">
             <h1 style="margin:5px;">إعداد المهندسين:</h1>
-            <h2><p style="margin:0; font-weight:bold; color:#0e06ee;">م/الشيماء جمال— م/أحمد ياسر— م/أحمد باسم— م/أمنية علاء— م/أمين حجاج</p></h2>
-            <h2><p style="margin:0; font-weight:bold; color:#0e06ee;">م/سيف الدين حسين— م/فاطمة علي— م/كريم عمرو— م/نادر رامز— م/نجوى وجيه</p></h2>
+            <h2><p style="margin:0; font-weight:bold; color:#0e06ee;">م/كريم عمرو—م/نادر رامز—م/أمنية علاء—م/نجوى وجيه—م/فاطمة علي</p></h2>
+            <h2><p style="margin:0; font-weight:bold; color:#0e06ee;">م/الشيماء جمال—م/أحمد ياسر—م/أحمد باسم—م/أمين حجاج—م/سيف الدين حسين</p></h2>
             <h1 style="margin:5px;">تحت إشراف:</h1>
             <h1><p style="margin:0; font-weight:bold; color:#f70505;">أ.د/ياسر عزت</p></h1>
         </div>
@@ -287,7 +213,6 @@
             <div class="sidebar">
                 <div class="box" style="text-align:center;">
                     <h3 id="mainStatus" style="margin:0;">النظام متوقف حالياً</h3>
-                    <span id="timeSinceStatus"></span>
                 </div>
                 <div class="box" style="height: 250px; display: flex; flex-direction: column;">
                     <h4 style="color:red; text-align:center; margin:0 0 10px 0;">⚠️ سجل الأعطال</h4>
@@ -358,6 +283,7 @@
 
         // FIX 2: تعريف المتغيرات بعد الـ imports مش قبلها
         let lastFirebaseTime = 0;
+        let lastActiveFirebaseTime = 0;
 
         const firebaseConfig = {
             apiKey: "AIzaSyDNWgqZdWppxKD2oGynIgut9cRGXFVGTKw",
@@ -518,7 +444,6 @@
                 initChart();
                 window.loadHistory();
                 window.startTracking();
-                setInterval(updateLastSeen, 1000);
             }, 100);
         };
 
@@ -551,6 +476,7 @@
 
                 window._lastFlows = flows;
                 const anyOn = flows.some(v => v > 0.1);
+                if (anyOn) lastActiveFirebaseTime = firebaseNow;
 
                 // --- مطلب 1: تحديث المنحنى فقط لو التصرف اتغير ---
                 const flowChanged = !lastChartFlows ||
@@ -581,8 +507,9 @@
                     localStorage.setItem('isWatering','false');
                     if (statusEl) statusEl.innerText = "🔴 النظام متوقف حالياً";
 
-                    // --- مطلب 5: وقت التوقف من Firebase ---
-                    localStorage.setItem('lastStoppedTime', String(firebaseNow));
+                    // --- مطلب 5: وقت التوقف = آخر timestamp شفنا فيه تصرف حقيقي ---
+                    const stopTime = lastActiveFirebaseTime > 0 ? lastActiveFirebaseTime : firebaseNow;
+                    localStorage.setItem('lastStoppedTime', String(stopTime));
 
                     flows.forEach((_, i) => {
                         if (sessionData.rawStartTimes[i] && !sessionData.rawEndTimes[i]) {
@@ -640,7 +567,7 @@
                     // الوقت من Firebase بالتوقيت المحلي HH:MM:SS (مثل شيت Excel)
                     const timeStr = new Date(fbTimestamp).toLocaleTimeString('en-US', {
                         hour: '2-digit', minute: '2-digit', second: '2-digit',
-                        hour12: false
+                        hour12: true
                     });
 
                     if (anyOn && !isWatering_prev) { myChart.data.labels.push(timeStr+' ▶'); myChart.data.datasets.forEach(ds=>ds.data.push(0)); }
@@ -782,25 +709,6 @@
         window.fetchWeather = fetchWeather;
 
         // ===================== الدوال المساعدة =====================
-        function updateLastSeen() {
-            const lastStop = localStorage.getItem('lastStoppedTime');
-            const statusEl = document.getElementById('timeSinceStatus');
-            if (!statusEl) return;
-            if (!lastStop || isWatering) { statusEl.innerText = ""; return; }
-            const diffMs = Date.now() + serverOffset - parseInt(lastStop);
-            const diffSec = Math.floor(diffMs / 1000);
-            const diffMin = Math.floor(diffSec / 60);
-            const diffHrs = Math.floor(diffMin / 60);
-            let text = "اخر وقت تشغيل منذ ";
-            if (diffSec < 60) text += `${diffSec} ثانية`;
-            else if (diffMin < 60) text += `${diffMin} دقيقة`;
-            else if (diffHrs < 24) text += `${diffHrs} ساعة و ${diffMin % 60} دقيقة`;
-            else {
-                const d = new Date(parseInt(lastStop));
-                text = `اخر وقت تشغيل بتاريخ ${d.toLocaleDateString('ar-EG')} الساعة ${d.toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}`;
-            }
-            statusEl.innerText = text;
-        }
 
         // calculateFinalForSprinkler: اتحولت لتكامل عددي مباشر جوه startTracking
 
@@ -880,7 +788,7 @@
                 if (lastFirebaseTime > 0) {
                     const nowStr = new Date(lastFirebaseTime).toLocaleTimeString('en-US', {
                         hour: '2-digit', minute: '2-digit', second: '2-digit',
-                        hour12: false
+                        hour12: true
                     });
                     savedLabels.push(nowStr + " (توقف)");
                     datasetsData.forEach(data => data.push(0));
@@ -1074,90 +982,6 @@
         });
     </script>
 
-    <!-- PANDA JS -->
-    <script>
-    (function(){
-        const msgs={idle:'أهلاً بك! 👋 سجّل دخولك',email:'😄 كمّل، أنا مستنيك!',password:'🙈 أنا مش شايف حاجة!',peek:'😏 هيهيهي.. شفتها!'};
-        const bga={idle:'#2ecc71',email:'#3498db',password:'#e74c3c',peek:'#f39c12'};
-        const anms={idle:'pandaBob 2.4s ease-in-out infinite',email:'pandaLaugh 0.5s ease-in-out infinite',password:'pandaShake 1.6s ease-in-out infinite',peek:'pandaPeek 0.6s ease-in-out infinite'};
-        let state='idle',pwdVisible=false;
-        function g(id){return document.getElementById(id);}
-
-        function setState(s){
-            if(state===s)return; state=s;
-            const svg=g('panda-svg'),bub=g('panda-bubble'),txt=g('speech-text');
-            if(!svg)return;
-            svg.style.animation=anms[s];
-            bub.style.animation='none'; void bub.offsetHeight; bub.style.animation='bubblePop 0.35s ease forwards';
-            txt.innerText=msgs[s]; bub.style.background=bga[s];
-            const arr=g('bubble-arrow'); if(arr)arr.style.borderTopColor=bga[s];
-            const lew=g('lew'),rew=g('rew'),lp=g('lp'),rp=g('rp'),lh=g('lh'),rh=g('rh');
-            const llid=g('llid'),rlid=g('rlid'),lb=g('lb'),rb=g('rb'),mouth=g('panda-mouth');
-            const armL=g('arm-left'),armR=g('arm-right');
-            // reset
-            [lew,rew].forEach(e=>e&&e.setAttribute('opacity','1'));
-            [lp,rp,lh,rh].forEach(e=>e&&e.setAttribute('opacity','1'));
-            [llid,rlid].forEach(e=>e&&e.setAttribute('opacity','0'));
-            [lb,rb].forEach(e=>e&&e.setAttribute('opacity','0'));
-            if(mouth)mouth.setAttribute('d','M 62 99 Q 75 111 88 99');
-            // arms idle
-            if(armL) armL.style.transform='translate(44px,118px) rotate(30deg)';
-            if(armR) armR.style.transform='translate(106px,118px) rotate(-30deg)';
-
-            if(s==='email'){
-                [llid,rlid].forEach(e=>e&&e.setAttribute('opacity','0.85'));
-                [lb,rb].forEach(e=>e&&e.setAttribute('opacity','1'));
-                if(mouth)mouth.setAttribute('d','M 59 98 Q 75 115 91 98');
-            } else if(s==='password'){
-                // close eyes + RAISE ARMS to cover eyes
-                [lew,rew].forEach(e=>e&&e.setAttribute('opacity','0'));
-                [lp,rp,lh,rh].forEach(e=>e&&e.setAttribute('opacity','0'));
-                [llid,rlid].forEach(e=>e&&e.setAttribute('opacity','1'));
-                // rotate arms up: left shoulder(44,118)→left eye(53,72): angle ≈ 165°
-                //                 right shoulder(106,118)→right eye(97,72): angle ≈ -165°
-                if(armL) armL.style.transform='translate(44px,118px) rotate(165deg)';
-                if(armR) armR.style.transform='translate(106px,118px) rotate(-165deg)';
-                if(mouth)mouth.setAttribute('d','M 68 101 Q 75 99 82 101');
-            } else if(s==='peek'){
-                // الإيد الشمال فاضلة على العين الشمال، الإيد اليمين بتتشال شوية — الباندا بيتنسط بعينه اليمين
-                [lew,lp,lh].forEach(e=>e&&e.setAttribute('opacity','0'));
-                if(llid)llid.setAttribute('opacity','1');
-                // العين اليمين ظاهرة (بتتنسط)
-                if(rew)rew.setAttribute('opacity','1'); if(rp)rp.setAttribute('opacity','1'); if(rh)rh.setAttribute('opacity','1');
-                if(rlid)rlid.setAttribute('opacity','0');
-                [lb,rb].forEach(e=>e&&e.setAttribute('opacity','1'));
-                // الإيد الشمال فاضلة فوق على العين الشمال
-                if(armL) armL.style.transform='translate(44px,118px) rotate(165deg)';
-                // الإيد اليمين بتتشال شوية
-                if(armR) armR.style.transform='translate(106px,118px) rotate(-70deg)';
-                if(mouth)mouth.setAttribute('d','M 60 98 Q 75 112 90 98');
-            }
-        }
-
-        // eye tracking — clamp within eye-white bounds
-        document.addEventListener('mousemove',function(e){
-            if(state==='password')return;
-            const svg=g('panda-svg'); if(!svg)return;
-            const r=svg.getBoundingClientRect();
-            let ox=Math.max(-6,Math.min(6,(e.clientX-(r.left+r.width/2))/r.width*7));
-            let oy=Math.max(-5,Math.min(5,(e.clientY-(r.top+r.height/2))/r.height*6));
-            const lp=g('lp'),rp=g('rp'),lh=g('lh'),rh=g('rh');
-            if(lp){lp.setAttribute('cx',53+ox);lp.setAttribute('cy',72+oy);}
-            if(rp){rp.setAttribute('cx',97+ox);rp.setAttribute('cy',72+oy);}
-            if(lh){lh.setAttribute('cx',56+ox);lh.setAttribute('cy',69+oy);}
-            if(rh){rh.setAttribute('cx',100+ox);rh.setAttribute('cy',69+oy);}
-        });
-
-        window.addEventListener('load',function(){
-            setTimeout(function(){
-                const em=g('email'),pw=g('password'),tg=g('togglePwd');
-                if(em){em.addEventListener('focus',()=>setState('email'));em.addEventListener('input',()=>setState('email'));em.addEventListener('blur',()=>{if(document.activeElement!==pw)setState('idle');});}
-                if(pw){pw.addEventListener('focus',()=>setState(pwdVisible?'peek':'password'));pw.addEventListener('input',()=>setState(pwdVisible?'peek':'password'));pw.addEventListener('blur',()=>setState('idle'));}
-                if(tg){tg.addEventListener('click',function(){pwdVisible=!pwdVisible;pw.type=pwdVisible?'text':'password';tg.textContent=pwdVisible?'🙈':'👁';if(document.activeElement===pw||pw.value.length>0)setState(pwdVisible?'peek':'password');});}
-            },600);
-        });
-    })();
-    </script>
 
     <!-- RAIN JS — strictly inside sprinkler boxes -->
     <script>
