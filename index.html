@@ -135,9 +135,19 @@
         }
         #login-page, #welcome-page, #dashboard-page { display: none; }
     
+        
         /* ═══════════════════════════════════════════════════════════
            RESPONSIVE — Tablet & Mobile
            ═══════════════════════════════════════════════════════════ */
+
+        /* ── Welcome page: always scrollable, no overlap ── */
+        #welcome-page {
+            position: relative;
+            overflow-y: auto;
+        }
+        .credits-section {
+            /* default: absolute at bottom (desktop) */
+        }
 
         /* ── Tablet (≤ 900px) ── */
         @media (max-width: 900px) {
@@ -151,36 +161,72 @@
         /* ── Mobile (≤ 600px) ── */
         @media (max-width: 600px) {
 
-            /* --- الصفحات العامة --- */
-            body { font-size: 14px; }
+            /* --- صفحة الترحيب: اجعلها scrollable ولا overlap --- */
+            #welcome-page {
+                flex-direction: column !important;
+                justify-content: flex-start !important;
+                align-items: center !important;
+                min-height: 100vh !important;
+                height: auto !important;
+                overflow-y: auto !important;
+                padding: 60px 15px 20px !important;
+                gap: 0 !important;
+            }
+            #welcome-page > div:first-child {
+                width: 88% !important;
+                max-width: 360px !important;
+                padding: 24px 18px !important;
+                border-radius: 16px !important;
+                margin-bottom: 15px !important;
+            }
+            #welcome-page h1 { font-size: 1.3em; margin: 0 0 14px 0; }
+            #welcome-page button {
+                font-size: 1.1em !important;
+                padding: 13px 40px !important;
+                border-radius: 50px !important;
+                width: 80% !important;
+            }
+            /* Credits: make it in-flow (not absolute) on mobile */
+            .credits-section {
+                position: relative !important;
+                bottom: auto !important;
+                width: 88% !important;
+                max-width: 360px !important;
+                border-radius: 14px !important;
+                padding: 12px 14px !important;
+                border-top: 3px solid #2ecc71;
+                background: rgba(255,255,255,0.92) !important;
+                text-align: center;
+            }
+            .credits-section h1 { font-size: 0.95em; margin: 4px 0; }
+            .credits-section h2 p,
+            .credits-section p  { font-size: 0.75em; margin: 3px 0; line-height: 1.5; }
 
             /* --- صفحة الدخول --- */
-            #login-page { padding: 20px !important; }
+            #login-page {
+                padding: 20px !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
             .login-card {
-                width: 90% !important;
-                padding: 24px 18px !important;
-                border-radius: 14px;
+                width: 88% !important;
+                max-width: 360px !important;
+                padding: 28px 18px !important;
+                border-radius: 14px !important;
             }
             .login-card h2  { font-size: 1.3em; }
-            .login-card input { font-size: 1em; padding: 11px 10px; }
+            .login-card input { font-size: 1em; padding: 12px 10px; width: 88% !important; }
             .btn-login { font-size: 1em; padding: 13px; }
-
-            /* --- صفحة الترحيب --- */
-            #welcome-page > div { width: 88% !important; padding: 28px 18px !important; }
-            #welcome-page h1 { font-size: 1.3em; }
-            #welcome-page button { font-size: 1.1em; padding: 13px 30px !important; }
-            .credits-section { padding: 8px 10px; }
-            .credits-section h1 { font-size: 1em; }
-            .credits-section h2 p { font-size: 0.78em; }
 
             /* --- شريط التنقل --- */
             #menu-container { top: 4px; left: 4px; }
             #back-arrow { top: 52px; left: 4px; font-size: 0.82em; padding: 4px 8px; }
 
             /* --- داشبورد عام --- */
+            body { font-size: 14px; }
             #dashboard-page { padding: 8px 8px 30px; }
 
-            /* --- صناديق الرشاشات (الأعلى) --- */
+            /* --- صناديق الرشاشات (الأعلى): 2×2 --- */
             #dashboard-page > div:first-child {
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 8px !important;
@@ -200,10 +246,7 @@
             .chart-box > .box:first-child { padding: 10px 6px; }
 
             /* --- صندوق الخريطة --- */
-            .chart-box .box[style*="height: 350px"] {
-                height: auto !important;
-                padding: 8px !important;
-            }
+            .chart-box .box { height: auto !important; }
             #map-canvas { height: 220px !important; }
 
             /* --- الصناديق العامة --- */
@@ -227,10 +270,6 @@
                 border-radius: 8px !important;
                 gap: 5px !important;
             }
-            [style*="display: flex; gap: 10px; width: 100%; margin-top: 30px"] {
-                gap: 6px !important;
-                margin-top: 14px !important;
-            }
 
             /* --- سجل الأعطال --- */
             .box[style*="height: 250px"] { height: auto !important; }
@@ -240,14 +279,7 @@
             /* --- صندوق الأرصاد --- */
             #weather-box h4 { font-size: 0.95em; }
             #weather-location { font-size: 0.78em !important; }
-            #weather-box > div[style*="grid-template-columns:1fr 1fr"] {
-                gap: 6px !important;
-            }
-            #weather-box > div > div { padding: 8px 6px !important; border-radius: 8px; }
             #w-temp, #w-humidity, #w-wind, #w-rain { font-size: 1em !important; }
-
-            /* --- العنوان GPS --- */
-            #map-canvas + h4, h4[style*="text-align: center"] { font-size: 0.9em; }
 
             /* --- warning bar --- */
             #nightModeWarning span { font-size: 1em !important; }
@@ -260,8 +292,11 @@
             #map-canvas { height: 180px !important; }
             table { font-size: 0.65em; }
             .btn-modern { font-size: 0.75em !important; }
-            .login-card { width: 95% !important; }
+            .login-card { width: 94% !important; }
+            #welcome-page > div:first-child { width: 94% !important; }
+            .credits-section { width: 94% !important; }
         }
+
     </style>
 
     <div id="login-page" style="height: 100vh; align-items: center; justify-content: center; background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=25d718&_nc_ohc=l6l6l-carw0Q7kNvwEY-uTL&_nc_oc=Ado13DQaoI_TgcQE14jq91ZdW12rXaGbJpGD69ia6vUvQ1o7XCSZSzNGZLjn1JbUqq0BOUX_amO857O03c8AVAnY&_nc_zt=23&_nc_ht=scontent.fcai11-1.fna&_nc_gid=oPpDmxIbNGGwC5YKi-rcSg&_nc_ss=7a389&oh=00_Af2yh1UrKOozUhJMRiJVMwSceTU0a1Xf-v66ifJqa_Ckvw&oe=69D89403') no-repeat center center fixed; background-size: cover;">
@@ -336,7 +371,7 @@
                 </div>
                 <div class="box" style="height: 350px; padding: 10px; position: relative;">
                     <h4 style="margin: 0 0 5px 0; text-align: center;">📍 (GPS Live)</h4>
-                    <div id="map-canvas" style="width: 100%; height: 50px; border-radius: 10px; position: relative; z-index: 0;"></div>
+                    <div id="map-canvas" style="width: 100%; height: 295px; border-radius: 10px; position: relative; z-index: 0;"></div>
                 </div>
             </div>
 
