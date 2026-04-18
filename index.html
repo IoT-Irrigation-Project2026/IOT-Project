@@ -14,13 +14,13 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        input[type="password"]::-ms-reveal,
+        /* ════════════════════════════════════
+           1. متغيرات الألوان والوضع الافتراضي
+           ════════════════════════════════════ */
+input[type="password"]::-ms-reveal,
         input[type="password"]::-ms-clear { display: none !important; }
         input[type="password"]::-webkit-credentials-auto-fill-button,
-        input[type="password"]::-webkit-textfield-decoration-container { display: none !important; }
-        body.dark-mode #google-map-iframe { filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%); }
-        body.dark-mode #map-canvas { filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%); }
-        body.dark-mode #weather-box #weather-location { color: #aaa !important; }
+        input[type="password"]::-webkit-textfield-decoration-container { display: none !important; }        body.dark-mode #weather-box #weather-location { color: #aaa !important; }
         body.dark-mode #weather-box #weather-update-time { color: #666 !important; }
         body.dark-mode #weather-box [style*="background:#fde8e8"] { background: rgba(231,76,60,0.15) !important; }
         body.dark-mode #weather-box [style*="background:#e3f2fd"] { background: rgba(52,152,219,0.15) !important; }
@@ -111,17 +111,11 @@
         #nightModeWarning { clear: both; width: 100%; }
         body.dark-mode #nightModeWarning div { border-color: #ff007f !important; background: rgba(255,0,127,0.1) !important; }
         body.dark-mode #nightModeWarning span { color: #ff007f !important; }
-    </style>
-</head>
-<body>
 
-    <div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fafafb; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999;">
-        <div style="width: 50px; height: 50px; border: 5px solid #fff; border-top: 5px solid #2ecc71; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-        <h2 style="color: white; margin-top: 20px; font-family: sans-serif;"></h2>
-    </div>
-
-    <style>
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* ════════════════════════════════════
+           2. الرسوم المتحركة والصفحات
+           ════════════════════════════════════ */
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         /* ─── RAIN ────────────────────────────────────── */
         .rain-drop {
             position:absolute; top:0; width:2px; border-radius:2px;
@@ -296,7 +290,6 @@
             #welcome-page > div:first-child { width: 94% !important; }
             .credits-section { width: 94% !important; }
         }
-
     </style>
 
     <div id="login-page" style="height: 100vh; align-items: center; justify-content: center; background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=25d718&_nc_ohc=l6l6l-carw0Q7kNvwEY-uTL&_nc_oc=Ado13DQaoI_TgcQE14jq91ZdW12rXaGbJpGD69ia6vUvQ1o7XCSZSzNGZLjn1JbUqq0BOUX_amO857O03c8AVAnY&_nc_zt=23&_nc_ht=scontent.fcai11-1.fna&_nc_gid=oPpDmxIbNGGwC5YKi-rcSg&_nc_ss=7a389&oh=00_Af2yh1UrKOozUhJMRiJVMwSceTU0a1Xf-v66ifJqa_Ckvw&oe=69D89403') no-repeat center center fixed; background-size: cover;">
@@ -391,22 +384,22 @@
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <div style="background:#fde8e8; border-radius:12px; padding:10px; text-align:center; border-bottom:3px solid #e74c3c;">
                             <div style="font-size:1.4em;">🌡️</div>
-                            <div style="font-size:0.72em; color:#555; margin:3px 0;">درجة الحرارة</div>
+                            <div style="font-size:0.72em; color:#e74c3c; margin:3px 0;">درجة الحرارة</div>
                             <div id="w-temp" style="font-size:1.2em; font-weight:bold; color:#e74c3c;">--</div>
                         </div>
                         <div style="background:#e3f2fd; border-radius:12px; padding:10px; text-align:center; border-bottom:3px solid #3498db;">
                             <div style="font-size:1.4em;">💧</div>
-                            <div style="font-size:0.72em; color:#555; margin:3px 0;">الرطوبة الجوية</div>
+                            <div style="font-size:0.72em; color:#3498db; margin:3px 0;">الرطوبة الجوية</div>
                             <div id="w-humidity" style="font-size:1.2em; font-weight:bold; color:#3498db;">--</div>
                         </div>
                         <div style="background:#e8f5e9; border-radius:12px; padding:10px; text-align:center; border-bottom:3px solid #2ecc71;">
                             <div style="font-size:1.4em;">💨</div>
-                            <div style="font-size:0.72em; color:#555; margin:3px 0;">سرعة الرياح</div>
+                            <div style="font-size:0.72em; color:#2ecc71; margin:3px 0;">سرعة الرياح</div>
                             <div id="w-wind" style="font-size:1.2em; font-weight:bold; color:#2ecc71;">--</div>
                         </div>
                         <div style="background:#f3e5f5; border-radius:12px; padding:10px; text-align:center; border-bottom:3px solid #9b59b6;">
                             <div style="font-size:1.4em;">🌧️</div>
-                            <div style="font-size:0.72em; color:#555; margin:3px 0;">بخر نتح / أمطار</div>
+                            <div style="font-size:0.72em; color:#9b59b6; margin:3px 0;">بخر نتح / أمطار</div>
                             <div id="w-rain" style="font-size:1.2em; font-weight:bold; color:#9b59b6;">--</div>
                         </div>
                     </div>
@@ -443,7 +436,7 @@
     <!-- الـ import لازم يكون أول حاجة في الـ module script بدون أي كود قبله -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, remove, push, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, remove, push, get, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         let lastFirebaseTime = 0;
@@ -492,9 +485,99 @@
         // --- متغيرات لمتابعة آخر قيم للمنحنى ---
         let lastChartFlows = null;
 
+        // --- منع التسجيل المتكرر ---
+        let isSavingSession = false;
+
         window._sessionData = sessionData;
         window._integrationLastTs = integrationLastTs;
         window._integrationLastFlow = integrationLastFlow;
+
+        // ===================== استعادة الجلسة الجارية من Firebase =====================
+        async function restoreActiveSession() {
+            try {
+                const snap = await get(ref(db, 'current_session'));
+                if (!snap.exists()) return;
+                const saved = snap.val();
+                if (!saved.active) return;
+
+                // استعادة بيانات الجلسة المحفوظة
+                sessionData.startTimes = saved.startTimes || [null,null,null,null];
+                sessionData.endTimes = saved.endTimes || [null,null,null,null];
+                sessionData.rawStartTimes = saved.rawStartTimes || [null,null,null,null];
+                sessionData.rawEndTimes = saved.rawEndTimes || [null,null,null,null];
+                sessionData.accumulatedAmounts = saved.accumulatedAmounts || [0,0,0,0];
+                integrationLastTs = saved.integrationLastTs || [null,null,null,null];
+                integrationLastFlow = saved.integrationLastFlow || [0,0,0,0];
+                console.log('تم استعادة الجلسة الجارية من Firebase');
+
+                // تحقق من الحالة الراهنة للرشاشات
+                const spSnap = await get(ref(db, 'Sprinklers'));
+                const spData = spSnap.val() || {};
+                const spKeys = ['Sprinkler1','Sprinkler2','Sprinkler3','Sprinkler4'];
+                const currentFlows = spKeys.map(k => parseFloat(spData[k]?.Flow || 0));
+                const stillWatering = currentFlows.some(v => v > 0.1);
+
+                if (stillWatering) {
+                    // الري لا يزال جارياً
+                    isWatering = true;
+                    const statusEl = document.getElementById('mainStatus');
+                    if (statusEl) statusEl.innerText = '🟢 النظام يعمل الآن';
+                } else {
+                    // الري انتهى بينما كنا غير متصلين - سجّل الجلسة الآن
+                    console.log('الري انتهى أثناء عدم الاتصال - جاري تسجيل الجلسة...');
+                    isWatering = false;
+                    const statusEl = document.getElementById('mainStatus');
+                    if (statusEl) statusEl.innerText = '🔴 النظام متوقف حالياً';
+
+                    // أكمل بيانات نهاية الجلسة للرشاشات التي لم تُسجَّل نهايتها
+                    const finishTime = saved.lastUpdate || Date.now();
+                    spKeys.forEach((_, i) => {
+                        if (sessionData.rawStartTimes[i] && !sessionData.rawEndTimes[i]) {
+                            // استخدم آخر وقت محفوظ كوقت انتهاء
+                            if (integrationLastTs[i] !== null) {
+                                const deltaHrs = (finishTime - integrationLastTs[i]) / 3600000;
+                                sessionData.accumulatedAmounts[i] += integrationLastFlow[i] * deltaHrs;
+                            }
+                            sessionData.rawEndTimes[i] = finishTime;
+                            sessionData.endTimes[i] = new Date(finishTime).toLocaleTimeString('ar-EG');
+                            integrationLastTs[i] = null;
+                            integrationLastFlow[i] = 0;
+                        }
+                    });
+                    await saveSession(finishTime);
+                }
+            } catch(e) {
+                console.error('خطأ في استعادة الجلسة:', e);
+            }
+        }
+
+        // ===================== حفظ الجلسة الجارية في Firebase (أثناء الري) =====================
+        async function saveActiveSession() {
+            try {
+                await set(ref(db, 'current_session'), {
+                    active: true,
+                    startTimes: sessionData.startTimes,
+                    endTimes: sessionData.endTimes,
+                    rawStartTimes: sessionData.rawStartTimes,
+                    rawEndTimes: sessionData.rawEndTimes,
+                    accumulatedAmounts: sessionData.accumulatedAmounts,
+                    integrationLastTs: integrationLastTs,
+                    integrationLastFlow: integrationLastFlow,
+                    lastUpdate: Date.now()
+                });
+            } catch(e) {
+                console.error('خطأ في حفظ الجلسة الجارية:', e);
+            }
+        }
+
+        // ===================== مسح الجلسة الجارية من Firebase =====================
+        async function clearActiveSession() {
+            try {
+                await set(ref(db, 'current_session'), { active: false });
+            } catch(e) {
+                console.error('خطأ في مسح الجلسة الجارية:', e);
+            }
+        }
 
         // ===================== وضع الليل =====================
         const themeToggle = document.getElementById('themeToggle');
@@ -606,9 +689,10 @@
             localStorage.setItem('activePage', 'dashboard');
             document.getElementById('welcome-page').style.display = 'none';
             document.getElementById('dashboard-page').style.display = 'block';
-            setTimeout(() => {
+            setTimeout(async () => {
                 initChart();
                 window.loadHistory();
+                await restoreActiveSession();
                 window.startTracking();
             }, 100);
         };
@@ -661,6 +745,8 @@
                             integrationLastFlow[i] = v;
                         }
                     });
+                    // حفظ الجلسة في Firebase فور بداية الري
+                    saveActiveSession();
 
                 } else if (!anyOn && isWatering) {
                     isWatering = false;
@@ -713,6 +799,8 @@
                             integrationLastFlow[i] = v;
                         }
                     });
+                    // تحديث الجلسة الجارية في Firebase بشكل دوري أثناء الري
+                    saveActiveSession();
                 }
 
                 // ===================== تحديث المنحنى =====================
@@ -913,6 +1001,43 @@
 
         // ===================== حفظ الجلسة في Firebase =====================
         async function saveSession(finishTime) {
+            // منع التسجيل المتكرر: استخدام Transaction على قفل Firebase
+            if (isSavingSession) {
+                console.log('saveSession: مهملة (جاري الحفظ بالفعل)');
+                return;
+            }
+
+            // محاولة الحصول على القفل باستخدام Transaction لمنع التسجيل من أجهزة متعددة
+            let lockAcquired = false;
+            const lockRef = ref(db, 'save_lock');
+            try {
+                const result = await runTransaction(lockRef, (current) => {
+                    // إذا القفل موجود ووقته أقل من 30 ثانية، ارفض
+                    if (current && current.ts && (Date.now() - current.ts) < 30000) {
+                        return undefined; // abort transaction
+                    }
+                    // اكتسب القفل
+                    return { ts: Date.now() };
+                });
+                lockAcquired = result.committed;
+            } catch(e) {
+                console.error('خطأ في اكتساب القفل:', e);
+                lockAcquired = false;
+            }
+
+            if (!lockAcquired) {
+                console.log('saveSession: لم يُكتسب القفل - جهاز آخر يحفظ الآن');
+                // تصفير بيانات الجلسة المحلية فقط بدون حفظ في قاعدة البيانات
+                for(let i=0;i<4;i++){
+                    sessionData.rawStartTimes[i]=null; sessionData.rawEndTimes[i]=null;
+                    sessionData.startTimes[i]=null; sessionData.endTimes[i]=null;
+                    sessionData.accumulatedAmounts[i]=0;
+                    integrationLastTs[i]=null; integrationLastFlow[i]=0;
+                }
+                return;
+            }
+
+            isSavingSession = true;
             const finalAmounts = sessionData.accumulatedAmounts.map(a => parseFloat(a).toFixed(4));
             const durations = sessionData.rawStartTimes.map((start, i) => {
                 if (start && sessionData.rawEndTimes[i]) {
@@ -954,6 +1079,15 @@
             } catch(e) {
                 console.error("خطأ في حفظ الجلسة:", e);
             }
+            
+            // مسح الجلسة الجارية من Firebase بعد الحفظ الناجح
+            await clearActiveSession();
+            
+            // تحرير القفل بعد ثانية
+            setTimeout(() => {
+                set(lockRef, { ts: 0 }).catch(() => {});
+                isSavingSession = false;
+            }, 1000);
 
             // إعادة تصفير بيانات الجلسة
             for(let i=0;i<4;i++){
@@ -1227,21 +1361,23 @@
 
     </script>
 
-    <script>/* water amounts display removed by R5 */</script>
+        
 
-    <script>
-        document.addEventListener('keydown', function(event) {
+
+    <!-- RAIN JS — strictly inside sprinkler boxes -->
+    
+
+<script>
+    /* ════ مستمع Enter للوجين ════ */
+    document.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 const btn = document.querySelector('#login-page button');
                 if (btn) btn.click();
             }
         });
-    </script>
 
-
-    <!-- RAIN JS — strictly inside sprinkler boxes -->
-    <script>
+    /* ════ رسوم مطر الرشاشات ════ */
     (function(){
         const dropCounts=[0,0,0,0];
         function getCfg(flow){
