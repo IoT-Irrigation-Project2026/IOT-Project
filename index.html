@@ -5,22 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>نظام IOT</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        /* ════════════════════════════════════
-           1. متغيرات الألوان والوضع الافتراضي
-           ════════════════════════════════════ */
-input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-reveal,
         input[type="password"]::-ms-clear { display: none !important; }
         input[type="password"]::-webkit-credentials-auto-fill-button,
-        input[type="password"]::-webkit-textfield-decoration-container { display: none !important; }        body.dark-mode #weather-box #weather-location { color: #aaa !important; }
+        input[type="password"]::-webkit-textfield-decoration-container { display: none !important; }
+        body.dark-mode #weather-box #weather-location { color: #aaa !important; }
         body.dark-mode #weather-box #weather-update-time { color: #666 !important; }
         body.dark-mode #weather-box [style*="background:#fde8e8"] { background: rgba(231,76,60,0.15) !important; }
         body.dark-mode #weather-box [style*="background:#e3f2fd"] { background: rgba(52,152,219,0.15) !important; }
@@ -31,14 +29,10 @@ input[type="password"]::-ms-reveal,
         body.dark-mode .box { background: rgba(17, 25, 40, 0.9) !important; border: 1px solid rgba(0, 242, 255, 0.2) !important; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8) !important; backdrop-filter: blur(12px) !important; }
         body.dark-mode h1, body.dark-mode h2 { color: #0e0e0e !important; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         body.dark-mode h3, body.dark-mode h4 { color: #ef3c3c !important; }
-        body.dark-mode span, body.dark-mode p, body.dark-mode label { color: #f7d307 !important; }
+        body.dark-mode span, body.dark-mode p, body.dark-mode label { color: #ffffff !important; }
         body.dark-mode .highlight, body.dark-mode strong { color: #00ff44 !important; }
         body.dark-mode #nightModeWarning { border: 1px solid #ff007f !important; background: rgba(255, 0, 127, 0.05) !important; box-shadow: 0 0 10px rgba(255, 0, 127, 0.2); }
         body.dark-mode #nightModeWarning span { color: #ff007f !important; }
-        body.dark-mode #v1 { color: var(--f1) !important; font-weight: bold; }
-        body.dark-mode #v2 { color: var(--f2) !important; font-weight: bold; }
-        body.dark-mode #v3 { color: var(--f3) !important; font-weight: bold; }
-        body.dark-mode #v4 { color: var(--f4) !important; font-weight: bold; }
         body.dark-mode #historyTable, body.dark-mode #historyTable td, body.dark-mode #historyTable th { border-color: rgba(0, 242, 255, 0.1) !important; color: #ffffff !important; }
         body.dark-mode #errorLog { background: rgba(255, 0, 0, 0.05) !important; border: 1px solid rgba(255, 0, 0, 0.2); }
         body.dark-mode #menu-dropdown { background: #1a1f2b !important; border: 1px solid #00f2ff; }
@@ -49,21 +43,17 @@ input[type="password"]::-ms-reveal,
         .main-content { overflow: visible !important; }
         #historyTable thead th { position: sticky; top: 0; background-color: var(--card-bg); z-index: 0; border-bottom: 3px solid #020202; border-top: 3px solid #020202; color: #f6f6f7; }
         .scroll-area { position: relative; overflow-y: auto; }
-        :root { --bg-main: #87CEEB; --box-bg: rgba(255,255,255,0.962); --text-color: #000; --chart-grid: #ddd; --f1: #3498db; --f2: #e74c3c; --f3: #f1c40f; --f4: #2ecc71; }
-        body.dark-mode .box[style*="border-bottom"] { background: rgba(17, 25, 40, 0.9) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; transition: all 0.3s ease; }
-        body.dark-mode .box[style*="var(--f1)"] { border-bottom: 4px solid #00f2ff !important; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3) !important; }
-        body.dark-mode .box[style*="var(--f2)"] { border-bottom: 4px solid #ff007f !important; box-shadow: 0 4px 15px rgba(255, 0, 127, 0.3) !important; }
-        body.dark-mode .box[style*="var(--f3)"] { border-bottom: 4px solid #ccff00 !important; box-shadow: 0 4px 15px rgba(204, 255, 0, 0.3) !important; }
-        body.dark-mode .box[style*="var(--f4)"] { border-bottom: 4px solid #00ff41 !important; box-shadow: 0 4px 15px rgba(0, 255, 65, 0.3) !important; }
-        .box[style*="var(--f1)"] { color: var(--f1); }
-        .box[style*="var(--f2)"] { color: var(--f2); }
-        .box[style*="var(--f3)"] { color: var(--f3); }
-        .box[style*="var(--f4)"] { color: var(--f4); }
+        :root { --bg-main: #87CEEB; --box-bg: rgba(255,255,255,0.962); --text-color: #000; --chart-grid: #ddd; }
+        .sprinkler-box { background: rgb(255,255,255) !important; border-radius: 12px; padding: 10px 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; position: relative; overflow: hidden; min-height: 56px; z-index: 0; font-weight: bold; transition: transform 0.3s ease; }
+        .sprinkler-box:hover { transform: translateY(-3px); }
+        body.dark-mode .sprinkler-box { backdrop-filter: blur(12px) !important; }
+        body.dark-mode .leaflet-control-zoom a { background-color: #1a1f2b !important; color: #ffffff !important; border-color: rgba(0,242,255,0.3) !important; font-weight: bold !important; }
+        body.dark-mode .leaflet-control-zoom a:hover { background-color: #0d1117 !important; color: #00f2ff !important; }
         table { table-layout: fixed; width: 100%; border-collapse: collapse; }
         thead { display: table-header-group; }
         tbody { display: table-row-group; }
-        #login-page { background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=25d718&_nc_ohc=l6l6l-carw0Q7kNvwEY-uTL&_nc_oc=Ado13DQaoI_TgcQE14jq91ZdW12rXaGbJpGD69ia6vUvQ1o7XCSZSzNGZLjn1JbUqq0BOUX_amO857O03c8AVAnY&_nc_zt=23&_nc_ht=scontent.fcai11-1.fna&_nc_gid=oPpDmxIbNGGwC5YKi-rcSg&_nc_ss=7a389&oh=00_Af2yh1UrKOozUhJMRiJVMwSceTU0a1Xf-v66ifJqa_Ckvw&oe=69D89403') no-repeat center center fixed; background-size: cover; }
-        #welcome-page { background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=25d718&_nc_ohc=l6l6l-carw0Q7kNvwEY-uTL&_nc_oc=Ado13DQaoI_TgcQE14jq91ZdW12rXaGbJpGD69ia6vUvQ1o7XCSZSzNGZLjn1JbUqq0BOUX_amO857O03c8AVAnY&_nc_zt=23&_nc_ht=scontent.fcai11-1.fna&_nc_gid=oPpDmxIbNGGwC5YKi-rcSg&_nc_ss=7a389&oh=00_Af1mZNEQVP4ij_lViSOt-ySqoDJeJY3Pa7_mqyUuLRb6DA&oe=69D46743') no-repeat center center fixed; background-size: cover; }
+        #login-page { background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg') no-repeat center center fixed; background-size: cover; }
+        #welcome-page { background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://www.vidaenlatierra.com/wp-content/uploads/2020/11/monocultivos-circulares.jpg') center/cover; }
         #dashboard-page { background-color: #f4f4f4; }
         body.dark-mode #login-page, body.dark-mode #welcome-page { background: linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)), url('Ph3.png') no-repeat center center !important; background-size: cover !important; background-attachment: scroll !important; }
         body.dark-mode #dashboard-page { background-color: #1a1a1a !important; }
@@ -86,22 +76,14 @@ input[type="password"]::-ms-reveal,
         .scroll-area { height: 400px; overflow-y: auto; border: 1px solid #0124e9; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85em; text-align: center; }
         th, td { border: 1px solid #0d0d0d; padding: 8px; vertical-align: middle; }
-        .grid-cell { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: transparent !important; border: none !important; }
-        .sub-val { background: transparent !important; padding: 4px; font-size: 0.75em; font-weight: bold; line-height: 1.4; border: none !important; }
-        .sub-val[style*="--f1"] { color: #3498db !important; }
-        .sub-val[style*="--f2"] { color: #e74c3c !important; }
-        .sub-val[style*="--f3"] { color: #f1c40f !important; }
-        .sub-val[style*="--f4"] { color: #2ecc71 !important; }
-        body.dark-mode .sub-val[style*="--f1"] { color: #00f2ff !important; text-shadow: 0 0 5px #00f2ff; }
-        body.dark-mode .sub-val[style*="--f2"] { color: #ff007f !important; text-shadow: 0 0 5px #ff007f; }
-        body.dark-mode .sub-val[style*="--f3"] { color: #ccff00 !important; text-shadow: 0 0 5px #ccff00; }
-        body.dark-mode .sub-val[style*="--f4"] { color: #00ff41 !important; text-shadow: 0 0 5px #00ff41; }
+        .grid-cell { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: transparent !important; border: none !important; width: 100%; }
+        .sub-val { background: transparent !important; padding: 2px 1px; font-size: 0.68em; font-weight: bold; line-height: 1.3; border: none !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+        body.dark-mode .grid-cell { background: rgba(0, 242, 255, 0.05) !important; }
         body.dark-mode .credits-section h2 p { color: #0004ff !important; text-shadow: 0 0 5px rgba(0,242,255,0.5); }
         body.dark-mode .credits-section h1 p { color: #ff4d4d !important; text-shadow: 0 0 5px rgba(255,77,77,0.5); }
-        body.dark-mode .grid-cell { background: rgba(0, 242, 255, 0.05) !important; }
         .earth-link { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 70px; height: 70px; background: #3498db; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 35px; cursor: pointer; box-shadow: 0 0 20px rgba(0,0,0,0.3); z-index: 10; border: 3px solid white; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(52,152,219,0.7); } 70% { box-shadow: 0 0 0 15px rgba(52,152,219,0); } 100% { box-shadow: 0 0 0 0 rgba(52,152,219,0); } }
-        .error-msg { color: #e74c3c; font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #f8d7da; padding: 3px; font-size: 1.5em; }
+        .error-msg { color: #e74c3c; font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #f8d7da; padding: 3px; font-size: 1.1em; }
         .preview-label { display: block; font-size: 0.8em; color: #666; margin-top: 4px; }
         .btn-modern { flex: 1; padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); color: white; font-size: 0.95em; }
         .btn-excel { background: linear-gradient(135deg, #f39c12, #e67e22); }
@@ -111,12 +93,13 @@ input[type="password"]::-ms-reveal,
         #nightModeWarning { clear: both; width: 100%; }
         body.dark-mode #nightModeWarning div { border-color: #ff007f !important; background: rgba(255,0,127,0.1) !important; }
         body.dark-mode #nightModeWarning span { color: #ff007f !important; }
+        body.dark-mode #gpsCoordsBox { background: linear-gradient(135deg, rgba(0,242,255,0.08), rgba(0,0,0,0.3)) !important; border: 1px solid rgba(0, 242, 255, 0.3) !important; box-shadow: 0 2px 12px rgba(0, 242, 255, 0.15) !important; }
+        body.dark-mode #gpsCoordsBox span { color: #00f2ff !important; }
+        body.dark-mode #gpsCoordsBox #gpsLatValue { color: #ff6b6b !important; }
+        body.dark-mode #gpsCoordsBox #gpsLngValue { color: #00ff44 !important; }
+        body.dark-mode #gpsCoordsBox #gpsTime { color: #dd0101 !important; }
 
-        /* ════════════════════════════════════
-           2. الرسوم المتحركة والصفحات
-           ════════════════════════════════════ */
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        /* ─── RAIN ────────────────────────────────────── */
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .rain-drop {
             position:absolute; top:0; width:2px; border-radius:2px;
             opacity:0.82; pointer-events:none;
@@ -128,19 +111,10 @@ input[type="password"]::-ms-reveal,
             100%{transform:translateY(var(--box-h,70px));opacity:0;}
         }
         #login-page, #welcome-page, #dashboard-page { display: none; }
-    
-        
-        /* ═══════════════════════════════════════════════════════════
-           RESPONSIVE — Tablet & Mobile
-           ═══════════════════════════════════════════════════════════ */
 
-        /* ── Welcome page: always scrollable, no overlap ── */
         #welcome-page {
             position: relative;
             overflow-y: auto;
-        }
-        .credits-section {
-            /* default: absolute at bottom (desktop) */
         }
 
         /* ── Tablet (≤ 900px) ── */
@@ -154,8 +128,6 @@ input[type="password"]::-ms-reveal,
 
         /* ── Mobile (≤ 600px) ── */
         @media (max-width: 600px) {
-
-            /* --- صفحة الترحيب: اجعلها scrollable ولا overlap --- */
             #welcome-page {
                 flex-direction: column !important;
                 justify-content: flex-start !important;
@@ -180,7 +152,6 @@ input[type="password"]::-ms-reveal,
                 border-radius: 50px !important;
                 width: 80% !important;
             }
-            /* Credits: make it in-flow (not absolute) on mobile */
             .credits-section {
                 position: relative !important;
                 bottom: auto !important;
@@ -196,7 +167,6 @@ input[type="password"]::-ms-reveal,
             .credits-section h2 p,
             .credits-section p  { font-size: 0.75em; margin: 3px 0; line-height: 1.5; }
 
-            /* --- صفحة الدخول --- */
             #login-page {
                 padding: 20px !important;
                 align-items: center !important;
@@ -212,52 +182,43 @@ input[type="password"]::-ms-reveal,
             .login-card input { font-size: 1em; padding: 12px 10px; width: 88% !important; }
             .btn-login { font-size: 1em; padding: 13px; }
 
-            /* --- شريط التنقل --- */
             #menu-container { top: 4px; left: 4px; }
             #back-arrow { top: 52px; left: 4px; font-size: 0.82em; padding: 4px 8px; }
 
-            /* --- داشبورد عام --- */
             body { font-size: 14px; }
             #dashboard-page { padding: 8px 8px 30px; }
 
-            /* --- صناديق الرشاشات (الأعلى): 2×2 --- */
-            #dashboard-page > div:first-child {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 8px !important;
+            #sprinkler-boxes {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 6px !important;
                 margin-bottom: 10px !important;
             }
-            #sbox-1, #sbox-2, #sbox-3, #sbox-4 {
+            .sprinkler-box {
                 min-height: 48px !important;
-                font-size: 0.82em;
-                padding: 10px 8px !important;
+                font-size: 0.72em;
+                padding: 8px 5px !important;
             }
 
-            /* --- اللياوت الرئيسي --- */
             .main-layout { gap: 8px; }
 
-            /* --- صندوق الشارت --- */
             .chart-container { height: 240px !important; }
             .chart-box > .box:first-child { padding: 10px 6px; }
 
-            /* --- صندوق الخريطة --- */
             .chart-box .box { height: auto !important; }
             #map-canvas { height: 220px !important; }
 
-            /* --- الصناديق العامة --- */
             .box {
                 border-radius: 10px;
                 padding: 10px 10px;
                 margin-bottom: 10px;
             }
 
-            /* --- الجدول --- */
             .scroll-area { height: 260px; }
             table { font-size: 0.72em; }
             th, td { padding: 5px 3px; }
-            .grid-cell { grid-template-columns: 1fr 1fr; gap: 1px; }
-            .sub-val { font-size: 0.68em; padding: 2px; }
+            .grid-cell { grid-template-columns: repeat(4, 1fr); gap: 1px; }
+            .sub-val { font-size: 0.6em; padding: 2px; }
 
-            /* --- أزرار Excel/Delete --- */
             .btn-modern {
                 font-size: 0.82em !important;
                 padding: 10px 6px !important;
@@ -265,17 +226,14 @@ input[type="password"]::-ms-reveal,
                 gap: 5px !important;
             }
 
-            /* --- سجل الأعطال --- */
             .box[style*="height: 250px"] { height: auto !important; }
-            #errorLog { max-height: 120px; font-size: 0.8em; }
+            #errorLog { max-height: 160px; font-size: 0.8em; }
             .error-msg { font-size: 0.85em !important; }
 
-            /* --- صندوق الأرصاد --- */
             #weather-box h4 { font-size: 0.95em; }
             #weather-location { font-size: 0.78em !important; }
             #w-temp, #w-humidity, #w-wind, #w-rain { font-size: 1em !important; }
 
-            /* --- warning bar --- */
             #nightModeWarning span { font-size: 1em !important; }
         }
 
@@ -289,10 +247,11 @@ input[type="password"]::-ms-reveal,
             .login-card { width: 94% !important; }
             #welcome-page > div:first-child { width: 94% !important; }
             .credits-section { width: 94% !important; }
+            #sprinkler-boxes { grid-template-columns: repeat(2, 1fr) !important; }
         }
     </style>
 
-    <div id="login-page" style="height: 100vh; align-items: center; justify-content: center; background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://scontent.fcai11-1.fna.fbcdn.net/v/t39.30808-6/469089298_10163464705426323_1876441644809304357_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=25d718&_nc_ohc=l6l6l-carw0Q7kNvwEY-uTL&_nc_oc=Ado13DQaoI_TgcQE14jq91ZdW12rXaGbJpGD69ia6vUvQ1o7XCSZSzNGZLjn1JbUqq0BOUX_amO857O03c8AVAnY&_nc_zt=23&_nc_ht=scontent.fcai11-1.fna&_nc_gid=oPpDmxIbNGGwC5YKi-rcSg&_nc_ss=7a389&oh=00_Af2yh1UrKOozUhJMRiJVMwSceTU0a1Xf-v66ifJqa_Ckvw&oe=69D89403') no-repeat center center fixed; background-size: cover;">
+    <div id="login-page" style="height: 100vh; align-items: center; justify-content: center;">
         <div class="login-card" style="padding-top:14px;">
           <h2 style="margin-top:4px;">تسجيل الدخول</h2>
           <input type="email" id="email" placeholder="البريد الإلكتروني">
@@ -320,7 +279,7 @@ input[type="password"]::-ms-reveal,
         </div>
     </div>
 
-    <div id="welcome-page" style="height: 100vh; flex-direction: column; align-items: center; justify-content: center; background: url('https://www.vidaenlatierra.com/wp-content/uploads/2020/11/monocultivos-circulares.jpg') center/cover;">
+    <div id="welcome-page" style="height: 100vh; flex-direction: column; align-items: center; justify-content: center;">
         <div style="background: rgba(255,255,255,0.95); padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
             <h1 style="color:#2c3e50;">نظام IOT</h1>
             <button style="padding: 15px 60px; font-size: 1.3em; cursor: pointer; background: #2ecc71; color: white; border: none; border-radius: 50px; font-weight: bold;" onclick="showDashboard()">جهاز 1</button>
@@ -338,33 +297,29 @@ input[type="password"]::-ms-reveal,
         <div id="back-arrow" onclick="goBackToWelcome()" style="position: fixed; top: 50px; left: 0px; z-index: 1000; cursor: pointer; display: flex; align-items: center; background: rgba(52,152,219,0.1); padding: 5px 10px; border-radius: 8px; color: #3498db; font-weight: bold; border: 1px solid #3498db; backdrop-filter: blur(5px);">
             <span style="font-size: 1.2em; margin-left: 5px;">⬅</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px;">
-            <div id="sbox-1" class="box" style="border-bottom:5px solid var(--f1);text-align:center;position:relative;overflow:hidden;min-height:56px;z-index:0;">
-                <div id="rain-1" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;clip-path:inset(0);"></div>
-                <span style="position:relative;z-index:2;">F1: <span id="v1">0.00</span> M3/hr</span>
-            </div>
-            <div id="sbox-2" class="box" style="border-bottom:5px solid var(--f2);text-align:center;position:relative;overflow:hidden;min-height:56px;z-index:0;">
-                <div id="rain-2" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;clip-path:inset(0);"></div>
-                <span style="position:relative;z-index:2;">F2: <span id="v2">0.00</span> M3/hr</span>
-            </div>
-            <div id="sbox-3" class="box" style="border-bottom:5px solid var(--f3);text-align:center;position:relative;overflow:hidden;min-height:56px;z-index:0;">
-                <div id="rain-3" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;clip-path:inset(0);"></div>
-                <span style="position:relative;z-index:2;">F3: <span id="v3">0.00</span> M3/hr</span>
-            </div>
-            <div id="sbox-4" class="box" style="border-bottom:5px solid var(--f4);text-align:center;position:relative;overflow:hidden;min-height:56px;z-index:0;">
-                <div id="rain-4" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;clip-path:inset(0);"></div>
-                <span style="position:relative;z-index:2;">F4: <span id="v4">0.00</span> M3/hr</span>
-            </div>
-        </div>
+
+        <!-- ===== صناديق الـ 50 رشاش (تُولَّد ديناميكياً) ===== -->
+        <div id="sprinkler-boxes" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px;"></div>
 
         <div class="main-layout">
             <div class="chart-box">
-                <div class="box chart-container" style="height: 400px; margin-bottom: 15px;">
+                <div class="box chart-container" style="height: 500px; margin-bottom: 15px;">
                     <canvas id="myChart"></canvas>
                 </div>
                 <div class="box" style="height: 350px; padding: 10px; position: relative;">
                     <h4 style="margin: 0 0 5px 0; text-align: center;">📍 (GPS Live)</h4>
                     <div id="map-canvas" style="width: 100%; height: 750px; border-radius: 10px; position: relative; z-index: 0;"></div>
+                    <div id="gpsCoordsBox" style="margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: linear-gradient(135deg, #ecf6ff, #f4f9ff); border: 1px solid #cfe3ff; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-around; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); font-family: 'Courier New', monospace;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-weight:bold; color:#2c3e50;">🌐 Latitude:</span>
+                            <span id="gpsLatValue" style="font-weight:bold; color:#e74c3c; font-size:1.05em; min-width: 110px; text-align:left; direction:ltr;">--</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-weight:bold; color:#2c3e50;">🌐 Longitude:</span>
+                            <span id="gpsLngValue" style="font-weight:bold; color:#27ae60; font-size:1.05em; min-width: 110px; text-align:left; direction:ltr;">--</span>
+                        </div>
+                        <div id="gpsTime" style="font-size:0.78em; color:#7f8c8d; width:100%; text-align:center;"></div>
+                    </div>
                 </div>
             </div>
 
@@ -372,12 +327,11 @@ input[type="password"]::-ms-reveal,
                 <div class="box" style="text-align:center;">
                     <h3 id="mainStatus" style="margin:0;">النظام متوقف حالياً</h3>
                 </div>
-                <div class="box" style="height: 250px; display: flex; flex-direction: column;">
+                <div class="box" style="height: 280px; display: flex; flex-direction: column;">
                     <h4 style="color:red; text-align:center; margin:0 0 10px 0;">⚠️ سجل الأعطال</h4>
                     <div id="errorLog" style="flex-grow: 1; overflow-y: auto; background: #fff9f5; border-radius: 8px; padding: 10px;"></div>
                 </div>
 
-                <!-- ===================== صندوق الأرصاد الجوية ===================== -->
                 <div class="box" id="weather-box">
                     <h4 style="text-align:center; margin:0 0 8px 0;">🌤️ الأرصاد الجوية</h4>
                     <div id="weather-location" style="text-align:center; font-size:0.82em; color:#555; margin-bottom:10px;">في انتظار بيانات GPS...</div>
@@ -408,14 +362,13 @@ input[type="password"]::-ms-reveal,
 
                 <div class="box">
                     <h4 style="text-align:center; margin:0 0 10px 0;">📊 سجل الري</h4>
-                    <div class="scroll-area" style="max-height: 400px; overflow-y: auto; position: relative;">
-                        <table id="historyTable" style="border-collapse: collapse; width: 100%;">
+                    <div class="scroll-area" style="max-height: 400px; overflow:auto; position: relative;">
+                        <table id="historyTable" style="border-collapse: collapse; width: 100%; table-layout: fixed;">
                             <thead>
                                 <tr>
-                                    <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black;">العملية</th>
-                                    <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black;">التاريخ</th>
-                                    <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black;">اليوم</th>
-                                    <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black;">كمية المياه (M3)</th>
+                                    <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black; width: 12%;">العملية</th>
+                                    <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black; width: 18%;">التاريخ</th>
+                                    <th style="position: sticky; top: -1px !important; background-color: #2980b9; color: white; z-index: 10; border: 1px solid black; width: 70%;">كمية المياه (M3) — 50 رشاش</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -433,11 +386,68 @@ input[type="password"]::-ms-reveal,
         </div>
     </div>
 
-    <!-- الـ import لازم يكون أول حاجة في الـ module script بدون أي كود قبله -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, remove, push, get, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // ===================== إعدادات عدد الرشاشات =====================
+        const SPRINKLER_COUNT = 50;
+
+        // ===================== توليد 50 لون مختلف تماماً (وضع نهاري / ليلي) =====================
+        // نستخدم الزاوية الذهبية (137.508°) لتوزيع التدرجات اللونية بأقصى تباين ممكن،
+        // مع تنويع السطوع والتشبع لضمان أن كل رشاش يحصل على لون فريد ومميز عن الباقين.
+        function hslToHex(h, s, l) {
+            s /= 100; l /= 100;
+            const k = n => (n + h / 30) % 12;
+            const a = s * Math.min(l, 1 - l);
+            const f = n => {
+                const c = l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+                return Math.round(c * 255).toString(16).padStart(2, '0');
+            };
+            return `#${f(0)}${f(8)}${f(4)}`;
+        }
+        function buildDistinctPalette(count, lightnessSteps, saturationSteps) {
+            const golden = 137.508;
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                const hue = (i * golden) % 360;
+                const l = lightnessSteps[i % lightnessSteps.length];
+                const s = saturationSteps[i % saturationSteps.length];
+                colors.push(hslToHex(hue, s, l));
+            }
+            return colors;
+        }
+        // وضع نهاري: ألوان مشبعة وغامقة نسبياً تظهر بوضوح على الخلفية الفاتحة
+        const FLOW_COLORS = buildDistinctPalette(50, [32, 42, 50, 38, 46], [85, 92, 78, 88, 95]);
+        // وضع ليلي: نفس التدرجات مع سطوع أعلى لتظهر على الخلفية الداكنة
+        const FLOW_COLORS_DARK = buildDistinctPalette(50, [60, 68, 72, 64, 76], [90, 95, 85, 92, 88]);
+
+        // مفاتيح الرشاشات في Firebase: Sprinkler1 .. Sprinkler50
+        const SPRINKLER_KEYS = Array.from({length: SPRINKLER_COUNT}, (_, i) => 'Sprinkler' + (i+1));
+
+        // مساعد لإنشاء مصفوفة بطول SPRINKLER_COUNT بقيمة افتراضية
+        const arrN = (val) => Array.from({length: SPRINKLER_COUNT}, () => val);
+
+        // ===================== توليد صناديق الرشاشات في الواجهة =====================
+        function buildSprinklerBoxes() {
+            const container = document.getElementById('sprinkler-boxes');
+            if (!container) return;
+            if (container.dataset.built === '1') return;
+            container.dataset.built = '1';
+            let html = '';
+            for (let i = 0; i < SPRINKLER_COUNT; i++) {
+                const idx = i + 1;
+                const color = FLOW_COLORS[i];
+                html += `
+                    <div id="sbox-${idx}" class="sprinkler-box" style="border-bottom:5px solid ${color};color:${color};">
+                        <div id="rain-${idx}" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;clip-path:inset(0);"></div>
+                        <span style="position:relative;z-index:2;">F${idx}: <span id="v${idx}" style="color:${color};">0.00</span> M3/hr</span>
+                    </div>`;
+            }
+            container.innerHTML = html;
+        }
+        window.buildSprinklerBoxes = buildSprinklerBoxes;
 
         let lastFirebaseTime = 0;
         let lastActiveFirebaseTime = 0;
@@ -469,18 +479,18 @@ input[type="password"]::-ms-reveal,
         let _leafletMarker = null;
         let _mapInitialized = false;
 
-        // --- بيانات الجلسة ---
+        // --- بيانات الجلسة (50 رشاش) ---
         let sessionData = {
-            startTimes: [null,null,null,null],
-            endTimes: [null,null,null,null],
-            rawStartTimes: [null,null,null,null],
-            rawEndTimes: [null,null,null,null],
-            accumulatedAmounts: [0,0,0,0]
+            startTimes: arrN(null),
+            endTimes: arrN(null),
+            rawStartTimes: arrN(null),
+            rawEndTimes: arrN(null),
+            accumulatedAmounts: arrN(0)
         };
 
         // --- متغيرات التكامل العددي الدقيق ---
-        let integrationLastTs = [null, null, null, null];
-        let integrationLastFlow = [0, 0, 0, 0];
+        let integrationLastTs = arrN(null);
+        let integrationLastFlow = arrN(0);
 
         // --- متغيرات لمتابعة آخر قيم للمنحنى ---
         let lastChartFlows = null;
@@ -488,6 +498,7 @@ input[type="password"]::-ms-reveal,
         window._sessionData = sessionData;
         window._integrationLastTs = integrationLastTs;
         window._integrationLastFlow = integrationLastFlow;
+        window._SPRINKLER_COUNT = SPRINKLER_COUNT;
 
         // --- منع التسجيل المتكرر ---
         let isSavingSession = false;
@@ -497,6 +508,7 @@ input[type="password"]::-ms-reveal,
             try {
                 await set(ref(db, 'current_session'), {
                     active: true,
+                    sprinklerCount: SPRINKLER_COUNT,
                     startTimes: sessionData.startTimes,
                     endTimes: sessionData.endTimes,
                     rawStartTimes: sessionData.rawStartTimes,
@@ -518,18 +530,30 @@ input[type="password"]::-ms-reveal,
             } catch(e) { /* تجاهل */ }
         }
 
+        // ===================== padArray: ضمان أن المصفوفة بطول SPRINKLER_COUNT =====================
+        function padArray(arr, fillVal) {
+            const out = arrN(fillVal);
+            if (Array.isArray(arr)) {
+                for (let i = 0; i < Math.min(arr.length, SPRINKLER_COUNT); i++) {
+                    out[i] = (arr[i] === undefined || arr[i] === null) ? fillVal : arr[i];
+                }
+            }
+            return out;
+        }
+
         // ===================== تسجيل جلسة مُعادة بناؤها من chart_data =====================
         async function recordMissedSession(chartData, finishTime) {
-            // إعادة بناء الكميات التقريبية من بيانات المنحنى المحفوظة
             const labels = chartData.labels || [];
-            const datasets = [chartData.f1||[], chartData.f2||[], chartData.f3||[], chartData.f4||[]];
-            const amounts = [0,0,0,0];
+            const datasets = [];
+            for (let i = 0; i < SPRINKLER_COUNT; i++) {
+                datasets.push(chartData['f' + (i+1)] || []);
+            }
+            const amounts = arrN(0);
             let minTs = null, maxTs = null;
 
             for (let li = 1; li < labels.length; li++) {
                 const lbl = labels[li];
-                // استخراج التوقيت من التسمية
-                const d = new Date(labels[li - 1].replace(' ▶','').replace(' ⏹','').trim());
+                const d  = new Date(labels[li - 1].replace(' ▶','').replace(' ⏹','').trim());
                 const d2 = new Date(lbl.replace(' ▶','').replace(' ⏹','').trim());
                 if (!isNaN(d.getTime()) && !isNaN(d2.getTime())) {
                     const dt = (d2 - d) / 3600000;
@@ -546,9 +570,8 @@ input[type="password"]::-ms-reveal,
                 }
             }
 
-            // إذا لم نستطع استخراج توقيتات نستخدم finishTime فقط
             const sessionFinish = maxTs || finishTime;
-            const sessionStart = minTs || (sessionFinish - 1800000); // افتراضي 30 دقيقة قبل
+            const sessionStart = minTs || (sessionFinish - 1800000);
 
             const startDate = new Date(sessionStart);
             const endDate = new Date(sessionFinish);
@@ -562,15 +585,23 @@ input[type="password"]::-ms-reveal,
                 if (snap.exists()) nextId = Object.keys(snap.val()).length + 1;
             } catch(e) {}
 
+            const startTimes = arrN('-');
+            const endTimes   = arrN('-');
+            const durations  = arrN('-');
+            startTimes[0] = startDate.toLocaleTimeString('ar-EG', {timeZone:'Africa/Cairo'});
+            endTimes[0]   = endDate.toLocaleTimeString('ar-EG', {timeZone:'Africa/Cairo'});
+            durations[0]  = durationStr;
+
             const record = {
                 id: nextId,
-                date: endDate.toLocaleDateString('ar-EG'),
-                day: new Intl.DateTimeFormat('ar-EG', {weekday:'long'}).format(endDate),
+                date: endDate.toLocaleDateString('ar-EG', {timeZone:'Africa/Cairo'}),
+                day: new Intl.DateTimeFormat('ar-EG', {weekday:'long', timeZone:'Africa/Cairo'}).format(endDate),
                 amounts: amounts.map(a => parseFloat(a).toFixed(4)),
-                startTimes: [startDate.toLocaleTimeString('ar-EG'), '-', '-', '-'],
-                endTimes: [endDate.toLocaleTimeString('ar-EG'), '-', '-', '-'],
-                durations: [durationStr, '-', '-', '-'],
+                startTimes: startTimes,
+                endTimes: endTimes,
+                durations: durations,
                 timestamp: sessionFinish,
+                sprinklerCount: SPRINKLER_COUNT,
                 note: 'مُعادة_بناؤها'
             };
 
@@ -585,58 +616,50 @@ input[type="password"]::-ms-reveal,
         // ===================== استعادة / كشف الجلسات الفائتة عند فتح الداشبورد =====================
         async function restoreActiveSession() {
             try {
-                // الخطوة 1: قراءة الحالة الراهنة للرشاشات
                 const spSnap = await get(ref(db, 'Sprinklers'));
                 const spData = spSnap.val() || {};
-                const spKeys = ['Sprinkler1','Sprinkler2','Sprinkler3','Sprinkler4'];
-                const currentFlows = spKeys.map(k => parseFloat(spData[k]?.Flow || 0));
+                const currentFlows = SPRINKLER_KEYS.map(k => parseFloat(spData[k]?.Flow || 0));
                 const stillWatering = currentFlows.some(v => v > 0.1);
 
-                // الخطوة 2: قراءة الجلسة الجارية المحفوظة
                 const csSnap = await get(ref(db, 'current_session'));
                 const savedSession = csSnap.exists() ? csSnap.val() : null;
 
-                // الخطوة 3: قراءة آخر حالة للمنحنى
                 const cdSnap = await get(ref(db, 'chart_data'));
                 const chartData = cdSnap.exists() ? cdSnap.val() : null;
 
-                // --- حالة أ: الري لا يزال جارياً الآن ---
                 if (stillWatering) {
                     if (savedSession && savedSession.active) {
-                        // استعادة الجلسة الموجودة
-                        sessionData.startTimes = savedSession.startTimes || [null,null,null,null];
-                        sessionData.endTimes = savedSession.endTimes || [null,null,null,null];
-                        sessionData.rawStartTimes = savedSession.rawStartTimes || [null,null,null,null];
-                        sessionData.rawEndTimes = savedSession.rawEndTimes || [null,null,null,null];
-                        sessionData.accumulatedAmounts = savedSession.accumulatedAmounts || [0,0,0,0];
-                        integrationLastTs = savedSession.integrationLastTs || [null,null,null,null];
-                        integrationLastFlow = savedSession.integrationLastFlow || [0,0,0,0];
+                        sessionData.startTimes         = padArray(savedSession.startTimes, null);
+                        sessionData.endTimes           = padArray(savedSession.endTimes, null);
+                        sessionData.rawStartTimes      = padArray(savedSession.rawStartTimes, null);
+                        sessionData.rawEndTimes        = padArray(savedSession.rawEndTimes, null);
+                        sessionData.accumulatedAmounts = padArray(savedSession.accumulatedAmounts, 0);
+                        integrationLastTs              = padArray(savedSession.integrationLastTs, null);
+                        integrationLastFlow            = padArray(savedSession.integrationLastFlow, 0);
                         console.log('تم استعادة جلسة ري جارية من Firebase');
                     }
-                    // startTracking سيكتشف الري النشط ويبدأ تسجيله
-                    isWatering = false; // اتركه لـ startTracking ليكشفه كـ "بداية جديدة"
+                    isWatering = false;
                     return;
                 }
 
-                // --- حالة ب: الري انتهى — كانت هناك جلسة محفوظة (متصفح كان مفتوحاً) ---
                 if (savedSession && savedSession.active) {
                     console.log('الري انتهى أثناء عدم الاتصال - جاري تسجيل الجلسة...');
-                    sessionData.startTimes = savedSession.startTimes || [null,null,null,null];
-                    sessionData.endTimes = savedSession.endTimes || [null,null,null,null];
-                    sessionData.rawStartTimes = savedSession.rawStartTimes || [null,null,null,null];
-                    sessionData.rawEndTimes = savedSession.rawEndTimes || [null,null,null,null];
-                    sessionData.accumulatedAmounts = savedSession.accumulatedAmounts || [0,0,0,0];
-                    integrationLastTs = savedSession.integrationLastTs || [null,null,null,null];
-                    integrationLastFlow = savedSession.integrationLastFlow || [0,0,0,0];
+                    sessionData.startTimes         = padArray(savedSession.startTimes, null);
+                    sessionData.endTimes           = padArray(savedSession.endTimes, null);
+                    sessionData.rawStartTimes      = padArray(savedSession.rawStartTimes, null);
+                    sessionData.rawEndTimes        = padArray(savedSession.rawEndTimes, null);
+                    sessionData.accumulatedAmounts = padArray(savedSession.accumulatedAmounts, 0);
+                    integrationLastTs              = padArray(savedSession.integrationLastTs, null);
+                    integrationLastFlow            = padArray(savedSession.integrationLastFlow, 0);
 
                     const finishTime = savedSession.lastUpdate || Date.now();
-                    spKeys.forEach((_, i) => {
+                    SPRINKLER_KEYS.forEach((_, i) => {
                         if (sessionData.rawStartTimes[i] && !sessionData.rawEndTimes[i]) {
                             if (integrationLastTs[i] !== null) {
                                 sessionData.accumulatedAmounts[i] += integrationLastFlow[i] * ((finishTime - integrationLastTs[i]) / 3600000);
                             }
                             sessionData.rawEndTimes[i] = finishTime;
-                            sessionData.endTimes[i] = new Date(finishTime).toLocaleTimeString('ar-EG');
+                            sessionData.endTimes[i] = new Date(finishTime).toLocaleTimeString('ar-EG', {timeZone:'Africa/Cairo'});
                             integrationLastTs[i] = null;
                             integrationLastFlow[i] = 0;
                         }
@@ -648,12 +671,10 @@ input[type="password"]::-ms-reveal,
                     return;
                 }
 
-                // --- حالة ج: لم يكن هناك متصفح مفتوح نهائياً — كشف الجلسة الفائتة من chart_data ---
                 if (chartData && chartData.isWatering === true) {
                     console.log('كُشفت جلسة فائتة من chart_data - جاري تسجيلها...');
-                    // الحصول على آخر timestamp من الرشاشات
                     let lastDeviceTs = 0;
-                    spKeys.forEach(k => {
+                    SPRINKLER_KEYS.forEach(k => {
                         let ts = spData[k]?.timestamp;
                         if (ts) {
                             if (ts < 10000000000) ts *= 1000;
@@ -662,7 +683,6 @@ input[type="password"]::-ms-reveal,
                     });
                     const finishTime = lastDeviceTs || Date.now();
 
-                    // محاولة الحصول على القفل أولاً لمنع التسجيل المزدوج
                     const lockRef = ref(db, 'save_lock');
                     let lockAcquired = false;
                     try {
@@ -675,11 +695,9 @@ input[type="password"]::-ms-reveal,
 
                     if (lockAcquired) {
                         await recordMissedSession(chartData, finishTime);
-                        // تمييز chart_data كغير-نشطة
                         try { await set(ref(db, 'chart_data/isWatering'), false); } catch(e) {}
                         setTimeout(() => { set(lockRef, { ts: 0 }).catch(()=>{}); }, 1000);
                     } else {
-                        // جهاز آخر يسجلها الآن
                         try { await set(ref(db, 'chart_data/isWatering'), false); } catch(e) {}
                     }
                     const statusEl = document.getElementById('mainStatus');
@@ -690,7 +708,6 @@ input[type="password"]::-ms-reveal,
                 console.error('خطأ في استعادة الجلسة:', e);
             }
         }
-
 
         // ===================== وضع الليل =====================
         const themeToggle = document.getElementById('themeToggle');
@@ -703,15 +720,57 @@ input[type="password"]::-ms-reveal,
             themeText.innerText = isDark ? "وضع النهار" : "وضع الليل";
             themeIcon.innerText = isDark ? "☀️" : "🌙";
             updateChartColors(isDark);
+            applySprinklerBoxColors(isDark);
         };
+
+        function applySprinklerBoxColors(isDark) {
+            var boxes = document.querySelectorAll(".sprinkler-box");
+            var palette = isDark ? FLOW_COLORS_DARK : FLOW_COLORS;
+
+            boxes.forEach(function(box, i) {
+                var color = palette[i % palette.length];
+
+                box.style.setProperty('border-bottom', '5px solid ' + color, 'important');
+                box.style.setProperty('border-top',    'none', 'important');
+                box.style.setProperty('border-left',   'none', 'important');
+                box.style.setProperty('border-right',  'none', 'important');
+
+                if (isDark) {
+                    box.style.setProperty('background',
+                        'linear-gradient(135deg, ' + color + '33, rgba(17,25,40,0.92))', 'important');
+                    box.style.setProperty('box-shadow',
+                        '0 0 12px ' + color + '77, 0 4px 16px rgba(0,0,0,0.7)', 'important');
+                } else {
+                    box.style.setProperty('background',
+                        'linear-gradient(135deg, ' + color + '18, #ffffff)', 'important');
+                    box.style.setProperty('box-shadow',
+                        '0 0 8px ' + color + '44', 'important');
+                }
+
+                var valSpan = document.getElementById('v' + (i + 1));
+                if (valSpan) valSpan.style.setProperty('color', color, 'important');
+
+                box.style.setProperty('color', color, 'important');
+            });
+        }
+
+        function hexToRgba(hex, alpha) {
+            const h = hex.replace('#','');
+            const bigint = parseInt(h.length === 3 ? h.split('').map(c=>c+c).join('') : h, 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return `rgba(${r},${g},${b},${alpha})`;
+        }
 
         function updateChartColors(isDark) {
             if (!myChart) return;
-            const neonColors = ['#00f2ff', '#ff007f', '#ccff00', '#00ff41'];
-            const originalColors = ['#3498db', '#e74c3c', '#f1c40f', '#2ecc71'];
+            const palette = isDark ? FLOW_COLORS_DARK : FLOW_COLORS;
             myChart.data.datasets.forEach((dataset, i) => {
-                dataset.borderColor = isDark ? neonColors[i] : originalColors[i];
-                dataset.borderWidth = isDark ? 3 : 2;
+                dataset.borderColor = palette[i % palette.length];
+                // مزامنة ألوان الرشاشات مع المنحنى
+            applySprinklerBoxColors(isDark);
+                dataset.borderWidth = isDark ? 2.5 : 2;
             });
             if (myChart.options.plugins?.legend) {
                 myChart.options.plugins.legend.labels.color = isDark ? "#ffffff" : "#666";
@@ -802,6 +861,8 @@ input[type="password"]::-ms-reveal,
             localStorage.setItem('activePage', 'dashboard');
             document.getElementById('welcome-page').style.display = 'none';
             document.getElementById('dashboard-page').style.display = 'block';
+            buildSprinklerBoxes();
+            applySprinklerBoxColors(document.body.classList.contains('dark-mode'));
             setTimeout(async () => {
                 initChart();
                 window.loadHistory();
@@ -816,14 +877,13 @@ input[type="password"]::-ms-reveal,
             localStorage.setItem('activePage', 'welcome');
         };
 
-        // ===================== تتبع Firebase Sprinklers =====================
+        // ===================== تتبع Firebase Sprinklers (50 رشاش) =====================
         window.startTracking = function() {
             onValue(ref(db, 'Sprinklers'), (snap) => {
                 const d = snap.val() || {};
 
-                const sprinklerKeys = ['Sprinkler1','Sprinkler2','Sprinkler3','Sprinkler4'];
-                const flows = sprinklerKeys.map(k => parseFloat(d[k]?.Flow || 0));
-                const timestamps = sprinklerKeys.map(k => {
+                const flows = SPRINKLER_KEYS.map(k => parseFloat(d[k]?.Flow || 0));
+                const timestamps = SPRINKLER_KEYS.map(k => {
                     let ts = d[k]?.timestamp;
                     if (!ts) return null;
                     if (ts < 10000000000) ts *= 1000;
@@ -839,12 +899,11 @@ input[type="password"]::-ms-reveal,
                 if (anyOn) lastActiveFirebaseTime = firebaseNow;
 
                 const flowChanged = !lastChartFlows ||
-                    flows.some((v, i) => Math.abs(v - lastChartFlows[i]) > 0.001);
+                    flows.some((v, i) => Math.abs(v - (lastChartFlows[i] || 0)) > 0.001);
 
                 const isWatering_prev = isWatering;
                 const statusEl = document.getElementById('mainStatus');
 
-                // ===================== منطق بداية/نهاية الري =====================
                 if (anyOn && !isWatering) {
                     isWatering = true;
                     localStorage.setItem('isWatering','true');
@@ -853,12 +912,11 @@ input[type="password"]::-ms-reveal,
                         if (v > 0.1 && !sessionData.rawStartTimes[i]) {
                             const ts = timestamps[i] || firebaseNow;
                             sessionData.rawStartTimes[i] = ts;
-                            sessionData.startTimes[i] = new Date(ts).toLocaleTimeString('ar-EG');
+                            sessionData.startTimes[i] = new Date(ts).toLocaleTimeString('ar-EG', {timeZone:'Africa/Cairo'});
                             integrationLastTs[i] = ts;
                             integrationLastFlow[i] = v;
                         }
                     });
-                    // حفظ الجلسة في Firebase فور بداية الري
                     saveActiveSession();
 
                 } else if (!anyOn && isWatering) {
@@ -877,7 +935,7 @@ input[type="password"]::-ms-reveal,
                                 sessionData.accumulatedAmounts[i] += integrationLastFlow[i] * deltaHrs;
                             }
                             sessionData.rawEndTimes[i] = ts;
-                            sessionData.endTimes[i] = new Date(ts).toLocaleTimeString('ar-EG');
+                            sessionData.endTimes[i] = new Date(ts).toLocaleTimeString('ar-EG', {timeZone:'Africa/Cairo'});
                             integrationLastTs[i] = null;
                             integrationLastFlow[i] = 0;
                         }
@@ -889,49 +947,58 @@ input[type="password"]::-ms-reveal,
                     flows.forEach((v, i) => {
                         if (v > 0.1 && !sessionData.rawStartTimes[i]) {
                             const ts=timestamps[i]||firebaseNow;
-                            sessionData.rawStartTimes[i]=ts; sessionData.startTimes[i]=new Date(ts).toLocaleTimeString('ar-EG');
+                            sessionData.rawStartTimes[i]=ts; sessionData.startTimes[i]=new Date(ts).toLocaleTimeString('ar-EG', {timeZone:'Africa/Cairo'});
                             integrationLastTs[i]=ts; integrationLastFlow[i]=v;
                         }
                         if (v<=0.1 && sessionData.rawStartTimes[i] && !sessionData.rawEndTimes[i]) {
                             const ts=timestamps[i]||firebaseNow;
                             if (integrationLastTs[i]!==null) sessionData.accumulatedAmounts[i]+=integrationLastFlow[i]*((ts-integrationLastTs[i])/3600000);
-                            sessionData.rawEndTimes[i]=ts; sessionData.endTimes[i]=new Date(ts).toLocaleTimeString('ar-EG');
+                            sessionData.rawEndTimes[i]=ts; sessionData.endTimes[i]=new Date(ts).toLocaleTimeString('ar-EG', {timeZone:'Africa/Cairo'});
                             integrationLastTs[i]=null; integrationLastFlow[i]=0;
                         }
                     });
                     flows.forEach((v, i) => {
                         if (v > 0.1) {
-                            const ts = timestamps[i] || firebaseNow;
-                            if (integrationLastTs[i] !== null && ts > integrationLastTs[i]) {
-                                const deltaHrs = (ts - integrationLastTs[i]) / 3600000;
-                                sessionData.accumulatedAmounts[i] += integrationLastFlow[i] * deltaHrs;
-                            } else if (integrationLastTs[i] === null) {
-                                integrationLastTs[i] = ts;
-                            }
-                            integrationLastTs[i] = ts;
-                            integrationLastFlow[i] = v;
-                        }
+
+    const ts = timestamps[i] || firebaseNow;
+
+    // احسب الكمية قبل تغيير التصرف
+    if (integrationLastTs[i] !== null) {
+
+        const deltaHrs =
+            (ts - integrationLastTs[i]) / 3600000;
+
+        sessionData.accumulatedAmounts[i] +=
+            integrationLastFlow[i] * deltaHrs;
+    }
+
+    // تحديث آخر وقت
+    integrationLastTs[i] = ts;
+
+    // تحديث آخر تصرف
+    integrationLastFlow[i] = v;
+}
                     });
-                    // تحديث الجلسة في Firebase أثناء الري
                     saveActiveSession();
                 }
 
-                // ===================== تحديث المنحنى =====================
+                // ===================== تحديث المنحنى (50 خط) =====================
                 const fbTimestamp = timestamps.reduce((best, ts) => (ts && ts > best) ? ts : best, 0);
                 if (myChart && flowChanged && fbTimestamp > 0) {
                     const timeStr = new Date(fbTimestamp).toLocaleTimeString('en-US', {
                         hour: '2-digit', minute: '2-digit', second: '2-digit',
-                        hour12: true
+                        hour12: true, timeZone: 'Africa/Cairo'
                     });
 
                     if (anyOn && !isWatering_prev) { myChart.data.labels.push(timeStr+' ▶'); myChart.data.datasets.forEach(ds=>ds.data.push(0)); }
 
                     if (anyOn) {
                         myChart.data.labels.push(timeStr);
-                        flows.forEach((v, i) => myChart.data.datasets[i].data.push(v));
+                        flows.forEach((v, i) => {
+                            if (myChart.data.datasets[i]) myChart.data.datasets[i].data.push(v);
+                        });
                     } else if (!anyOn && isWatering_prev) { myChart.data.labels.push(timeStr+' ⏹'); myChart.data.datasets.forEach(ds=>ds.data.push(0)); }
 
-                    // احتفظ بآخر 60 نقطة فقط
                     while (myChart.data.labels.length > 60) {
                         myChart.data.labels.shift();
                         myChart.data.datasets.forEach(ds => ds.data.shift());
@@ -939,15 +1006,15 @@ input[type="password"]::-ms-reveal,
 
                     myChart.update('none');
 
-                    // ========= حفظ بيانات المنحنى في Firebase بدل localStorage =========
+                    // ========= حفظ بيانات المنحنى في Firebase (f1..f50) =========
                     const chartDataToSave = {
                         labels: myChart.data.labels,
-                        f1: myChart.data.datasets[0].data,
-                        f2: myChart.data.datasets[1].data,
-                        f3: myChart.data.datasets[2].data,
-                        f4: myChart.data.datasets[3].data,
-                        isWatering: isWatering
+                        isWatering: isWatering,
+                        sprinklerCount: SPRINKLER_COUNT
                     };
+                    for (let i = 0; i < SPRINKLER_COUNT; i++) {
+                        chartDataToSave['f' + (i+1)] = myChart.data.datasets[i] ? myChart.data.datasets[i].data : [];
+                    }
                     set(ref(db, 'chart_data'), chartDataToSave).catch(err => console.error("خطأ حفظ المنحنى:", err));
 
                     lastChartFlows = [...flows];
@@ -963,7 +1030,6 @@ input[type="password"]::-ms-reveal,
         };
 
         // ===================== GPS =====================
-        // دالة تهيئة خريطة Leaflet مرة واحدة فقط عند التشغيل
         function initLeafletMap(lat, lng) {
             if (_mapInitialized) return;
             _mapInitialized = true;
@@ -974,13 +1040,11 @@ input[type="password"]::-ms-reveal,
                 zoomControl: true
             });
 
-            // طبقة القمر الصناعي من Esri (مجانية بدون API key)
             L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                 attribution: 'Tiles &copy; Esri',
                 maxZoom: 19
             }).addTo(_leafletMap);
 
-            // أيقونة حمراء مخصصة
             const redIcon = L.icon({
                 iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
                 shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
@@ -997,7 +1061,6 @@ input[type="password"]::-ms-reveal,
 
         onValue(ref(db, 'GPS_Data'), (snap) => {
             const coords = snap.val() || {};
-            console.log("GPS DATA:", coords);
             const lat = parseFloat(coords.Lat) || 0;
             const lng = parseFloat(coords.Lng) || 0;
             let time = coords.timestamp || (Date.now()+(window._serverOffset||0));
@@ -1016,21 +1079,25 @@ input[type="password"]::-ms-reveal,
 
             if (lat !== 0 && lng !== 0) {
                 if (!_mapInitialized) {
-                    // التهيئة الأولى: نفتح الخريطة ونزوم على الموقع مرة واحدة فقط
                     initLeafletMap(lat, lng);
                 } else {
-                    // التحديثات التالية: نحرك الدبوس فقط بدون أي تغيير في الزوم
                     _leafletMarker.setLatLng([lat, lng]);
                 }
             }
 
+            // ====== تحديث خانة إحداثيات GPS تحت الخريطة ======
+            const latEl = document.getElementById('gpsLatValue');
+            const lngEl = document.getElementById('gpsLngValue');
+            if (latEl) latEl.innerText = (lat !== 0) ? lat.toFixed(6) + '°' : '--';
+            if (lngEl) lngEl.innerText = (lng !== 0) ? lng.toFixed(6) + '°' : '--';
+
             const gpsTimeEl = document.getElementById('gpsTime');
-            if (gpsTimeEl) gpsTimeEl.innerText = "آخر تحديث: " + new Date(time).toLocaleString('ar-EG');
+            if (gpsTimeEl) gpsTimeEl.innerText = "آخر تحديث: " + new Date(time).toLocaleString('ar-EG', {timeZone:'Africa/Cairo'});
 
             if (lat !== 0 && lng !== 0) fetchWeather(lat, lng);
         });
 
-                // ===================== الأرصاد الجوية (OpenWeather) =====================
+        // ===================== الأرصاد الجوية (OpenWeather) =====================
         let _lastWeatherLat = null, _lastWeatherLng = null;
         async function fetchWeather(lat, lng) {
             if (_lastWeatherLat !== null &&
@@ -1086,7 +1153,7 @@ input[type="password"]::-ms-reveal,
                 if (windEl)   windEl.innerText    = `${wind} m/s`;
                 if (rainEl)   rainEl.innerText    = rainText;
                 if (locEl)    locEl.innerText     = cityName ? `📍 ${cityName}${country ? ', '+country : ''}` : `📍 ${lat.toFixed(3)}, ${lng.toFixed(3)}`;
-                if (timeEl)   timeEl.innerText    = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar-EG');
+                if (timeEl)   timeEl.innerText    = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar-EG', {timeZone:'Africa/Cairo'});
 
             } catch (err) {
                 const locEl2 = document.getElementById('weather-location');
@@ -1096,7 +1163,6 @@ input[type="password"]::-ms-reveal,
         window.fetchWeather = fetchWeather;
 
         // ===================== الدوال المساعدة =====================
-
         function updateErrorLogs(f, isActive) {
             const log = document.getElementById('errorLog');
             if (!log) return;
@@ -1114,15 +1180,13 @@ input[type="password"]::-ms-reveal,
 
         // ===================== حفظ الجلسة في Firebase =====================
         async function saveSession(finishTime) {
-            // منع التسجيل المتكرر من نفس الجهاز
             if (isSavingSession) { console.log('saveSession: مهملة (جاري الحفظ)'); return; }
 
-            // قفل ذري يمنع الأجهزة المتعددة من التسجيل في نفس الوقت
             const lockRef = ref(db, 'save_lock');
             let lockAcquired = false;
             try {
                 const res = await runTransaction(lockRef, (cur) => {
-                    if (cur && cur.ts && (Date.now() - cur.ts) < 30000) return undefined; // القفل محجوز
+                    if (cur && cur.ts && (Date.now() - cur.ts) < 30000) return undefined;
                     return { ts: Date.now() };
                 });
                 lockAcquired = res.committed;
@@ -1130,8 +1194,7 @@ input[type="password"]::-ms-reveal,
 
             if (!lockAcquired) {
                 console.log('saveSession: جهاز آخر يحفظ الآن');
-                // تصفير بيانات الجلسة المحلية فقط
-                for(let i=0;i<4;i++){
+                for(let i=0;i<SPRINKLER_COUNT;i++){
                     sessionData.rawStartTimes[i]=null; sessionData.rawEndTimes[i]=null;
                     sessionData.startTimes[i]=null; sessionData.endTimes[i]=null;
                     sessionData.accumulatedAmounts[i]=0;
@@ -1151,7 +1214,6 @@ input[type="password"]::-ms-reveal,
                 return "-";
             });
 
-            // قراءة السجل الحالي من Firebase لتحديد رقم العملية
             let nextId = 1;
             try {
                 const snap = await get(ref(db, 'irr_history'));
@@ -1166,29 +1228,27 @@ input[type="password"]::-ms-reveal,
 
             const newRecord = {
                 id: nextId,
-                date: new Date(finishTime).toLocaleDateString('ar-EG'),
-                day: new Intl.DateTimeFormat('ar-EG', {weekday:'long'}).format(new Date(finishTime)),
+                date: new Date(finishTime).toLocaleDateString('ar-EG', {timeZone:'Africa/Cairo'}),
+                day: new Intl.DateTimeFormat('ar-EG', {weekday:'long', timeZone:'Africa/Cairo'}).format(new Date(finishTime)),
                 amounts: finalAmounts,
                 startTimes: [...sessionData.startTimes].map(t => t || "-"),
                 endTimes: [...sessionData.endTimes].map(t => t || "-"),
                 durations: durations,
-                timestamp: finishTime
+                timestamp: finishTime,
+                sprinklerCount: SPRINKLER_COUNT
             };
 
-            // حفظ في Firebase باستخدام push لإنشاء key فريد
             try {
                 await push(ref(db, 'irr_history'), newRecord);
                 console.log("تم حفظ الجلسة في Firebase");
             } catch(e) {
                 console.error("خطأ في حفظ الجلسة:", e);
             }
-            
-            // مسح الجلسة الجارية ثم تحرير القفل
+
             await clearActiveSession();
             setTimeout(() => { set(lockRef, { ts: 0 }).catch(()=>{}); isSavingSession = false; }, 1000);
 
-            // إعادة تصفير بيانات الجلسة
-            for(let i=0;i<4;i++){
+            for(let i=0;i<SPRINKLER_COUNT;i++){
                 sessionData.rawStartTimes[i]=null;
                 sessionData.rawEndTimes[i]=null;
                 sessionData.startTimes[i]=null;
@@ -1209,39 +1269,47 @@ input[type="password"]::-ms-reveal,
                 if (!snap.exists()) return;
 
                 const data = snap.val();
-                // تحويل الـ object لـ array ورتبه حسب الـ id
                 const history = Object.values(data).sort((a, b) => (a.id || 0) - (b.id || 0));
 
                 history.forEach(row => {
+                    const amounts = padArray(row.amounts || [], '0');
+                    let cells = '';
+                    for (let i = 0; i < SPRINKLER_COUNT; i++) {
+                        const c = FLOW_COLORS[i];
+                        cells += `<div class="sub-val" style="color:${c};font-weight:bold">F${i+1}:${amounts[i]}</div>`;
+                    }
                     const tr = tbody.insertRow();
-                    tr.innerHTML = `<td>${row.id}</td><td>${row.date}</td><td>${row.day}</td>
-                        <td><div class="grid-cell">
-                            <div class="sub-val" style="color:#3498db;font-weight:bold">F1:${row.amounts[0]}</div>
-                            <div class="sub-val" style="color:#e74c3c;font-weight:bold">F2:${row.amounts[1]}</div>
-                            <div class="sub-val" style="color:#f1c40f;font-weight:bold">F3:${row.amounts[2]}</div>
-                            <div class="sub-val" style="color:#2ecc71;font-weight:bold">F4:${row.amounts[3]}</div>
-                        </div></td>`;
+                    tr.innerHTML = `<td>${row.id}</td><td>${row.date}</td>
+                        <td><div class="grid-cell">${cells}</div></td>`;
                 });
             });
         };
 
-        // ===================== المنحنى — يُحمَّل من Firebase =====================
+        // ===================== المنحنى — 50 dataset =====================
         window.initChart = function initChart() {
             const ctx = document.getElementById('myChart');
             if (myChart) myChart.destroy();
 
-            // نبدأ بمنحنى فارغ أولاً ثم نحدّثه لما تيجي البيانات من Firebase
+            const isDark = document.body.classList.contains('dark-mode');
+            const palette = isDark ? FLOW_COLORS_DARK : FLOW_COLORS;
+
+            const datasets = [];
+            for (let i = 0; i < SPRINKLER_COUNT; i++) {
+                datasets.push({
+                    label: 'F' + (i+1),
+                    borderColor: palette[i],
+                    backgroundColor: palette[i],
+                    data: [],
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 0,
+                    borderWidth: 2
+                });
+            }
+
             myChart = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [
-                        { label: 'F1', borderColor: '#3498db', data: [], tension: 0.4, fill: false, pointRadius: 0 },
-                        { label: 'F2', borderColor: '#e74c3c', data: [], tension: 0.4, fill: false, pointRadius: 0 },
-                        { label: 'F3', borderColor: '#f1c40f', data: [], tension: 0.4, fill: false, pointRadius: 0 },
-                        { label: 'F4', borderColor: '#2ecc71', data: [], tension: 0.4, fill: false, pointRadius: 0 }
-                    ]
-                },
+                data: { labels: [], datasets: datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -1250,25 +1318,31 @@ input[type="password"]::-ms-reveal,
                         y: { beginAtZero: true, grid: { color: '#ddd' }, ticks: { color: '#666' } },
                         x: { grid: { color: '#ddd' }, ticks: { color: '#666' } }
                     },
-                    plugins: { legend: { labels: { color: '#666' } } }
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#666', boxWidth: 12, padding: 6, font: { size: 10 } }
+                        }
+                    }
                 }
             });
 
-            // قراءة بيانات المنحنى المحفوظة من Firebase (مرة واحدة فقط عند البدء)
             get(ref(db, 'chart_data')).then(snap => {
                 if (!snap.exists()) return;
                 const cd = snap.val();
 
                 let savedLabels = cd.labels || [];
-                let datasetsData = [cd.f1 || [], cd.f2 || [], cd.f3 || [], cd.f4 || []];
+                let datasetsData = [];
+                for (let i = 0; i < SPRINKLER_COUNT; i++) {
+                    datasetsData.push(cd['f' + (i+1)] || []);
+                }
                 const wasWatering = cd.isWatering === true;
 
-                // لو كان الري متوقف وآخر قيمة مش صفر، نضيف نقطة توقف
                 if (!wasWatering && datasetsData.some(data => data.length > 0 && data[data.length - 1] > 0)) {
                     if (lastFirebaseTime > 0) {
                         const nowStr = new Date(lastFirebaseTime).toLocaleTimeString('en-US', {
                             hour: '2-digit', minute: '2-digit', second: '2-digit',
-                            hour12: true
+                            hour12: true, timeZone: 'Africa/Cairo'
                         });
                         savedLabels.push(nowStr + " (توقف)");
                         datasetsData.forEach(data => data.push(0));
@@ -1277,22 +1351,20 @@ input[type="password"]::-ms-reveal,
 
                 if (myChart) {
                     myChart.data.labels = savedLabels;
-                    myChart.data.datasets.forEach((ds, i) => { ds.data = datasetsData[i]; });
+                    myChart.data.datasets.forEach((ds, i) => { ds.data = datasetsData[i] || []; });
                     myChart.update('none');
                 }
             }).catch(err => console.error("خطأ تحميل بيانات المنحنى:", err));
         };
 
-        // اجعل initChart متاح عالمياً
         window.initChart = window.initChart;
 
-        // ===================== تصدير Excel + PDF + ZIP =====================
+        // ===================== تصدير Excel + PDF + ZIP (50 رشاش) =====================
         window.exportToExcel = async function() {
             const isDarkMode = document.body.classList.contains('dark-mode');
             const warningBox = document.getElementById('nightModeWarning');
             if (warningBox) warningBox.style.display = 'block';
 
-            // قراءة السجل من Firebase
             let history = [];
             try {
                 const snap = await get(ref(db, 'irr_history'));
@@ -1309,34 +1381,75 @@ input[type="password"]::-ms-reveal,
                 return;
             }
 
-            const dateStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+            const dateStr = new Date().toLocaleDateString('en-GB', {timeZone:'Africa/Cairo'}).replace(/\//g, '-');
 
             try {
-                let dataArr = [
-                    ["تقرير نظام IOT (مشروع تخرج المستوى الرابع)"],
-                    ["العملية", "التاريخ", "اليوم", "بداية التشغيل", "", "", "", "نهاية التشغيل", "", "", "", "زمن التشغيل", "", "", "", "كمية المياه (M3)", "", "", ""],
-                    ["", "", "", "Spr 1", "Spr 2", "Spr 3", "Spr 4", "Spr 1", "Spr 2", "Spr 3", "Spr 4", "Spr 1", "Spr 2", "Spr 3", "Spr 4", "F1", "F2", "F3", "F4"]
+                const N = SPRINKLER_COUNT;          // 50
+                const PER_ROW = 10;                  // 10 رشاشات في الصف
+                const ROWS_PER_SECTION = N / PER_ROW; // 5 صفوف لكل قسم
+                const FIXED_COLS = 3;                // العملية + التاريخ + نوع البيانات
+                const totalCols = FIXED_COLS + PER_ROW; // 13 عمود
+
+                // الأقسام الأربعة لكل عملية
+                const sections = [
+                    { label: "بداية التشغيل",      key: "startTimes", prefix: "Spr", fallback: "-" },
+                    { label: "نهاية التشغيل",      key: "endTimes",   prefix: "Spr", fallback: "-" },
+                    { label: "زمن التشغيل",        key: "durations",  prefix: "Spr", fallback: "-" },
+                    { label: "كمية المياه (M3)",   key: "amounts",    prefix: "F",   fallback: "0" }
                 ];
-                history.forEach(row => {
-                    dataArr.push([row.id, row.date, row.day,
-                        ...(row.startTimes || ["-","-","-","-"]),
-                        ...(row.endTimes || ["-","-","-","-"]),
-                        ...(row.durations || ["-","-","-","-"]),
-                        ...(row.amounts || ["0","0","0","0"])
-                    ]);
+                const ROWS_PER_OP = sections.length * ROWS_PER_SECTION; // 20 صف لكل عملية
+
+                // الصف الأول: العنوان (يُدمَج عبر كل الأعمدة)
+                const titleRow = ["تقرير نظام IOT (مشروع تخرج المستوى الرابع) — 50 رشاش"];
+                while (titleRow.length < totalCols) titleRow.push("");
+
+                // الصف الثاني: ترويسة الأعمدة
+                const headerRow = ["العملية", "التاريخ", "نوع البيانات", "البيانات (50 رشاش)"];
+                while (headerRow.length < totalCols) headerRow.push("");
+
+                const dataArr = [titleRow, headerRow];
+
+                const merges = [
+                    { s: { r:0,c:0 }, e: { r:0,c:totalCols-1 } },           // عنوان
+                    { s: { r:1,c:FIXED_COLS }, e: { r:1,c:totalCols-1 } }   // ترويسة البيانات
+                ];
+
+                const opBlocks = [];      // {start, end} لكل عملية للـ thick border
+                const sectionMerges = []; // دمج خلية نوع البيانات عمودياً
+
+                history.forEach((row) => {
+                    const opStartR = dataArr.length;
+                    sections.forEach((sec) => {
+                        const values = padArray(row[sec.key] || [], sec.fallback);
+                        const secStartR = dataArr.length;
+                        for (let r = 0; r < ROWS_PER_SECTION; r++) {
+                            const rowData = [
+                                (r === 0 && secStartR === opStartR) ? row.id   : "",
+                                (r === 0 && secStartR === opStartR) ? row.date : "",
+                                r === 0 ? sec.label : ""
+                            ];
+                            for (let c = 0; c < PER_ROW; c++) {
+                                const idx = r * PER_ROW + c;
+                                rowData.push(`${sec.prefix}${idx + 1}=${values[idx]}`);
+                            }
+                            dataArr.push(rowData);
+                        }
+                        const secEndR = dataArr.length - 1;
+                        // دمج خلية نوع البيانات عبر الـ 5 صفوف
+                        sectionMerges.push({ s: { r: secStartR, c: 2 }, e: { r: secEndR, c: 2 } });
+                    });
+                    const opEndR = dataArr.length - 1;
+                    // دمج عمود العملية + التاريخ عمودياً عبر كل صفوف العملية الـ 20
+                    merges.push({ s: { r: opStartR, c: 0 }, e: { r: opEndR, c: 0 } });
+                    merges.push({ s: { r: opStartR, c: 1 }, e: { r: opEndR, c: 1 } });
+                    opBlocks.push({ start: opStartR, end: opEndR });
                 });
 
+                merges.push(...sectionMerges);
+
                 const ws = XLSX.utils.aoa_to_sheet(dataArr);
-                ws['!merges'] = [
-                    { s: { r:0,c:0 }, e: { r:0,c:18 } },
-                    { s: { r:1,c:0 }, e: { r:2,c:0 } },
-                    { s: { r:1,c:1 }, e: { r:2,c:1 } },
-                    { s: { r:1,c:2 }, e: { r:2,c:2 } },
-                    { s: { r:1,c:3 }, e: { r:1,c:6 } },
-                    { s: { r:1,c:7 }, e: { r:1,c:10 } },
-                    { s: { r:1,c:11 }, e: { r:1,c:14 } },
-                    { s: { r:1,c:15 }, e: { r:1,c:18 } }
-                ];
+                ws['!merges'] = merges;
+
                 const range = XLSX.utils.decode_range(ws['!ref']);
                 for (let R = range.s.r; R <= range.e.r; ++R) {
                     for (let C = range.s.c; C <= range.e.c; ++C) {
@@ -1346,20 +1459,60 @@ input[type="password"]::-ms-reveal,
                             alignment: { vertical: "center", horizontal: "center", wrapText: true },
                             border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } }
                         };
-                        if (R <= 2) { ws[cell_ref].s.fill = { fgColor: { rgb: "E0E0E0" } }; ws[cell_ref].s.font = { bold: true }; }
+                        if (R <= 1) { ws[cell_ref].s.fill = { fgColor: { rgb: "E0E0E0" } }; ws[cell_ref].s.font = { bold: true }; }
                     }
                 }
-                ws['!cols'] = Array(19).fill({ wch: 12 });
+
+                // تظليل خفيف وbold لخلية نوع البيانات
+                opBlocks.forEach(({ start, end }) => {
+                    for (let R = start; R <= end; R++) {
+                        const cell_ref = XLSX.utils.encode_cell({ c: 2, r: R });
+                        if (ws[cell_ref] && ws[cell_ref].v) {
+                            ws[cell_ref].s.font = { bold: true };
+                            ws[cell_ref].s.fill = { fgColor: { rgb: "F2F2F2" } };
+                        }
+                    }
+                });
+
+                // Thick outside border لكل بلوك عملية
+                opBlocks.forEach(({ start, end }) => {
+                    for (let R = start; R <= end; R++) {
+                        for (let C = 0; C < totalCols; C++) {
+                            const cell_ref = XLSX.utils.encode_cell({ c: C, r: R });
+                            if (!ws[cell_ref]) ws[cell_ref] = { t: 's', v: '' };
+                            if (!ws[cell_ref].s) ws[cell_ref].s = {};
+                            const b = Object.assign({
+                                top:    { style: "thin" },
+                                bottom: { style: "thin" },
+                                left:   { style: "thin" },
+                                right:  { style: "thin" }
+                            }, ws[cell_ref].s.border || {});
+                            if (R === start)           b.top    = { style: "thick" };
+                            if (R === end)             b.bottom = { style: "thick" };
+                            if (C === 0)               b.left   = { style: "thick" };
+                            if (C === totalCols - 1)   b.right  = { style: "thick" };
+                            ws[cell_ref].s.border = b;
+                        }
+                    }
+                });
+
+                ws['!cols'] = [
+                    { wch: 10 }, // العملية
+                    { wch: 14 }, // التاريخ
+                    { wch: 18 }, // نوع البيانات
+                    ...Array(PER_ROW).fill({ wch: 14 })
+                ];
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "نتائج الري");
                 const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 
                 if (isDarkMode) document.body.classList.remove('dark-mode');
                 if (typeof updateChartColors === "function") updateChartColors(false);
+                applySprinklerBoxColors(false);
                 await new Promise(resolve => setTimeout(resolve, 800));
 
                 const captureOptions = {
-                    scale: 3, useCORS: true, backgroundColor: "#ffffff",
+                    scale: 2, useCORS: true, backgroundColor: "#ffffff",
                     onclone: (clonedDoc) => {
                         clonedDoc.querySelectorAll('*').forEach(node => {
                             node.style.filter = 'none';
@@ -1373,42 +1526,149 @@ input[type="password"]::-ms-reveal,
                     }
                 };
 
-                const chartElement = document.querySelector('.chart-container');
-                const chartCanvas = await html2canvas(chartElement, captureOptions);
-                const chartImgData = chartCanvas.toDataURL('image/png');
+                // ====== رفع جودة مفتاح المنحنيات (Legend) قبل التصوير ======
+                let _origLegend = null, _origDPR = null, _origAnim = null;
+                if (myChart) {
+                    _origDPR = myChart.options.devicePixelRatio;
+                    _origAnim = myChart.options.animation;
+                    if (myChart.options.plugins && myChart.options.plugins.legend) {
+                        const lg = myChart.options.plugins.legend.labels || {};
+                        _origLegend = {
+                            color: lg.color,
+                            boxWidth: lg.boxWidth,
+                            boxHeight: lg.boxHeight,
+                            padding: lg.padding,
+                            fontSize: lg.font && lg.font.size,
+                            fontWeight: lg.font && lg.font.weight,
+                            usePointStyle: lg.usePointStyle
+                        };
+                        myChart.options.plugins.legend.labels = {
+                            ...lg,
+                            color: '#111',
+                            boxWidth: 28,
+                            boxHeight: 14,
+                            padding: 12,
+                            usePointStyle: false,
+                            font: { size: 16, weight: 'bold', family: 'Arial, sans-serif' }
+                        };
+                    }
+                    myChart.options.devicePixelRatio = 4;
+                    myChart.options.animation = false;
+                    myChart.update('none');
+                    myChart.resize();
+                    await new Promise(r => setTimeout(r, 300));
+                }
 
-                const tableElement = document.querySelector('table');
-                const tableCanvas = await html2canvas(tableElement, captureOptions);
-                const tableImgData = tableCanvas.toDataURL('image/png');
+                // التقاط المنحنى مباشرةً من Canvas الأصلي بدقة عالية للحصول على Legend واضح وحاد
+                let chartImgData;
+                const chartCanvasEl = document.getElementById('myChart');
+                if (chartCanvasEl) {
+                    chartImgData = chartCanvasEl.toDataURL('image/png', 1.0);
+                }
+                // نسخة احتياطية: تصوير الحاوية بـ html2canvas بمقياس أعلى
+                const chartElement = document.querySelector('.chart-container');
+                const chartCanvas = await html2canvas(chartElement, { ...captureOptions, scale: 4 });
+                if (!chartImgData) chartImgData = chartCanvas.toDataURL('image/png');
+
+                // ====== استرجاع إعدادات Legend الأصلية ======
+                if (myChart) {
+                    if (_origLegend && myChart.options.plugins && myChart.options.plugins.legend) {
+                        myChart.options.plugins.legend.labels = {
+                            color: _origLegend.color,
+                            boxWidth: _origLegend.boxWidth,
+                            padding: _origLegend.padding,
+                            font: { size: _origLegend.fontSize, weight: _origLegend.fontWeight }
+                        };
+                    }
+                    myChart.options.devicePixelRatio = _origDPR;
+                    myChart.options.animation = _origAnim;
+                    myChart.update('none');
+                    myChart.resize();
+                }
+
+                // ====== التقاط كل عمليتين كصورة منفصلة ======
+                const theadEl = document.querySelector('#historyTable thead');
+                const allBodyRows = Array.from(document.querySelectorAll('#historyTable tbody tr'));
+                const pairImgs = [];
+
+                async function capturePair(rowsSlice) {
+                    const wrapper = document.createElement('div');
+                    wrapper.style.cssText = 'position:fixed; left:-10000px; top:0; width:1100px; background:#fff; padding:12px; z-index:-1;';
+                    const tbl = document.createElement('table');
+                    tbl.style.cssText = 'border-collapse:collapse; width:100%; table-layout:fixed; background:#fff; color:#000; font-size:0.85em; text-align:center;';
+                    const theadClone = theadEl.cloneNode(true);
+                    theadClone.querySelectorAll('th').forEach(th => {
+                        th.style.position = 'static';
+                        th.style.top = 'auto';
+                        th.style.backgroundColor = '#2980b9';
+                        th.style.color = '#fff';
+                        th.style.border = '1px solid #000';
+                        th.style.padding = '8px';
+                    });
+                    tbl.appendChild(theadClone);
+                    const tb = document.createElement('tbody');
+                    rowsSlice.forEach(r => {
+                        const cl = r.cloneNode(true);
+                        cl.querySelectorAll('td').forEach(td => {
+                            td.style.border = '1px solid #000';
+                            td.style.padding = '8px';
+                            td.style.color = '#000';
+                            td.style.background = '#fff';
+                        });
+                        cl.querySelectorAll('.sub-val').forEach(sv => {
+                            sv.style.fontWeight = 'bold';
+                        });
+                        tb.appendChild(cl);
+                    });
+                    tbl.appendChild(tb);
+                    wrapper.appendChild(tbl);
+                    document.body.appendChild(wrapper);
+                    const cnv = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                    document.body.removeChild(wrapper);
+                    return cnv.toDataURL('image/png');
+                }
+
+                for (let i = 0; i < allBodyRows.length; i += 2) {
+                    const slice = allBodyRows.slice(i, i + 2);
+                    pairImgs.push(await capturePair(slice));
+                }
 
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(18);
-                pdf.setTextColor(40, 40, 40);
-                pdf.text("IoT Irrigation System Report", 105, 15, { align: "center" });
-                pdf.setFont("helvetica", "normal");
-                pdf.setFontSize(10);
-                pdf.setTextColor(100, 100, 100);
-                pdf.text(`Generated: ${new Date().toLocaleString('en-US')}`, 105, 22, { align: "center" });
-                pdf.setDrawColor(200, 200, 200);
-                pdf.line(20, 25, 190, 25);
+                // PDF أفقي عشان 50 عمود/خط
+                const pdf = new jsPDF('l', 'mm', 'a4');
 
-                const tableProps = pdf.getImageProperties(tableImgData);
-                const tableW = 190, tableH = (tableProps.height * tableW) / tableProps.width;
-                pdf.addImage(tableImgData, 'PNG', (210 - tableW) / 2, 30, tableW, tableH);
+                // ====== صفحات العمليات (كل عمليتين في صفحة) ======
+                for (let p = 0; p < pairImgs.length; p++) {
+                    if (p > 0) pdf.addPage();
+                    pdf.setFont("helvetica", "bold");
+                    pdf.setFontSize(18);
+                    pdf.setTextColor(40, 40, 40);
+                    pdf.text("IoT Irrigation System Report — 50 Flow Sensors", 148, 15, { align: "center" });
+                    pdf.setFont("helvetica", "normal");
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(100, 100, 100);
+                    pdf.text(`Generated: ${new Date().toLocaleString('en-US', {timeZone:'Africa/Cairo'})}`, 148, 22, { align: "center" });
+                    pdf.setDrawColor(200, 200, 200);
+                    pdf.line(20, 25, 277, 25);
 
-                const chartProps = pdf.getImageProperties(chartImgData);
-                const imgW = 180, imgH = (chartProps.height * imgW) / chartProps.width;
-                const xPos = (210 - imgW) / 2;
-                if (tableH + 30 + imgH > 275) {
-                    pdf.addPage();
-                    pdf.setFontSize(16);
-                    pdf.text("Irrigation Data Visualization", 105, 15, { align: "center" });
-                    pdf.addImage(chartImgData, 'PNG', xPos, 25, imgW, imgH);
-                } else {
-                    pdf.addImage(chartImgData, 'PNG', xPos, tableH + 45, imgW, imgH);
+                    const props = pdf.getImageProperties(pairImgs[p]);
+                    const wMM = 280;
+                    const hMM = (props.height * wMM) / props.width;
+                    const maxH = 170;
+                    const finalH = Math.min(hMM, maxH);
+                    pdf.addImage(pairImgs[p], 'PNG', (297 - wMM) / 2, 30, wMM, finalH);
                 }
+
+                // ====== الصفحة الأخيرة: المنحنى فقط ======
+                if (pairImgs.length > 0) pdf.addPage();
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(16);
+                pdf.setTextColor(40, 40, 40);
+                pdf.text("Irrigation Data Visualization (50 Sensors)", 148, 15, { align: "center" });
+                const chartProps = pdf.getImageProperties(chartImgData);
+                const imgW = 260, imgH = (chartProps.height * imgW) / chartProps.width;
+                const xPos = (297 - imgW) / 2;
+                pdf.addImage(chartImgData, 'PNG', xPos, 25, imgW, Math.min(imgH, 170));
 
                 const zip = new JSZip();
                 zip.file(`Detailed_Report_${dateStr}.xlsx`, excelBuffer);
@@ -1423,6 +1683,7 @@ input[type="password"]::-ms-reveal,
                 if (warningBox) warningBox.style.display = 'none';
                 if (isDarkMode) document.body.classList.add('dark-mode');
                 if (typeof updateChartColors === "function") updateChartColors(isDarkMode);
+                applySprinklerBoxColors(isDarkMode);
             }
         };
 
@@ -1430,9 +1691,7 @@ input[type="password"]::-ms-reveal,
         window.clearAllHistory = async function() {
             if (confirm("يرجى العلم أنه سيتم حذف المنحنى مع السجل")) {
                 try {
-                    // حذف سجل الري من Firebase
                     await remove(ref(db, 'irr_history'));
-                    // حذف بيانات المنحنى من Firebase
                     await remove(ref(db, 'chart_data'));
                     console.log("تم حذف السجل والمنحنى من Firebase");
                 } catch(e) {
@@ -1441,15 +1700,13 @@ input[type="password"]::-ms-reveal,
                     return;
                 }
 
-                // تنظيف localStorage من أي بيانات قديمة
-                ['irr_history','chart_labels','chart_f1','chart_f2','chart_f3','chart_f4','lastStoppedTime','savedChartData'].forEach(k => localStorage.removeItem(k));
+                ['irr_history','chart_labels','lastStoppedTime','savedChartData'].forEach(k => localStorage.removeItem(k));
+                for (let i = 1; i <= SPRINKLER_COUNT; i++) localStorage.removeItem('chart_f' + i);
 
-                // إعادة رسم منحنى فارغ
                 initChart();
             }
         };
 
-        // إخفاء شاشة التحميل إجبارياً بعد 5 ثواني
         setTimeout(() => {
             const loadingEl = document.getElementById('loading-screen');
             if (loadingEl && loadingEl.style.display !== 'none') {
@@ -1459,15 +1716,9 @@ input[type="password"]::-ms-reveal,
 
     </script>
 
-        
-
-
-    <!-- RAIN JS — strictly inside sprinkler boxes -->
-    
-
-<script>
-    /* ════ مستمع Enter للوجين ════ */
-    document.addEventListener('keydown', function(event) {
+    <script>
+        /* ════ مستمع Enter للوجين ════ */
+        document.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 const btn = document.querySelector('#login-page button');
@@ -1475,48 +1726,52 @@ input[type="password"]::-ms-reveal,
             }
         });
 
-    /* ════ رسوم مطر الرشاشات ════ */
-    (function(){
-        const dropCounts=[0,0,0,0];
-        function getCfg(flow){
-            if(flow<5)  return {color:'rgba(200,175,50,0.78)', dur:2.2, h:13, w:2,   n:8};
-            if(flow>10) return {color:'rgba(195,55,55,0.82)',  dur:0.55,h:16, w:2.5, n:20};
-            return            {color:'rgba(55,130,210,0.80)',  dur:1.2, h:14, w:2,   n:13};
-        }
-        function startRain(idx,flow){
-            const box=document.getElementById('sbox-'+(idx+1));
-            const layer=document.getElementById('rain-'+(idx+1));
-            if(!layer||!box)return;
-            const cfg=getCfg(flow);
-            if(Math.abs(dropCounts[idx]-cfg.n)<3){
-                Array.from(layer.children).forEach(d=>{d.style.background=cfg.color;d.style.animationDuration=cfg.dur+'s';d.style.height=cfg.h+'px';d.style.width=cfg.w+'px';});
-                return;
+        /* ════ رسوم مطر الـ 50 رشاش ════ */
+        (function(){
+            const N = 50;
+            const dropCounts = new Array(N).fill(0);
+            function getCfg(flow){
+                if(flow<5)  return {color:'rgba(200,175,50,0.78)', dur:2.2, h:13, w:2,   n:8};
+                if(flow>10) return {color:'rgba(195,55,55,0.82)',  dur:0.55,h:16, w:2.5, n:20};
+                return            {color:'rgba(55,130,210,0.80)',  dur:1.2, h:14, w:2,   n:13};
             }
-            layer.innerHTML=''; dropCounts[idx]=cfg.n;
-            const W=box.offsetWidth||200, H=box.offsetHeight||60;
-            layer.style.setProperty('--box-h', H+'px');
-            for(let k=0;k<cfg.n;k++){
-                const d=document.createElement('div');
-                d.className='rain-drop';
-                d.style.cssText='position:absolute;border-radius:2px;pointer-events:none;animation:rainFall linear infinite;';
-                d.style.left=Math.random()*(W-6)+'px';
-                d.style.height=cfg.h+'px'; d.style.width=cfg.w+'px';
-                d.style.background=cfg.color;
-                d.style.animationDuration=cfg.dur+'s';
-                d.style.animationDelay=(Math.random()*cfg.dur)+'s';
-                d.style.setProperty('--box-h', H+'px');
-                layer.appendChild(d);
+            function startRain(idx,flow){
+                const box=document.getElementById('sbox-'+(idx+1));
+                const layer=document.getElementById('rain-'+(idx+1));
+                if(!layer||!box)return;
+                const cfg=getCfg(flow);
+                if(Math.abs(dropCounts[idx]-cfg.n)<3){
+                    Array.from(layer.children).forEach(d=>{d.style.background=cfg.color;d.style.animationDuration=cfg.dur+'s';d.style.height=cfg.h+'px';d.style.width=cfg.w+'px';});
+                    return;
+                }
+                layer.innerHTML=''; dropCounts[idx]=cfg.n;
+                const W=box.offsetWidth||200, H=box.offsetHeight||60;
+                layer.style.setProperty('--box-h', H+'px');
+                for(let k=0;k<cfg.n;k++){
+                    const d=document.createElement('div');
+                    d.className='rain-drop';
+                    d.style.cssText='position:absolute;border-radius:2px;pointer-events:none;animation:rainFall linear infinite;';
+                    d.style.left=Math.random()*(W-6)+'px';
+                    d.style.height=cfg.h+'px'; d.style.width=cfg.w+'px';
+                    d.style.background=cfg.color;
+                    d.style.animationDuration=cfg.dur+'s';
+                    d.style.animationDelay=(Math.random()*cfg.dur)+'s';
+                    d.style.setProperty('--box-h', H+'px');
+                    layer.appendChild(d);
+                }
             }
-        }
-        function stopRain(idx){
-            const layer=document.getElementById('rain-'+(idx+1));
-            if(layer){layer.innerHTML=''; dropCounts[idx]=0;}
-        }
-        setInterval(function(){
-            const flows=window._lastFlows; if(!flows)return;
-            flows.forEach(function(v,i){ if(v>0.1) startRain(i,v); else stopRain(i); });
-        },1200);
-    })();
+            function stopRain(idx){
+                const layer=document.getElementById('rain-'+(idx+1));
+                if(layer){layer.innerHTML=''; dropCounts[idx]=0;}
+            }
+            setInterval(function(){
+                const flows=window._lastFlows; if(!flows)return;
+                for (let i = 0; i < N; i++) {
+                    const v = flows[i] || 0;
+                    if (v > 0.1) startRain(i, v); else stopRain(i);
+                }
+            },1200);
+        })();
     </script>
 
 </body>
