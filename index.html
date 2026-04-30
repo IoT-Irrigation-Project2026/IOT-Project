@@ -1648,17 +1648,37 @@
                 // ====== أسماء المهندسين والمشرف ======
                 const ENGINEERS = "م/كريم عمرو—م/نادر رامز—م/أمنية علاء—م/نجوى وجيه—م/فاطمة علي—م/الشيماء جمال—م/أحمد ياسر—م/أحمد باسم—م/أمين حجاج—م/سيف الدين حسين";
 
-                // ====== جلب شعار الجامعة (Logo2) من Firebase ======
-                let logoSrc = null;
+                // ====== جلب شعار الجامعة (Logo2) من GitHub عبر Canvas (CORS-safe) ======
+                let logoSrc = 'https://raw.githubusercontent.com/karim0000000/IOT-Project/main/Logo2.png';
                 let logoPngBuffer = null;
                 try {
-                    const logoSnap = await get(ref(db, 'Logo2'));
-                    if (logoSnap.exists()) {
-                        logoSrc = logoSnap.val();
-                        if (logoSrc && typeof logoSrc === 'string') {
-                            const resp = await fetch(logoSrc, {mode:'cors'});
-                            logoPngBuffer = await resp.arrayBuffer();
+                    // نحوّل الصورة عبر Canvas لتجنب مشاكل CORS
+                    const pngBase64 = await new Promise((resolve) => {
+                        function tryLoad(useCors) {
+                            const img = new Image();
+                            if (useCors) img.crossOrigin = 'anonymous';
+                            img.onload = () => {
+                                try {
+                                    const cvs = document.createElement('canvas');
+                                    cvs.width  = img.naturalWidth  || 300;
+                                    cvs.height = img.naturalHeight || 300;
+                                    cvs.getContext('2d').drawImage(img, 0, 0);
+                                    resolve(cvs.toDataURL('image/png'));
+                                } catch(e) {
+                                    if (useCors) tryLoad(false); else resolve(null);
+                                }
+                            };
+                            img.onerror = () => { if (useCors) tryLoad(false); else resolve(null); };
+                            img.src = logoSrc + (useCors ? '' : '?t=' + Date.now());
                         }
+                        tryLoad(true);
+                    });
+                    if (pngBase64) {
+                        const b64 = pngBase64.split(',')[1];
+                        const bin = atob(b64);
+                        logoPngBuffer = new ArrayBuffer(bin.length);
+                        const view = new Uint8Array(logoPngBuffer);
+                        for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
                     }
                 } catch(e) { console.log('Logo2 fetch:', e); }
 
@@ -1777,8 +1797,8 @@
                         let fill, font;
 
                         if (C <= 1) {
-                            // منطقة الشعار (أزرق فاتح)
-                            fill = {fgColor:{rgb:"EBF5FB"}};
+                            // منطقة الشعار (أبيض)
+                            fill = {fgColor:{rgb:"FFFFFF"}};
                             font = {bold:false, sz:10, color:{rgb:"333333"}};
                             // بوردر يسار/يمين للمنطقة فقط
                             if (C === 0) border.left  = {style:"thick"};
@@ -1852,32 +1872,69 @@
                     try {
                         const xlsxZip = await JSZip.loadAsync(excelBuffer);
                         xlsxZip.file('xl/media/image1.png', logoPngBuffer);
-                        const drawingXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><xdr:twoCellAnchor editAs="oneCell"><xdr:from><xdr:col>0</xdr:col><xdr:colOff>57600</xdr:colOff><xdr:row>0</xdr:row><xdr:rowOff>57600</xdr:rowOff></xdr:from><xdr:to><xdr:col>2</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>7</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="2" name="Logo"/><xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill><xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="1800000" cy="1200000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/></xdr:twoCellAnchor></xdr:wsDr>`;
+
+                        // drawing1.xml بنفس صيغة ExcelJS المُجرَّبة في Excel
+                        // الشعار يملأ الخلية المدموجة A1:B(HDR_ROWS) بالكامل بهامش بسيط
+                        const drawingXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n` +
+                            `<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">` +
+                            `<xdr:twoCellAnchor editAs="oneCell">` +
+                            `<xdr:from><xdr:col>0</xdr:col><xdr:colOff>50000</xdr:colOff><xdr:row>0</xdr:row><xdr:rowOff>50000</xdr:rowOff></xdr:from>` +
+                            `<xdr:to><xdr:col>2</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${HDR_ROWS}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to>` +
+                            `<xdr:pic>` +
+                            `<xdr:nvPicPr><xdr:cNvPr id="1" name="Picture 1"/><xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr></xdr:nvPicPr>` +
+                            `<xdr:blipFill><a:blip xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:embed="rId1" cstate="print"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill>` +
+                            `<xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr>` +
+                            `</xdr:pic>` +
+                            `<xdr:clientData/>` +
+                            `</xdr:twoCellAnchor></xdr:wsDr>`;
                         xlsxZip.file('xl/drawings/drawing1.xml', drawingXml);
-                        const drawingRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image1.png"/></Relationships>`;
+
+                        const drawingRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image1.png"/></Relationships>`;
                         xlsxZip.file('xl/drawings/_rels/drawing1.xml.rels', drawingRels);
+
                         const sheetFiles = Object.keys(xlsxZip.files).filter(n => /^xl\/worksheets\/sheet\d+\.xml$/.test(n));
                         if (sheetFiles.length > 0) {
                             const sheetPath = sheetFiles[0];
                             let sheetXml = await xlsxZip.file(sheetPath).async('string');
-                            if (!sheetXml.includes('<drawing')) {
-                                sheetXml = sheetXml.replace('</worksheet>', '<drawing xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:id="rId_img1"/></worksheet>');
-                                xlsxZip.file(sheetPath, sheetXml);
-                            }
                             const sheetName = sheetPath.split('/').pop();
                             const relsPath = `xl/worksheets/_rels/${sheetName}.rels`;
                             const relsFile = xlsxZip.file(relsPath);
                             let sheetRels = relsFile ? await relsFile.async('string') : null;
+
+                            // اختيار rId فريد لو في relationships موجودة
+                            let drawingRId = 'rId1';
                             if (sheetRels) {
-                                sheetRels = sheetRels.replace('</Relationships>', '<Relationship Id="rId_img1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>');
+                                const existingIds = (sheetRels.match(/Id="(rId\d+)"/g) || []).map(s => s.match(/"(.+)"/)[1]);
+                                let n = 1;
+                                while (existingIds.includes(drawingRId)) { n++; drawingRId = 'rId' + n; }
+                            }
+
+                            // إضافة <drawing> لو مش موجود (drawing بييجي بعد ignoredErrors حسب الـ schema)
+                            if (!/<drawing[\s\/]/.test(sheetXml)) {
+                                const drawingTag = `<drawing r:id="${drawingRId}"/>`;
+                                sheetXml = sheetXml.replace('</worksheet>', drawingTag + '</worksheet>');
+                                xlsxZip.file(sheetPath, sheetXml);
+                            }
+
+                            // إنشاء/تحديث ملف الـ rels
+                            const drawingRel = `<Relationship Id="${drawingRId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/>`;
+                            if (sheetRels) {
+                                if (!sheetRels.includes(`Id="${drawingRId}"`)) {
+                                    sheetRels = sheetRels.replace('</Relationships>', drawingRel + '</Relationships>');
+                                }
                             } else {
-                                sheetRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId_img1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>`;
+                                sheetRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${drawingRel}</Relationships>`;
                             }
                             xlsxZip.file(relsPath, sheetRels);
                         }
+
                         let ct = await xlsxZip.file('[Content_Types].xml').async('string');
-                        if (!ct.includes('drawing+xml')) ct = ct.replace('</Types>', '<Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/></Types>');
-                        if (!ct.includes('.png')) ct = ct.replace('</Types>', '<Default Extension="png" ContentType="image/png"/></Types>');
+                        if (!ct.includes('/xl/drawings/drawing1.xml')) {
+                            ct = ct.replace('</Types>', '<Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/></Types>');
+                        }
+                        if (!/Extension="png"/i.test(ct)) {
+                            ct = ct.replace('</Types>', '<Default Extension="png" ContentType="image/png"/></Types>');
+                        }
                         xlsxZip.file('[Content_Types].xml', ct);
                         excelBuffer = await xlsxZip.generateAsync({type:'arraybuffer'});
                     } catch(e) { console.error('Logo inject error:', e); }
@@ -1948,11 +2005,20 @@
                     const centerDiv = document.createElement('div');
                     centerDiv.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;text-align:center;background:#ebf5fb;border-right:1px solid #aaa;border-left:1px solid #aaa;';
                     const engLines = ENGINEERS.split('—').map(n=>`<span style="color:#154360">${n}</span>`).join(' — ');
-                    centerDiv.innerHTML = `<div style="font-size:16px;font-weight:bold;color:#1a3a8c;text-decoration:underline;margin-bottom:8px">إعداد المهندسين:</div><div style="font-size:12px;line-height:1.6;margin-bottom:10px">${engLines}</div><div style="font-size:14px;color:#333;margin-bottom:4px">تحت إشراف</div><div style="font-size:18px;font-weight:bold;color:#c0392b">أ.د.ياسر عزت</div>`;
+                    centerDiv.innerHTML = `<div style="font-size:16px;font-weight:bold;color:#1a3a8c;text-decoration:underline;margin-bottom:8px">إعداد المهندسين:</div><div style="font-size:12px;line-height:1.6;margin-bottom:10px">${engLines}</div><div style="font-size:16px;font-weight:bold;color:#333;margin-bottom:4px">تحت إشراف</div><div style="font-size:22px;font-weight:bold;color:#c0392b">أ.د.ياسر عزت</div>`;
 
                     const logoDiv = document.createElement('div');
-                    logoDiv.style.cssText = 'width:190px;min-width:190px;display:flex;align-items:center;justify-content:center;padding:8px;background:#f0f8ff;';
-                    if (logoSrc) {
+                    logoDiv.style.cssText = 'width:190px;min-width:190px;display:flex;align-items:center;justify-content:center;padding:8px;background:#ffffff;';
+                    if (logoPngBuffer) {
+                        // استخدام الـ buffer المحوَّل مسبقاً (CORS-safe)
+                        const blob = new Blob([logoPngBuffer], {type:'image/png'});
+                        const objUrl = URL.createObjectURL(blob);
+                        const img = document.createElement('img');
+                        img.src = objUrl;
+                        img.style.cssText = 'max-width:170px;max-height:140px;object-fit:contain;';
+                        logoDiv.appendChild(img);
+                        logoDiv._objUrl = objUrl;
+                    } else if (logoSrc) {
                         const img = document.createElement('img');
                         img.src = logoSrc; img.crossOrigin = 'anonymous';
                         img.style.cssText = 'max-width:170px;max-height:140px;object-fit:contain;';
@@ -1963,9 +2029,18 @@
                     outer.appendChild(centerDiv);
                     outer.appendChild(logoDiv);
                     document.body.appendChild(outer);
-                    if (logoSrc) await new Promise(r => setTimeout(r, 900));
-                    const cnv = await html2canvas(outer, {scale:2, useCORS:true, backgroundColor:'#ffffff'});
+                    // انتظر تحميل الصورة بشكل كامل
+                    if (logoDiv.querySelector('img')) {
+                        await new Promise(r => {
+                            const imgEl = logoDiv.querySelector('img');
+                            if (imgEl.complete) return r();
+                            imgEl.onload = r; imgEl.onerror = r;
+                            setTimeout(r, 1500);
+                        });
+                    }
+                    const cnv = await html2canvas(outer, {scale:2, useCORS:true, allowTaint:true, backgroundColor:'#ffffff'});
                     document.body.removeChild(outer);
+                    if (logoDiv._objUrl) URL.revokeObjectURL(logoDiv._objUrl);
                     return cnv.toDataURL('image/png');
                 }
 
