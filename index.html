@@ -2080,39 +2080,78 @@
                 // ====== أسماء المهندسين والمشرف ======
                 const ENGINEERS = "م/كريم عمرو—م/نادر رامز—م/أمنية علاء—م/نجوى وجيه—م/فاطمة علي—م/الشيماء جمال—م/أحمد ياسر—م/أحمد باسم—م/أمين حجاج—م/سيف الدين حسين";
 
-                // ====== جلب شعار الجامعة (Logo2) من GitHub عبر Canvas (CORS-safe) ======
-                let logoSrc = 'https://github.com/IoT-Irrigation-Project2026';
+                // ====== توليد شعار الجامعة مباشرة عبر Canvas (بدون روابط خارجية) ======
+                let logoSrc = null;
                 let logoPngBuffer = null;
                 try {
-                    // نحوّل الصورة عبر Canvas لتجنب مشاكل CORS
-                    const pngBase64 = await new Promise((resolve) => {
-                        function tryLoad(useCors) {
-                            const img = new Image();
-                            if (useCors) img.crossOrigin = 'anonymous';
-                            img.onload = () => {
-                                try {
-                                    const cvs = document.createElement('canvas');
-                                    cvs.width  = img.naturalWidth  || 300;
-                                    cvs.height = img.naturalHeight || 300;
-                                    cvs.getContext('2d').drawImage(img, 0, 0);
-                                    resolve(cvs.toDataURL('image/png'));
-                                } catch(e) {
-                                    if (useCors) tryLoad(false); else resolve(null);
-                                }
-                            };
-                            img.onerror = () => { if (useCors) tryLoad(false); else resolve(null); };
-                            img.src = logoSrc + (useCors ? '' : '?t=' + Date.now());
-                        }
-                        tryLoad(true);
-                    });
-                    if (pngBase64) {
-                        const b64 = pngBase64.split(',')[1];
-                        const bin = atob(b64);
-                        logoPngBuffer = new ArrayBuffer(bin.length);
-                        const view = new Uint8Array(logoPngBuffer);
-                        for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
+                    const cvs = document.createElement('canvas');
+                    cvs.width = 300; cvs.height = 300;
+                    const ctx = cvs.getContext('2d');
+
+                    // خلفية بيضاء
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, 300, 300);
+
+                    // دائرة خضراء خارجية
+                    ctx.beginPath();
+                    ctx.arc(150, 150, 140, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#1a6b1a';
+                    ctx.lineWidth = 8;
+                    ctx.stroke();
+
+                    // دائرة خضراء داخلية
+                    ctx.beginPath();
+                    ctx.arc(150, 150, 125, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#1a6b1a';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+
+                    // خلفية خضراء للشعار
+                    ctx.beginPath();
+                    ctx.arc(150, 150, 122, 0, Math.PI * 2);
+                    ctx.fillStyle = '#eafaf1';
+                    ctx.fill();
+
+                    // نجمة/شكل وسطي
+                    ctx.save();
+                    ctx.translate(150, 120);
+                    const spikes = 8, outerR = 42, innerR = 20;
+                    ctx.beginPath();
+                    for (let s = 0; s < spikes * 2; s++) {
+                        const r = s % 2 === 0 ? outerR : innerR;
+                        const angle = (s * Math.PI) / spikes - Math.PI / 2;
+                        s === 0 ? ctx.moveTo(Math.cos(angle)*r, Math.sin(angle)*r)
+                                : ctx.lineTo(Math.cos(angle)*r, Math.sin(angle)*r);
                     }
-                } catch(e) { console.log('Logo2 fetch:', e); }
+                    ctx.closePath();
+                    ctx.fillStyle = '#1a6b1a';
+                    ctx.fill();
+                    ctx.restore();
+
+                    // نص جامعة عين شمس
+                    ctx.fillStyle = '#1a3a1a';
+                    ctx.font = 'bold 22px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('جامعة عين شمس', 150, 195);
+
+                    // نص كلية الزراعة
+                    ctx.font = 'bold 18px Arial';
+                    ctx.fillStyle = '#1a6b1a';
+                    ctx.fillText('كلية الزراعة', 150, 222);
+
+                    // نص قسم الهندسة الزراعية
+                    ctx.font = 'bold 14px Arial';
+                    ctx.fillStyle = '#2d7a2d';
+                    ctx.fillText('قسم الهندسة الزراعية', 150, 246);
+
+                    // تحويل Canvas إلى ArrayBuffer
+                    const pngBase64 = cvs.toDataURL('image/png');
+                    const b64 = pngBase64.split(',')[1];
+                    const bin = atob(b64);
+                    logoPngBuffer = new ArrayBuffer(bin.length);
+                    const view = new Uint8Array(logoPngBuffer);
+                    for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
+                } catch(e) { console.log('Logo generate error:', e); }
 
             try {
                 const N = SPRINKLER_COUNT;          // 50
