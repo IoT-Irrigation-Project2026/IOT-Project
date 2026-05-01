@@ -1227,7 +1227,7 @@
                 };
                 sendPasswordResetEmail(auth, email, resetActionSettings)
                     .then(() => {
-                        showForgotMsg('✅ تم إرسال رابط استعادة كلمة السر إلى بريدك. لو ما لقيتش الإيميل، شوف في صندوق الـ Spam.', 'success');
+                        showForgotMsg('تم إرسال رابط إستعادة كلمة السر إلى بريدك الإلكتروني في رسائل الspam✅', 'success');
                         forgotSendBtn.disabled = false;
                         forgotSendBtn.innerHTML = 'إرسال مرة أخرى';
                     })
