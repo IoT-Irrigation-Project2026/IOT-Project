@@ -2080,78 +2080,75 @@
                 // ====== أسماء المهندسين والمشرف ======
                 const ENGINEERS = "م/كريم عمرو—م/نادر رامز—م/أمنية علاء—م/نجوى وجيه—م/فاطمة علي—م/الشيماء جمال—م/أحمد ياسر—م/أحمد باسم—م/أمين حجاج—م/سيف الدين حسين";
 
-                // ====== توليد شعار الجامعة مباشرة عبر Canvas (بدون روابط خارجية) ======
+                // ====== تحميل شعار الجامعة الحقيقي — مع fallback رسم Canvas ======
                 let logoSrc = null;
                 let logoPngBuffer = null;
+
+                // --- المحاولة الأولى: تحميل الصورة الحقيقية من GitHub ---
                 try {
-                    const cvs = document.createElement('canvas');
-                    cvs.width = 300; cvs.height = 300;
-                    const ctx = cvs.getContext('2d');
-
-                    // خلفية بيضاء
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(0, 0, 300, 300);
-
-                    // دائرة خضراء خارجية
-                    ctx.beginPath();
-                    ctx.arc(150, 150, 140, 0, Math.PI * 2);
-                    ctx.strokeStyle = '#1a6b1a';
-                    ctx.lineWidth = 8;
-                    ctx.stroke();
-
-                    // دائرة خضراء داخلية
-                    ctx.beginPath();
-                    ctx.arc(150, 150, 125, 0, Math.PI * 2);
-                    ctx.strokeStyle = '#1a6b1a';
-                    ctx.lineWidth = 3;
-                    ctx.stroke();
-
-                    // خلفية خضراء للشعار
-                    ctx.beginPath();
-                    ctx.arc(150, 150, 122, 0, Math.PI * 2);
-                    ctx.fillStyle = '#eafaf1';
-                    ctx.fill();
-
-                    // نجمة/شكل وسطي
-                    ctx.save();
-                    ctx.translate(150, 120);
-                    const spikes = 8, outerR = 42, innerR = 20;
-                    ctx.beginPath();
-                    for (let s = 0; s < spikes * 2; s++) {
-                        const r = s % 2 === 0 ? outerR : innerR;
-                        const angle = (s * Math.PI) / spikes - Math.PI / 2;
-                        s === 0 ? ctx.moveTo(Math.cos(angle)*r, Math.sin(angle)*r)
-                                : ctx.lineTo(Math.cos(angle)*r, Math.sin(angle)*r);
-                    }
-                    ctx.closePath();
-                    ctx.fillStyle = '#1a6b1a';
-                    ctx.fill();
-                    ctx.restore();
-
-                    // نص جامعة عين شمس
-                    ctx.fillStyle = '#1a3a1a';
-                    ctx.font = 'bold 22px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('جامعة عين شمس', 150, 195);
-
-                    // نص كلية الزراعة
-                    ctx.font = 'bold 18px Arial';
-                    ctx.fillStyle = '#1a6b1a';
-                    ctx.fillText('كلية الزراعة', 150, 222);
-
-                    // نص قسم الهندسة الزراعية
-                    ctx.font = 'bold 14px Arial';
-                    ctx.fillStyle = '#2d7a2d';
-                    ctx.fillText('قسم الهندسة الزراعية', 150, 246);
-
-                    // تحويل Canvas إلى ArrayBuffer
-                    const pngBase64 = cvs.toDataURL('image/png');
-                    const b64 = pngBase64.split(',')[1];
-                    const bin = atob(b64);
-                    logoPngBuffer = new ArrayBuffer(bin.length);
-                    const view = new Uint8Array(logoPngBuffer);
-                    for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
-                } catch(e) { console.log('Logo generate error:', e); }
+                    // *** ضع هنا الرابط الكامل للصورة على GitHub ***
+                    // مثال: https://raw.githubusercontent.com/username/repo/main/ain_shams_agri_logo.png
+                    const LOGO_URL = 'Logo2.png';
+                    const controller = new AbortController();
+                    const fetchTimeout = setTimeout(() => controller.abort(), 8000); // 8 ثواني حد أقصى للانتظار
+                    const resp = await fetch(LOGO_URL, { signal: controller.signal });
+                    clearTimeout(fetchTimeout);
+                    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                    logoPngBuffer = await resp.arrayBuffer();
+                    console.log('Logo loaded from GitHub successfully');
+                } catch(e) {
+                    // --- Fallback: رسم شعار بديل بالـ Canvas لو الصورة ما اتحملتش ---
+                    console.log('Logo fetch failed (' + e.message + '), using canvas fallback');
+                    try {
+                        const cvs = document.createElement('canvas');
+                        cvs.width = 400; cvs.height = 400;
+                        const ctx = cvs.getContext('2d');
+                        ctx.fillStyle = '#fff';
+                        ctx.fillRect(0, 0, 400, 400);
+                        ctx.beginPath();
+                        ctx.arc(200, 200, 180, 0, Math.PI * 2);
+                        ctx.strokeStyle = '#000'; ctx.lineWidth = 5; ctx.stroke();
+                        ctx.beginPath();
+                        ctx.arc(200, 200, 155, 0, Math.PI * 2);
+                        ctx.lineWidth = 2; ctx.stroke();
+                        ctx.fillStyle = '#2e8b57';
+                        function drawLeaf(x, y, angle) {
+                            ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
+                            ctx.beginPath(); ctx.moveTo(0, 0);
+                            ctx.bezierCurveTo(8, -10, 12, -18, 0, -28);
+                            ctx.bezierCurveTo(-12, -18, -8, -10, 0, 0);
+                            ctx.fill(); ctx.restore();
+                        }
+                        const leafCount = 48, leafRadius = 135;
+                        for (let i = 0; i < leafCount; i++) {
+                            const a = (i / leafCount) * Math.PI * 2;
+                            drawLeaf(200 + Math.cos(a) * leafRadius, 200 + Math.sin(a) * leafRadius, a);
+                        }
+                        ctx.fillStyle = '#555';
+                        ctx.beginPath(); ctx.moveTo(200, 90); ctx.lineTo(220, 200);
+                        ctx.lineTo(180, 200); ctx.closePath(); ctx.fill();
+                        ctx.textAlign = 'center';
+                        ctx.fillStyle = '#cc0000'; ctx.font = 'bold 28px Arial';
+                        ctx.fillText('كلية الزراعة', 200, 250);
+                        function drawCircularText(text, centerX, centerY, r, startAngle, direction = 1) {
+                            ctx.save(); ctx.translate(centerX, centerY); ctx.rotate(startAngle);
+                            for (let i = 0; i < text.length; i++) {
+                                ctx.save(); ctx.rotate(direction * i * 0.07);
+                                ctx.fillText(text[i], 0, -r); ctx.restore();
+                            }
+                            ctx.restore();
+                        }
+                        ctx.fillStyle = '#000'; ctx.font = 'bold 18px Arial';
+                        drawCircularText("AIN SHAMS UNIVERSITY",  200, 200, 165, -Math.PI / 1.1,  1);
+                        drawCircularText("FACULTY OF AGRICULTURE", 200, 200, 165,  Math.PI / 1.1, -1);
+                        const pngBase64 = cvs.toDataURL('image/png');
+                        const b64 = pngBase64.split(',')[1];
+                        const bin = atob(b64);
+                        logoPngBuffer = new ArrayBuffer(bin.length);
+                        const view = new Uint8Array(logoPngBuffer);
+                        for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
+                    } catch(e2) { console.log('Logo canvas fallback error:', e2); }
+                }
 
             try {
                 const N = SPRINKLER_COUNT;          // 50
