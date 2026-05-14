@@ -13,6 +13,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <style>
         input[type="password"]::-ms-reveal,
         input[type="password"]::-ms-clear { display: none !important; }
@@ -49,6 +51,28 @@
         body.dark-mode .sprinkler-box { backdrop-filter: blur(12px) !important; }
         body.dark-mode .leaflet-control-zoom a { background-color: #1a1f2b !important; color: #ffffff !important; border-color: rgba(0,242,255,0.3) !important; font-weight: bold !important; }
         body.dark-mode .leaflet-control-zoom a:hover { background-color: #0d1117 !important; color: #00f2ff !important; }
+        /* Leaflet Draw dark mode */
+        body.dark-mode .leaflet-draw-toolbar a { background-color: #1a1f2b !important; border-color: rgba(0,242,255,0.3) !important; }
+        body.dark-mode .leaflet-draw-toolbar a:hover { background-color: #0d1117 !important; }
+        body.dark-mode .leaflet-draw-actions a { background-color: #1a1f2b !important; color: #00f2ff !important; }
+        /* Zone action panel dark mode */
+        body.dark-mode #zone-action-panel { background: rgba(17,25,40,0.95) !important; border-color: rgba(0,242,255,0.25) !important; }
+        body.dark-mode .zone-action-title { color: #00f2ff !important; }
+        body.dark-mode .action-btn { opacity: 0.85; }
+        body.dark-mode #zone-draw-status { background: rgba(17,25,40,0.9) !important; color: #ccc !important; }
+        body.dark-mode #zone-list-panel { background: rgba(17,25,40,0.9) !important; border-color: rgba(0,242,255,0.2) !important; }
+        body.dark-mode .zone-list-item { background: rgba(255,255,255,0.04) !important; }
+        body.dark-mode .zone-list-item span { color: #ddd !important; }
+        /* Manual zone panel dark mode */
+        body.dark-mode #manual-zone-panel { background: rgba(17,25,40,0.95) !important; border-color: rgba(0,242,255,0.25) !important; }
+        body.dark-mode #manual-zone-panel h4 { color: #00f2ff !important; }
+        body.dark-mode #manual-zone-panel label { color: #aaa !important; }
+        body.dark-mode #manual-zone-panel input { background: #0d1117 !important; color: #fff !important; border-color: rgba(0,242,255,0.3) !important; }
+        body.dark-mode #manual-action-select { background: #0d1117 !important; color: #fff !important; }
+        body.dark-mode #manual-zone-status { background: rgba(17,25,40,0.8) !important; color: #ccc !important; }
+        /* Zone tooltip on map */
+        .zone-tooltip { background:rgba(0,0,0,0.65);color:#fff;border:none;font-weight:bold;font-size:0.8em;padding:2px 7px;border-radius:6px;white-space:nowrap; }
+        .zone-tooltip::before { display:none; }
         table { table-layout: fixed; width: 100%; border-collapse: collapse; }
         thead { display: table-header-group; }
         tbody { display: table-row-group; }
@@ -583,6 +607,51 @@
                 <div class="box" style="height: 350px; padding: 10px; position: relative;">
                     <h4 style="margin: 0 0 5px 0; text-align: center;">📍 (GPS Live)</h4>
                     <div id="map-canvas" style="width: 100%; height: 750px; border-radius: 10px; position: relative; z-index: 0;"></div>
+                    <div id="zone-action-panel" style="margin-top:10px;padding:12px 14px;border-radius:12px;background:#f8faff;border:1px solid #dce8ff;direction:rtl;">
+                        <div class="zone-action-title" style="font-weight:bold;font-size:0.95em;color:#2c3e50;margin-bottom:10px;text-align:center;">🗺️ اختر نوع المنطقة ثم ارسم مستطيلاً على الخريطة</div>
+                        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px;">
+                            <button class="action-btn" onclick="window.selectZoneAction(1)" data-action="1" style="padding:8px 14px;border-radius:9px;border:2px solid #27ae60;background:#eafaf1;color:#1e8449;font-weight:bold;cursor:pointer;font-size:0.82em;transition:all .2s;">🌱 ري طبيعي</button>
+                            <button class="action-btn" onclick="window.selectZoneAction(2)" data-action="2" style="padding:8px 14px;border-radius:9px;border:2px solid #2c3e50;background:#eaecee;color:#1a252f;font-weight:bold;cursor:pointer;font-size:0.82em;transition:all .2s;">🚫 منطقة محظورة</button>
+                            <button class="action-btn" onclick="window.selectZoneAction(3)" data-action="3" style="padding:8px 14px;border-radius:9px;border:2px solid #d4ac0d;background:#fefde7;color:#9a7d0a;font-weight:bold;cursor:pointer;font-size:0.82em;transition:all .2s;">💧 تعديل تدفق</button>
+                            <button class="action-btn" onclick="window.selectZoneAction(4)" data-action="4" style="padding:8px 14px;border-radius:9px;border:2px solid #e74c3c;background:#fdecea;color:#c0392b;font-weight:bold;cursor:pointer;font-size:0.82em;transition:all .2s;">🐛 مكافحة حشرية</button>
+                            <button class="action-btn" id="delete-mode-btn" onclick="window.toggleDeleteMode()" data-action="5" style="padding:8px 14px;border-radius:9px;border:2px solid #7f8c8d;background:#f2f3f4;color:#566573;font-weight:bold;cursor:pointer;font-size:0.82em;transition:all .2s;">🗑️ حذف منطقة</button>
+                        </div>
+                        <div id="zone-draw-status" style="text-align:center;padding:7px 12px;border-radius:8px;background:#fff;border:1px solid #e0e7ff;font-size:0.85em;color:#555;font-weight:bold;">اختر نوع المنطقة من الأزرار أعلاه لتفعيل أداة الرسم</div>
+                    </div>
+                    <div id="zone-list-panel" style="margin-top:10px;padding:10px 14px;border-radius:12px;background:#f8faff;border:1px solid #dce8ff;display:none;direction:rtl;max-height:200px;overflow-y:auto;">
+                        <div style="font-weight:bold;font-size:0.88em;color:#2c3e50;margin-bottom:8px;">📋 المناطق المحفوظة (Leaflet Draw):</div>
+                        <div id="zone-list-items"></div>
+                    </div>
+                    <div id="manual-zone-panel" class="box" style="margin-top:10px;padding:14px;direction:rtl;border:1px solid #dce8ff;background:#f8faff;border-radius:12px;">
+                        <h4 style="margin:0 0 12px 0;text-align:center;color:#2c3e50;font-size:1em;">✍️ إدخال يدوي → Firebase: ControlSettings/TargetZone</h4>
+                        <div style="margin-bottom:12px;">
+                            <label style="font-weight:bold;font-size:0.85em;display:block;margin-bottom:5px;color:#555;">نوع المنطقة:</label>
+                            <select id="manual-action-select" onchange="window.updateManualColor()" style="width:100%;padding:9px 12px;border-radius:9px;border:2px solid #27ae60;font-size:0.9em;font-weight:bold;background:#eafaf1;color:#1e8449;cursor:pointer;outline:none;transition:all .2s;">
+                                <option value="1">🌱 ري طبيعي — Normal Irrigation</option>
+                                <option value="2">🚫 منطقة محظورة — No-Water Zone</option>
+                                <option value="3">💧 تعديل تدفق — Low/High Flow</option>
+                                <option value="4">🐛 مكافحة حشرية — Targeted Pest Control</option>
+                            </select>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                            <div>
+                                <label style="font-weight:bold;font-size:0.8em;color:#2c3e50;display:block;margin-bottom:5px;">↖️ الركن الأول (NW)</label>
+                                <input id="m-nw-lat" type="number" step="any" placeholder="Latitude" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #c8d6e5;font-size:0.85em;box-sizing:border-box;margin-bottom:6px;outline:none;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#c8d6e5'"/>
+                                <input id="m-nw-lng" type="number" step="any" placeholder="Longitude" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #c8d6e5;font-size:0.85em;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#c8d6e5'"/>
+                            </div>
+                            <div>
+                                <label style="font-weight:bold;font-size:0.8em;color:#2c3e50;display:block;margin-bottom:5px;">↘️ الركن الثاني (SE)</label>
+                                <input id="m-se-lat" type="number" step="any" placeholder="Latitude" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #c8d6e5;font-size:0.85em;box-sizing:border-box;margin-bottom:6px;outline:none;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#c8d6e5'"/>
+                                <input id="m-se-lng" type="number" step="any" placeholder="Longitude" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #c8d6e5;font-size:0.85em;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#c8d6e5'"/>
+                            </div>
+                        </div>
+                        <div id="manual-zone-status" style="text-align:center;padding:7px 12px;border-radius:8px;background:#fff;border:1px solid #e0e7ff;font-size:0.83em;color:#555;margin-bottom:10px;font-weight:bold;min-height:30px;line-height:1.6;">أدخل إحداثيات ركني المستطيل (NW و SE) ثم اضغط حفظ</div>
+                        <div style="display:flex;gap:8px;">
+                            <button onclick="window.saveManualZone()" id="manual-save-btn" style="flex:1;padding:10px;border-radius:10px;border:none;background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;font-weight:bold;cursor:pointer;font-size:0.9em;box-shadow:0 3px 8px rgba(39,174,96,0.3);">💾 حفظ في Firebase</button>
+                            <button onclick="window.deleteManualZone()" style="flex:1;padding:10px;border-radius:10px;border:1px solid #7f8c8d;background:#f2f3f4;color:#566573;font-weight:bold;cursor:pointer;font-size:0.9em;">🧹 مسح الحقول</button>
+                        </div>
+                    </div>
+
                     <div id="gpsCoordsBox" style="margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: linear-gradient(135deg, #ecf6ff, #f4f9ff); border: 1px solid #cfe3ff; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-around; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); font-family: 'Courier New', monospace;">
                         <div style="display:flex; align-items:center; gap:8px;">
                             <span style="font-weight:bold; color:#2c3e50;">🌐 Latitude:</span>
@@ -1607,6 +1676,169 @@
             _leafletMarker = L.marker([lat, lng], { icon: redIcon })
                 .addTo(_leafletMap)
                 .bindPopup('📍 الموقع الحالي');
+
+            // ── ACTION TYPES ──
+            const ACTION_TYPES = {
+                1:{label:'Normal Irrigation',     labelAr:'ري طبيعي',        color:'#27ae60', icon:'🌱'},
+                2:{label:'No-Water Zone',         labelAr:'منطقة محظورة',     color:'#2c3e50', icon:'🚫'},
+                3:{label:'Low/High Flow',         labelAr:'تعديل تدفق',       color:'#d4ac0d', icon:'💧'},
+                4:{label:'Targeted Pest Control', labelAr:'مكافحة حشرية',  color:'#e74c3c', icon:'🐛'}
+            };
+
+            // ── Leaflet Draw: multi-zone (targetZone) ──
+            const drawnItems   = new L.FeatureGroup().addTo(_leafletMap);
+            let selectedActionId = null, isDeleteMode = false, activeDrawer = null;
+            const layerZoneMap = new Map();
+
+            function refreshZoneList() {
+                const lEl=document.getElementById('zone-list-items'), pEl=document.getElementById('zone-list-panel');
+                if(!lEl||!pEl) return;
+                pEl.style.display=layerZoneMap.size>0?'':'none';
+                let html='';
+                layerZoneMap.forEach((zId,layer)=>{
+                    const m=layer._zoneMeta||{}, act=ACTION_TYPES[m.actionId]||{};
+                    html+=`<div class="zone-list-item" style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;margin-bottom:5px;background:#fff;border:1px solid #e8ecf0;">`
+                         +`<span style="width:12px;height:12px;border-radius:50%;background:${act.color||'#999'};flex-shrink:0;display:inline-block;"></span>`
+                         +`<span style="flex:1;font-size:0.82em;color:#2c3e50;font-weight:bold;">${act.icon||''} ${act.labelAr||'منطقة'} <small>#${zId.slice(-5)}</small></span>`
+                         +`<button onclick="window.deleteZone('${zId}')" style="padding:3px 9px;border-radius:6px;border:1px solid #e74c3c;background:#fdecea;color:#e74c3c;cursor:pointer;font-size:0.78em;font-weight:bold;">حذف</button></div>`;
+                });
+                lEl.innerHTML=html;
+            }
+
+            window.selectZoneAction=function(actionId){
+                isDeleteMode=false; selectedActionId=actionId;
+                const act=ACTION_TYPES[actionId];
+                document.querySelectorAll('.action-btn').forEach(b=>b.style.outline='none');
+                const ab=document.querySelector(`.action-btn[data-action="${actionId}"]`);
+                if(ab) ab.style.outline='3px solid '+act.color;
+                if(activeDrawer){try{activeDrawer.disable();}catch(_){} activeDrawer=null;}
+                const st=document.getElementById('zone-draw-status');
+                if(st){st.style.background=act.color+'18';st.style.borderColor=act.color+'55';st.style.color=act.color;st.innerHTML=act.icon+' تم اختيار: <strong>'+act.labelAr+'</strong> — ارسم مستطيلاً الآن';}
+                activeDrawer=new L.Draw.Polygon(_leafletMap,{shapeOptions:{color:act.color,weight:2,fillOpacity:0.18},allowIntersection:false,showArea:true});
+                activeDrawer.enable();
+            };
+
+            window.toggleDeleteMode=function(){
+                if(activeDrawer){try{activeDrawer.disable();}catch(_){} activeDrawer=null;}
+                selectedActionId=null;
+                document.querySelectorAll('.action-btn').forEach(b=>b.style.outline='none');
+                isDeleteMode=!isDeleteMode;
+                const db2=document.getElementById('delete-mode-btn'),st=document.getElementById('zone-draw-status');
+                if(isDeleteMode){
+                    if(db2){db2.style.outline='3px solid #e74c3c';db2.style.background='#fdecea';}
+                    if(st){st.innerHTML='🗑️ وضع الحذف — انقر على أي مستطيل';st.style.color='#e74c3c';st.style.background='#fdecea';}
+                }else{
+                    if(db2){db2.style.outline='none';db2.style.background='#f2f3f4';}
+                    if(st){st.innerHTML='اختر نوع المنطقة من الأزرار أعلاه';st.style.color='#555';st.style.background='#fff';}
+                }
+            };
+
+            window.deleteZone=async function(zId){
+                try{
+                    await set(ref(db,'targetZone/'+zId),null);
+                    layerZoneMap.forEach((id,l)=>{if(id===zId){drawnItems.removeLayer(l);layerZoneMap.delete(l);}});
+                    refreshZoneList();
+                }catch(err){console.error('خطأ حذف:',err);}
+            };
+
+            function addZoneLayer(layer,zId,meta){
+                layer._zoneMeta=meta;
+                drawnItems.addLayer(layer);
+                layerZoneMap.set(layer,zId);
+                const act=ACTION_TYPES[meta.actionId]||{};
+                layer.bindTooltip((act.icon||'')+' '+(act.labelAr||''),{permanent:true,direction:'center',className:'zone-tooltip'});
+                layer.on('click',function(){if(!isDeleteMode)return;if(confirm('هل تريد حذف هذه المنطقة؟'))window.deleteZone(zId);});
+            }
+
+            get(ref(db,'targetZone')).then(snap=>{
+                const allZ=snap.val();if(!allZ)return;
+                Object.entries(allZ).forEach(([zId,s])=>{
+                    if(!s||!s.points)return;
+                    const act=ACTION_TYPES[s.actionId]||{color:'#3498db'};
+                    const pts=s.points.map(p=>[p.lat,p.lng]);
+                    const layer=L.polygon(pts,{color:act.color,weight:2,fillOpacity:0.18});
+                    addZoneLayer(layer,zId,s);
+                });
+                refreshZoneList();
+            }).catch(()=>{});
+
+            _leafletMap.on(L.Draw.Event.CREATED,async function(e){
+                if(activeDrawer){try{activeDrawer.disable();}catch(_){} activeDrawer=null;}
+                if(!selectedActionId)return;
+                const act=ACTION_TYPES[selectedActionId];
+                const latLngs=e.layer.getLatLngs()[0];
+                const points=latLngs.map(p=>({lat:p.lat,lng:p.lng}));
+                const zId='zone_'+(Date.now()+(window._serverOffset||0));
+                const payload={actionId:selectedActionId,actionLabel:act.label,actionLabelAr:act.labelAr,color:act.color,type:'rectangle',points,savedAt:Date.now()+(window._serverOffset||0)};
+                const st=document.getElementById('zone-draw-status');
+                if(st)st.innerHTML='⏳ جاري الحفظ...';
+                try{
+                    await set(ref(db,'targetZone/'+zId),payload);
+                    e.layer.setStyle({color:act.color,weight:2,fillOpacity:0.18});
+                    addZoneLayer(e.layer,zId,payload);
+                    refreshZoneList();
+                    if(st){st.style.color=act.color;st.innerHTML='✅ تم الحفظ — '+act.icon+' '+act.labelAr;}
+                    selectedActionId=null;
+                    document.querySelectorAll('.action-btn').forEach(b=>b.style.outline='none');
+                    setTimeout(()=>{if(st){st.innerHTML='اختر نوع المنطقة';st.style.color='#555';st.style.background='#fff';}},3500);
+                }catch(err){
+                    if(st)st.innerHTML='❌ فشل: '+err.message;
+                }
+            });
+
+            // ── Manual input: ControlSettings/TargetZone ──
+            let _manualLayer=null;
+
+            window.updateManualColor=function(){
+                const sel=document.getElementById('manual-action-select');if(!sel)return;
+                const C={1:{border:'#27ae60',bg:'#eafaf1',color:'#1e8449'},2:{border:'#2c3e50',bg:'#eaecee',color:'#1a252f'},3:{border:'#d4ac0d',bg:'#fefde7',color:'#9a7d0a'},4:{border:'#e74c3c',bg:'#fdecea',color:'#c0392b'}};
+                const c2=C[parseInt(sel.value)]||C[1];
+                sel.style.borderColor=c2.border;sel.style.background=c2.bg;sel.style.color=c2.color;
+            };
+
+            function renderManualLayer(points,color,labelAr,icon){
+                if(_manualLayer){drawnItems.removeLayer(_manualLayer);_manualLayer=null;}
+                _manualLayer=L.polygon(points.map(p=>[p.lat,p.lng]),{color,weight:2.5,fillOpacity:0.2,dashArray:'6,4'});
+                _manualLayer.bindTooltip((icon||'')+' '+labelAr+' [يدوي]',{permanent:true,direction:'center',className:'zone-tooltip'});
+                drawnItems.addLayer(_manualLayer);
+                _leafletMap.fitBounds(_manualLayer.getBounds(),{padding:[30,30]});
+            }
+
+            window.saveManualZone=async function(){
+                const actionId=parseInt(document.getElementById('manual-action-select').value);
+                const nwLat=parseFloat(document.getElementById('m-nw-lat').value);
+                const nwLng=parseFloat(document.getElementById('m-nw-lng').value);
+                const seLat=parseFloat(document.getElementById('m-se-lat').value);
+                const seLng=parseFloat(document.getElementById('m-se-lng').value);
+                const st=document.getElementById('manual-zone-status');
+                if([nwLat,nwLng,seLat,seLng].some(v=>isNaN(v)||v===0)){
+                    if(st){st.innerHTML='⚠️ أدخل جميع الإحداثيات بشكل صحيح';st.style.color='#e67e22';st.style.background='#fef9e7';}
+                    return;
+                }
+                const act=ACTION_TYPES[actionId];
+                const points=[{lat:nwLat,lng:nwLng},{lat:nwLat,lng:seLng},{lat:seLat,lng:seLng},{lat:seLat,lng:nwLng}];
+                const zId='zone_manual_'+(Date.now()+(window._serverOffset||0));
+                const payload={actionId,actionLabel:act.label,actionLabelAr:act.labelAr,color:act.color,type:'rectangle',source:'manual',points,savedAt:Date.now()+(window._serverOffset||0)};
+                if(st){st.innerHTML='⏳ جاري الحفظ...';st.style.color='#2980b9';st.style.background='#eaf4fd';}
+                try{
+                    await set(ref(db,'targetZone/'+zId),payload);
+                    const layer=L.polygon(points.map(p=>[p.lat,p.lng]),{color:act.color,weight:2,fillOpacity:0.18});
+                    addZoneLayer(layer,zId,payload);
+                    refreshZoneList();
+                    if(st){st.innerHTML='✅ تمت الإضافة إلى قائمة المناطق — '+act.icon+' '+act.labelAr;st.style.color='#27ae60';st.style.background='#eafaf1';}
+                    ['m-nw-lat','m-nw-lng','m-se-lat','m-se-lng'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+                    setTimeout(()=>{if(st){st.innerHTML='أدخل إحداثيات ركني المستطيل (NW و SE) ثم اضغط حفظ';st.style.color='#555';st.style.background='#fff';}},3000);
+                }catch(err){
+                    if(st){st.innerHTML='❌ فشل: '+err.message;st.style.color='#e74c3c';st.style.background='#fdecea';}
+                }
+            };
+
+            window.deleteManualZone=function(){
+                ['m-nw-lat','m-nw-lng','m-se-lat','m-se-lng'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+                const st=document.getElementById('manual-zone-status');
+                if(st){st.innerHTML='أدخل إحداثيات ركني المستطيل (NW و SE) ثم اضغط حفظ';st.style.color='#555';st.style.background='#fff';}
+            };
+
         }
 
         onValue(ref(db, 'GPS_Data'), (snap) => {
