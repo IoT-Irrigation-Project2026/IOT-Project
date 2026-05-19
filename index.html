@@ -613,7 +613,7 @@
                             <button class="action-btn" onclick="window.selectZoneAction(1)" data-action="1" style="padding:8px 14px;border-radius:9px;border:2px solid #27ae60;background:#eafaf1;color:#1e8449;font-weight:bold;cursor:pointer;font-size:0.82em;transition:all .2s;">🌱 ري طبيعي</button>
                             <button class="action-btn" onclick="window.selectZoneAction(2)" data-action="2" style="padding:8px 14px;border-radius:9px;border:2px solid #2c3e50;background:#eaecee;color:#1a252f;font-weight:bold;cursor:pointer;font-size:0.82em;transition:all .2s;">🚫 منطقة محظورة</button>
                             <button class="action-btn" onclick="window.selectZoneAction(3)" data-action="3" style="padding:8px 14px;border-radius:9px;border:2px solid #d4ac0d;background:#fefde7;color:#9a7d0a;font-weight:bold;cursor:pointer;font-size:0.82em;transition:all .2s;">💧 تعديل تدفق</button>
-                            <button class="action-btn" onclick="window.selectZoneAction(4)" data-action="4" style="padding:8px 14px;border-radius:9px;border:2px solid #e74c3c;background:#fdecea;color:#c0392b;font-weight:bold;cursor:pointer;font-size:0.82em;transition:all .2s;">🐛 مكافحة حشرية</button>
+                            <button class="action-btn" onclick="window.selectZoneAction(4)" data-action="4" style="padding:8px 14px;border-radius:9px;border:2px solid #e74c3c;background:#fdecea;color:#c0392b;font-weight:bold;cursor:pointer;font-size:0.82em;transition:all .2s;">تخصيص منطقة🔒</button>
                             <button class="action-btn" id="delete-mode-btn" onclick="window.toggleDeleteMode()" data-action="5" style="padding:8px 14px;border-radius:9px;border:2px solid #7f8c8d;background:#f2f3f4;color:#566573;font-weight:bold;cursor:pointer;font-size:0.82em;transition:all .2s;">🗑️ حذف منطقة</button>
                         </div>
                         <div id="zone-draw-status" style="text-align:center;padding:7px 12px;border-radius:8px;background:#fff;border:1px solid #e0e7ff;font-size:0.85em;color:#555;font-weight:bold;">اختر نوع المنطقة من الأزرار أعلاه لتفعيل أداة الرسم</div>
@@ -630,7 +630,7 @@
                                 <option value="1">🌱 ري طبيعي — Normal Irrigation</option>
                                 <option value="2">🚫 منطقة محظورة — No-Water Zone</option>
                                 <option value="3">💧 تعديل تدفق — Low/High Flow</option>
-                                <option value="4">🐛 مكافحة حشرية — Targeted Pest Control</option>
+                                <option value="4">تخصيص منطقة🔒— Customize an area</option>
                             </select>
                         </div>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
@@ -1682,7 +1682,7 @@
                 1:{label:'Normal Irrigation',     labelAr:'ري طبيعي',        color:'#27ae60', icon:'🌱'},
                 2:{label:'No-Water Zone',         labelAr:'منطقة محظورة',     color:'#2c3e50', icon:'🚫'},
                 3:{label:'Low/High Flow',         labelAr:'تعديل تدفق',       color:'#d4ac0d', icon:'💧'},
-                4:{label:'Targeted Pest Control', labelAr:'مكافحة حشرية',  color:'#e74c3c', icon:'🐛'}
+                4:{label:'Targeted Pest Control', labelAr:'تخصيص منطقة',  color:'#e74c3c', icon:'🐛'}
             };
 
             // ── Leaflet Draw: multi-zone (targetZone) ──
